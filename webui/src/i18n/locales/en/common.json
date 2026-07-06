@@ -70,6 +70,7 @@
       "general": "General",
       "byok": "BYOK",
       "overview": "Overview",
+      "personalization": "Personalization",
       "appearance": "Appearance",
       "models": "Models",
       "providers": "Providers",
@@ -91,6 +92,7 @@
       "about": "About",
       "status": "Status",
       "localPreferences": "Local preferences",
+      "customInstructions": "Custom instructions",
       "presets": "Presets",
       "imageGeneration": "Image generation",
       "imageDefaults": "Defaults",
@@ -157,6 +159,9 @@
       "imageSaveDir": "Save directory",
       "botName": "Bot name",
       "botIcon": "Bot icon",
+      "customInstructions": "Custom instructions",
+      "globalAgentsPath": "Save location",
+      "reasoningLanguage": "Thinking language",
       "timezone": "Timezone",
       "workspacePath": "Default workspace",
       "localServiceAccess": "Local services",
@@ -201,6 +206,8 @@
       "maxImagesPerTurn": "Upper bound for one generate_image request.",
       "botName": "Shown wherever nanobot uses a display name.",
       "botIcon": "Short emoji or text shown with the bot name.",
+      "customInstructions": "Edits the global AGENTS.md used by every new agent turn from this nanobot configuration.",
+      "reasoningLanguage": "Only affects model-visible reasoning or thinking content when the provider exposes it; final reply language is unchanged.",
       "timezone": "Used for schedules and time-aware replies.",
       "cliAppsCatalog": "Install only the app-specific CLI adapters nanobot can run locally; native apps stay untouched.",
       "cliAppsFilter": "Search by app, category, or capability.",
@@ -217,6 +224,14 @@
       "transcriptionProviderStatus": "API keys stay under providers, not in transcription settings.",
       "transcriptionModel": "Leave as the resolved default unless your provider needs a custom model id.",
       "transcriptionLanguage": "Optional ISO-639 hint such as en, zh, ja, or ko."
+    },
+    "placeholders": {
+      "customInstructions": "Example: Apply KISS. Prefer short, direct answers unless detail is requested."
+    },
+    "reasoningLanguage": {
+      "default": "Default",
+      "zh": "Chinese thinking",
+      "en": "English thinking"
     },
     "timezone": {
       "select": "Select timezone",

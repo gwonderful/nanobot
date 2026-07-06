@@ -12,6 +12,10 @@ from nanobot.agent.tools import mcp as mcp_tools
 from nanobot.agent.tools.registry import ToolRegistry
 from nanobot.apps.cli import utils as cli_app_utils
 from nanobot.bus.events import InboundMessage
+from nanobot.config.global_instructions import (
+    GlobalInstructionsStore,
+    LocalFileGlobalInstructionsStore,
+)
 from nanobot.session.goal_state import goal_state_runtime_lines
 from nanobot.utils.helpers import (
     current_time_str,
@@ -57,9 +61,22 @@ class ContextBuilder:
     _MAX_HISTORY_TOKENS = 8_000  # hard cap on recent history section size (tokens)
     _RUNTIME_CONTEXT_END = "[/Runtime Context]"
 
-    def __init__(self, workspace: Path, timezone: str | None = None, disabled_skills: list[str] | None = None):
+    def __init__(
+        self,
+        workspace: Path,
+        timezone: str | None = None,
+        disabled_skills: list[str] | None = None,
+        global_agents_path: Path | None = None,
+        global_instructions_store: GlobalInstructionsStore | None = None,
+        reasoning_language: str = "default",
+    ):
         self.workspace = workspace
         self.timezone = timezone
+        self.global_agents_path = global_agents_path
+        self.global_instructions_store = global_instructions_store
+        if self.global_instructions_store is None and global_agents_path is not None:
+            self.global_instructions_store = LocalFileGlobalInstructionsStore(global_agents_path)
+        self.reasoning_language = reasoning_language
         self.memory = MemoryStore(workspace)
         self.skills = SkillsLoader(workspace, disabled_skills=set(disabled_skills) if disabled_skills else None)
 
@@ -77,15 +94,29 @@ class ContextBuilder:
         root = workspace or self.workspace
         parts = [self._get_identity(channel=channel, workspace=root)]
 
+        global_instructions = self._load_global_agents()
+        if global_instructions:
+            parts.append(global_instructions)
+
         bootstrap = self._load_bootstrap_files(root)
         if bootstrap:
             parts.append(bootstrap)
+
+        reasoning_language = self._reasoning_language_section()
+        if reasoning_language:
+            parts.append(reasoning_language)
 
         parts.append(render_template("agent/tool_contract.md"))
 
         memory = self.memory.get_memory_context()
         if memory and not self._is_template_content(self.memory.read_memory(), "memory/MEMORY.md"):
-            parts.append(f"# Memory\n\n{memory}")
+            parts.append(
+                self._format_instruction_section(
+                    "Memory",
+                    self.memory.memory_file,
+                    memory,
+                )
+            )
 
         always_skills = self.skills.get_always_skills()
         if always_skills:
@@ -167,14 +198,68 @@ class ContextBuilder:
         """Load all bootstrap files from workspace."""
         parts = []
         root = workspace or self.workspace
+        titles = {
+            "AGENTS.md": "Workspace Instructions",
+            "SOUL.md": "Workspace Soul",
+            "USER.md": "Workspace User Instructions",
+        }
 
         for filename in self.BOOTSTRAP_FILES:
             file_path = root / filename
-            if file_path.exists():
-                content = file_path.read_text(encoding="utf-8")
-                parts.append(f"## {filename}\n\n{content}")
+            content = self._read_instruction_file(file_path)
+            if content:
+                parts.append(
+                    self._format_instruction_section(
+                        titles.get(filename, filename),
+                        file_path,
+                        content,
+                    )
+                )
 
         return "\n\n".join(parts) if parts else ""
+
+    def _load_global_agents(self) -> str:
+        """Load global instructions from the configured store."""
+        if self.global_instructions_store is None:
+            return ""
+        document = self.global_instructions_store.read()
+        content = document.content.strip()
+        if not content:
+            return ""
+        return self._format_instruction_section(
+            "Global Instructions",
+            document.source,
+            content,
+        )
+
+    def _reasoning_language_section(self) -> str:
+        language = (self.reasoning_language or "default").strip().lower()
+        if language == "zh":
+            content = (
+                "Use Chinese for model-visible reasoning or thinking content when the "
+                "provider exposes it. Do not change the final answer language because "
+                "of this setting."
+            )
+        elif language == "en":
+            content = (
+                "Use English for model-visible reasoning or thinking content when the "
+                "provider exposes it. Do not change the final answer language because "
+                "of this setting."
+            )
+        else:
+            return ""
+        return "# Reasoning Language Preference\nSource: config.agents.defaults.reasoning_language\n\n" + content
+
+    @staticmethod
+    def _read_instruction_file(path: Path) -> str:
+        try:
+            return path.read_text(encoding="utf-8").strip()
+        except FileNotFoundError:
+            return ""
+
+    @staticmethod
+    def _format_instruction_section(title: str, source: str | Path, content: str) -> str:
+        return f"# {title}\nSource: {source}\n\n{content}"
 
     @staticmethod
     def _is_template_content(content: str, template_path: str) -> bool:

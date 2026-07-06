@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "앱",
       "automations": "자동화",
-      "skills": "스킬"
+      "skills": "스킬",
+      "personalization": "개인화"
     },
     "sections": {
       "interface": "인터페이스",
@@ -104,7 +105,8 @@
       "apps": "앱",
       "nativeHost": "네이티브 호스트",
       "hostSafety": "앱 보안",
-      "voiceInput": "음성 입력"
+      "voiceInput": "음성 입력",
+      "customInstructions": "사용자 지정 지침"
     },
     "rows": {
       "theme": "테마",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "제공자 상태",
       "transcriptionModel": "모델",
       "transcriptionLanguage": "언어",
-      "voiceLimits": "제한"
+      "voiceLimits": "제한",
+      "customInstructions": "사용자 지정 지침",
+      "reasoningLanguage": "사고 언어",
+      "globalAgentsPath": "전역 지침 경로"
     },
     "help": {
       "theme": "밝은 모드와 어두운 모드를 전환합니다.",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "Providers에 저장된 해당 제공자의 인증 정보를 사용합니다.",
       "transcriptionProviderStatus": "API 키는 transcription 설정이 아니라 providers 아래에 유지됩니다.",
       "transcriptionModel": "제공자가 사용자 지정 모델 ID를 요구하지 않으면 해석된 기본값을 사용하세요.",
-      "transcriptionLanguage": "en, zh, ja, ko 같은 선택적 ISO-639 힌트입니다."
+      "transcriptionLanguage": "en, zh, ja, ko 같은 선택적 ISO-639 힌트입니다.",
+      "customInstructions": "이 nanobot 구성의 모든 새 agent 턴에서 로드되는 전역 AGENTS.md를 편집합니다.",
+      "reasoningLanguage": "모델에 보이는 사고/추론 내용의 언어에만 영향을 주며, 응답 언어는 바꾸지 않습니다."
     },
     "values": {
       "light": "라이트",
@@ -657,6 +664,14 @@
       "selectProvider": "제공자 선택",
       "configureProvider": "제공자 설정",
       "languageAuto": "자동"
+    },
+    "placeholders": {
+      "customInstructions": "예: KISS 원칙을 따르세요. 자세한 설명을 요청받지 않으면 짧고 직접적으로 답하세요."
+    },
+    "reasoningLanguage": {
+      "default": "기본값",
+      "zh": "중국어로 사고",
+      "en": "영어로 사고"
     }
   },
   "chat": {

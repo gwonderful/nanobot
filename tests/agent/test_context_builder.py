@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from nanobot.agent.context import ContextBuilder
+from nanobot.config.global_instructions import GlobalInstructionsDocument
 from nanobot.session.goal_state import GOAL_STATE_KEY
 
 # ---------------------------------------------------------------------------
@@ -118,7 +119,8 @@ class TestLoadBootstrapFiles:
         (tmp_path / "AGENTS.md").write_text("Be helpful.", encoding="utf-8")
         builder = _builder(tmp_path)
         result = builder._load_bootstrap_files()
-        assert "## AGENTS.md" in result
+        assert "# Workspace Instructions" in result
+        assert f"Source: {tmp_path / 'AGENTS.md'}" in result
         assert "Be helpful." in result
 
     def test_multiple_bootstrap_files(self, tmp_path):
@@ -126,8 +128,8 @@ class TestLoadBootstrapFiles:
         (tmp_path / "SOUL.md").write_text("Soul.", encoding="utf-8")
         builder = _builder(tmp_path)
         result = builder._load_bootstrap_files()
-        assert "## AGENTS.md" in result
-        assert "## SOUL.md" in result
+        assert "# Workspace Instructions" in result
+        assert "# Workspace Soul" in result
         assert "Rules." in result
         assert "Soul." in result
 
@@ -136,8 +138,9 @@ class TestLoadBootstrapFiles:
             (tmp_path / name).write_text(f"Content of {name}", encoding="utf-8")
         builder = _builder(tmp_path)
         result = builder._load_bootstrap_files()
-        for name in ContextBuilder.BOOTSTRAP_FILES:
-            assert f"## {name}" in result
+        assert "# Workspace Instructions" in result
+        assert "# Workspace Soul" in result
+        assert "# Workspace User Instructions" in result
 
     def test_legacy_tools_md_is_not_bootstrapped(self, tmp_path):
         (tmp_path / "TOOLS.md").write_text("workspace tool notes", encoding="utf-8")
@@ -207,6 +210,78 @@ class TestBundledToolContract:
         assert "# Tool Usage Notes" in prompt
         assert "## General Tool Contract" in prompt
         assert "Do not use `exec` as a universal workaround" in prompt
+
+
+class TestGlobalInstructions:
+    def test_global_instructions_can_be_loaded_from_store(self, tmp_path):
+        class FakeStore:
+            def read(self):
+                return GlobalInstructionsDocument(
+                    source="account:global",
+                    content="Account-scoped rule.",
+                    exists=True,
+                )
+
+        (tmp_path / "AGENTS.md").write_text("Workspace rule.", encoding="utf-8")
+        builder = _builder(tmp_path, global_instructions_store=FakeStore())
+
+        prompt = builder.build_system_prompt()
+
+        assert "# Global Instructions" in prompt
+        assert "Source: account:global" in prompt
+        assert "Account-scoped rule." in prompt
+        assert prompt.index("Account-scoped rule.") < prompt.index("Workspace rule.")
+
+    def test_global_agents_are_injected_before_workspace_and_memory(self, tmp_path):
+        global_agents = tmp_path / ".nanobot" / "AGENTS.md"
+        global_agents.parent.mkdir()
+        global_agents.write_text("Global rule.", encoding="utf-8")
+        (tmp_path / "AGENTS.md").write_text("Workspace rule.", encoding="utf-8")
+        (tmp_path / "SOUL.md").write_text("Soul context.", encoding="utf-8")
+        (tmp_path / "USER.md").write_text("User context.", encoding="utf-8")
+        memory_dir = tmp_path / "memory"
+        memory_dir.mkdir()
+        (memory_dir / "MEMORY.md").write_text("Remember this project.", encoding="utf-8")
+        builder = _builder(
+            tmp_path,
+            global_agents_path=global_agents,
+            reasoning_language="zh",
+        )
+
+        prompt = builder.build_system_prompt()
+
+        expected_order = [
+            "# Global Instructions",
+            "# Workspace Instructions",
+            "# Workspace Soul",
+            "# Workspace User Instructions",
+            "# Reasoning Language Preference",
+            "# Tool Usage Notes",
+            "# Memory",
+        ]
+        positions = [prompt.index(section) for section in expected_order]
+        assert positions == sorted(positions)
+        assert f"Source: {global_agents}" in prompt
+        assert f"Source: {tmp_path / 'AGENTS.md'}" in prompt
+        assert f"Source: {tmp_path / 'SOUL.md'}" in prompt
+        assert f"Source: {tmp_path / 'USER.md'}" in prompt
+        assert f"Source: {tmp_path / 'memory' / 'MEMORY.md'}" in prompt
+        assert "Global rule." in prompt
+        assert "Workspace rule." in prompt
+        assert "Remember this project." in prompt
+        assert "Use Chinese for model-visible reasoning" in prompt
+
+    def test_missing_global_agents_and_default_reasoning_language_are_omitted(self, tmp_path):
+        builder = _builder(
+            tmp_path,
+            global_agents_path=tmp_path / ".nanobot" / "AGENTS.md",
+            reasoning_language="default",
+        )
+
+        prompt = builder.build_system_prompt()
+
+        assert "# Global Instructions" not in prompt
+        assert "# Reasoning Language Preference" not in prompt
 
 
 # ---------------------------------------------------------------------------

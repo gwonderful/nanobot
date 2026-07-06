@@ -22,6 +22,11 @@ def get_data_dir() -> Path:
     return ensure_dir(get_config_path().parent)
 
 
+def get_global_agents_path() -> Path:
+    """Return the global AGENTS.md path for the active config context."""
+    return get_data_dir() / "AGENTS.md"
+
+
 def get_runtime_subdir(name: str) -> Path:
     """Return a named runtime subdirectory under the instance data dir."""
     return ensure_dir(get_data_dir() / name)

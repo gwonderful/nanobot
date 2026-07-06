@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "應用",
       "automations": "自動任務",
-      "skills": "技能"
+      "skills": "技能",
+      "personalization": "個人化"
     },
     "sections": {
       "interface": "介面",
@@ -104,7 +105,8 @@
       "apps": "應用",
       "nativeHost": "原生宿主",
       "hostSafety": "App 安全",
-      "voiceInput": "語音辨識"
+      "voiceInput": "語音辨識",
+      "customInstructions": "自訂指令"
     },
     "rows": {
       "theme": "主題",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "提供商狀態",
       "transcriptionModel": "模型",
       "transcriptionLanguage": "語言",
-      "voiceLimits": "限制"
+      "voiceLimits": "限制",
+      "customInstructions": "自訂指令",
+      "globalAgentsPath": "全域指令路徑",
+      "reasoningLanguage": "思考語言"
     },
     "help": {
       "theme": "在淺色與深色外觀之間切換。",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "使用「提供商」中對應提供商的憑證。",
       "transcriptionProviderStatus": "API Key 仍保存在 providers 裡，不寫進 transcription 設定。",
       "transcriptionModel": "除非提供商需要自訂模型 ID，否則保持解析後的預設值即可。",
-      "transcriptionLanguage": "可選 ISO-639 語言提示，例如 en、zh、ja 或 ko。"
+      "transcriptionLanguage": "可選 ISO-639 語言提示，例如 en、zh、ja 或 ko。",
+      "customInstructions": "編輯此 nanobot 設定下所有新 agent 回合都會載入的全域 AGENTS.md。",
+      "reasoningLanguage": "只影響模型可見思考/推理內容的語言，不改變回覆語言。"
     },
     "values": {
       "light": "淺色",
@@ -657,6 +664,14 @@
       "selectProvider": "選擇提供商",
       "configureProvider": "設定提供商",
       "languageAuto": "自動"
+    },
+    "placeholders": {
+      "customInstructions": "例如：遵循 KISS 原則。除非要求詳細說明，否則簡短直接。"
+    },
+    "reasoningLanguage": {
+      "default": "預設",
+      "zh": "中文思考",
+      "en": "英文思考"
     }
   },
   "chat": {

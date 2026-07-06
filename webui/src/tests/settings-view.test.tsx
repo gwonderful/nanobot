@@ -30,6 +30,14 @@ function settingsPayload(): SettingsPayload {
       bot_icon: "nb",
       tool_hint_max_length: 40,
     },
+    personalization: {
+      global_agents: {
+        path: "C:\\Users\\ai02\\.nanobot\\AGENTS.md",
+        content: "Always reply in Chinese.",
+        exists: true,
+      },
+      reasoning_language: "default",
+    },
     model_presets: [{
       name: "default",
       label: "Default",
@@ -159,7 +167,14 @@ const installedAnyGen = {
 
 function renderSettingsView(
   options: {
-    initialSection?: "overview" | "apps" | "automations" | "advanced" | "models" | "browser";
+    initialSection?:
+      | "overview"
+      | "apps"
+      | "automations"
+      | "advanced"
+      | "models"
+      | "browser"
+      | "personalization";
     initialSettings?: SettingsPayload;
     showSidebar?: boolean;
     onSettingsChange?: (payload: SettingsPayload) => void;
@@ -206,6 +221,57 @@ describe("SettingsView Apps catalog", () => {
     expect(screen.getByRole("heading", { name: "Automations" })).toBeInTheDocument();
     expect(await screen.findByText("No automations yet.")).toBeInTheDocument();
     expect(screen.queryByText("Settings")).not.toBeInTheDocument();
+  });
+
+  it("shows and saves global custom instructions in personalization", async () => {
+    const updated = {
+      ...settingsPayload(),
+      personalization: {
+        global_agents: {
+          path: "C:\\Users\\ai02\\.nanobot\\AGENTS.md",
+          content: "Reply in Chinese and think in Chinese.",
+          exists: true,
+        },
+        reasoning_language: "zh" as const,
+      },
+      requires_restart: true,
+    };
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url === "/api/settings") return jsonResponse(settingsPayload());
+      if (
+        url ===
+        "/api/settings/update?global_agents_content=Reply+in+Chinese+and+think+in+Chinese.&reasoning_language=zh"
+      ) {
+        return jsonResponse(updated);
+      }
+      return { ok: false, status: 404, json: async () => ({}) } as Response;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    renderSettingsView({
+      initialSection: "personalization",
+      initialSettings: settingsPayload(),
+    });
+
+    expect(screen.getByRole("button", { name: "Personalization" })).toBeInTheDocument();
+    const textarea = screen.getByLabelText("Custom instructions") as HTMLTextAreaElement;
+    expect(textarea.value).toBe("Always reply in Chinese.");
+
+    fireEvent.change(textarea, {
+      target: { value: "Reply in Chinese and think in Chinese." },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Chinese thinking" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledWith(
+        "/api/settings/update?global_agents_content=Reply+in+Chinese+and+think+in+Chinese.&reasoning_language=zh",
+        expect.objectContaining({
+          headers: { Authorization: "Bearer tok" },
+        }),
+      );
+    });
   });
 
   it("shows a visible uninstall button for installed CLI apps and calls uninstall", async () => {

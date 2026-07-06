@@ -134,6 +134,7 @@ import type {
   NanobotFeaturesPayload,
   NetworkSafetySettingsUpdate,
   ProviderModelsPayload,
+  ReasoningLanguagePreference,
   SessionAutomationJob,
   SettingsPayload,
   SkillSummary,
@@ -144,6 +145,7 @@ import type {
 
 export type SettingsSectionKey =
   | "overview"
+  | "personalization"
   | "appearance"
   | "models"
   | "image"
@@ -182,6 +184,8 @@ interface AgentSettingsDraft {
   timezone: string;
   botName: string;
   botIcon: string;
+  globalAgentsContent: string;
+  reasoningLanguage: ReasoningLanguagePreference;
   toolHintMaxLength: number;
 }
 
@@ -351,6 +355,17 @@ function editableDefaultProvider(payload: SettingsPayload): string {
   return base?.provider ?? payload.agent.provider ?? payload.agent.resolved_provider ?? "";
 }
 
+function personalizationFromPayload(payload: SettingsPayload): NonNullable<SettingsPayload["personalization"]> {
+  return payload.personalization ?? {
+    global_agents: {
+      path: "",
+      content: "",
+      exists: false,
+    },
+    reasoning_language: "default",
+  };
+}
+
 function settingsProviderRow(
   payload: SettingsPayload,
   provider: string | null | undefined,
@@ -384,6 +399,8 @@ const DEFAULT_AGENT_SETTINGS_DRAFT: AgentSettingsDraft = {
   timezone: "UTC",
   botName: "nanobot",
   botIcon: "",
+  globalAgentsContent: "",
+  reasoningLanguage: "default",
   toolHintMaxLength: 40,
 };
 
@@ -431,6 +448,7 @@ const DEFAULT_NETWORK_SAFETY_FORM: NetworkSafetySettingsUpdate = {
 };
 
 function agentDraftFromPayload(payload: SettingsPayload): AgentSettingsDraft {
+  const personalization = personalizationFromPayload(payload);
   const fallbackDefault = defaultPreset(payload);
   const activePresetName = modelPresetValue(payload);
   const activePreset =
@@ -448,6 +466,8 @@ function agentDraftFromPayload(payload: SettingsPayload): AgentSettingsDraft {
     timezone: payload.agent.timezone,
     botName: payload.agent.bot_name,
     botIcon: payload.agent.bot_icon,
+    globalAgentsContent: personalization.global_agents.content,
+    reasoningLanguage: personalization.reasoning_language,
     toolHintMaxLength: payload.agent.tool_hint_max_length,
   };
 }
@@ -885,6 +905,15 @@ export function SettingsView({
     );
   }, [form, settings]);
 
+  const personalizationDirty = useMemo(() => {
+    if (!settings) return false;
+    const personalization = personalizationFromPayload(settings);
+    return (
+      form.globalAgentsContent !== personalization.global_agents.content ||
+      form.reasoningLanguage !== personalization.reasoning_language
+    );
+  }, [form, settings]);
+
   const imageGenerationDirty = useMemo(() => {
     if (!settings) return false;
     return (
@@ -1085,6 +1114,27 @@ export function SettingsView({
         setPendingRestartSections((prev) => ({ ...prev, runtime: true }));
       }
       await onWorkspaceSettingsChange?.();
+      await maybeRestartHostEngine(payload);
+      setError(null);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const savePersonalizationSettings = async () => {
+    if (!settings || !personalizationDirty || saving) return;
+    setSaving(true);
+    try {
+      const payload = await updateSettings(token, {
+        globalAgentsContent: form.globalAgentsContent,
+        reasoningLanguage: form.reasoningLanguage,
+      });
+      applyPayload(payload);
+      if (payload.requires_restart) {
+        setPendingRestartSections((prev) => ({ ...prev, runtime: true }));
+      }
       await maybeRestartHostEngine(payload);
       setError(null);
     } catch (err) {
@@ -1556,6 +1606,18 @@ export function SettingsView({
             onSelectSection={selectSection}
           />
         );
+      case "personalization":
+        return (
+          <PersonalizationSettings
+            settings={settings}
+            form={form}
+            setForm={setForm}
+            dirty={personalizationDirty}
+            saving={saving}
+            onSave={savePersonalizationSettings}
+            requiresRestartPending={pendingRestartSections.runtime}
+          />
+        );
       case "appearance":
         return (
           <AppearanceSettings
@@ -1896,6 +1958,7 @@ export function SettingsView({
 
 const SETTINGS_NAV_ITEMS: Array<{ key: SettingsSectionKey; icon: LucideIcon; fallback: string }> = [
   { key: "overview", icon: Activity, fallback: "Overview" },
+  { key: "personalization", icon: Bot, fallback: "Personalization" },
   { key: "appearance", icon: Palette, fallback: "Appearance" },
   { key: "models", icon: SlidersHorizontal, fallback: "Models" },
   { key: "image", icon: ImageIcon, fallback: "Image" },
@@ -2246,6 +2309,124 @@ function VersionCheckRow({ currentVersion }: { currentVersion?: string }) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+function PersonalizationSettings({
+  settings,
+  form,
+  setForm,
+  dirty,
+  saving,
+  onSave,
+  requiresRestartPending,
+}: {
+  settings: SettingsPayload;
+  form: AgentSettingsDraft;
+  setForm: Dispatch<SetStateAction<AgentSettingsDraft>>;
+  dirty: boolean;
+  saving: boolean;
+  onSave: () => void;
+  requiresRestartPending: boolean;
+}) {
+  const { t } = useTranslation();
+  const tx = (key: string, fallback: string) => t(key, { defaultValue: fallback });
+  const textareaId = "settings-custom-instructions";
+  const personalization = personalizationFromPayload(settings);
+  const reasoningOptions: Array<{
+    value: ReasoningLanguagePreference;
+    label: string;
+  }> = [
+    {
+      value: "default",
+      label: tx("settings.reasoningLanguage.default", "Default"),
+    },
+    {
+      value: "zh",
+      label: tx("settings.reasoningLanguage.zh", "Chinese thinking"),
+    },
+    {
+      value: "en",
+      label: tx("settings.reasoningLanguage.en", "English thinking"),
+    },
+  ];
+  return (
+    <section>
+      <SettingsSectionTitle>
+        {tx("settings.sections.customInstructions", "Custom instructions")}
+      </SettingsSectionTitle>
+      <SettingsGroup>
+        <div className="space-y-3 px-4 py-4 sm:px-5">
+          <div className="space-y-1">
+            <label
+              htmlFor={textareaId}
+              className="block text-[14px] font-medium leading-5 text-foreground"
+            >
+              {tx("settings.rows.customInstructions", "Custom instructions")}
+            </label>
+            <p className="max-w-[44rem] text-[12px] leading-5 text-muted-foreground">
+              {tx(
+                "settings.help.customInstructions",
+                "Edits the global AGENTS.md used by every new agent turn from this nanobot configuration.",
+              )}
+            </p>
+            <p className="break-all text-[12px] leading-5 text-muted-foreground">
+              {tx("settings.rows.globalAgentsPath", "Save location")}:{" "}
+              {personalization.global_agents.path}
+            </p>
+          </div>
+          <Textarea
+            id={textareaId}
+            aria-label={tx("settings.rows.customInstructions", "Custom instructions")}
+            value={form.globalAgentsContent}
+            onChange={(event) =>
+              setForm((prev) => ({ ...prev, globalAgentsContent: event.target.value }))
+            }
+            placeholder={tx(
+              "settings.placeholders.customInstructions",
+              "Example: Apply KISS. Prefer short, direct answers unless detail is requested.",
+            )}
+            className="min-h-[300px] w-full resize-y rounded-[10px] border-border/70 bg-background/85 font-mono text-[13px] leading-6 shadow-none"
+          />
+          <div className="space-y-2">
+            <div className="text-[13px] font-medium leading-5 text-foreground">
+              {tx("settings.rows.reasoningLanguage", "Thinking language")}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {reasoningOptions.map((option) => {
+                const active = form.reasoningLanguage === option.value;
+                return (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    variant={active ? "default" : "outline"}
+                    size="sm"
+                    onClick={() =>
+                      setForm((prev) => ({ ...prev, reasoningLanguage: option.value }))
+                    }
+                    aria-pressed={active}
+                  >
+                    {option.label}
+                  </Button>
+                );
+              })}
+            </div>
+            <p className="max-w-[44rem] text-[12px] leading-5 text-muted-foreground">
+              {tx(
+                "settings.help.reasoningLanguage",
+                "Only affects model-visible reasoning or thinking content when the provider exposes it; final reply language is unchanged.",
+              )}
+            </p>
+          </div>
+        </div>
+        <SettingsFooter
+          dirty={dirty}
+          saving={saving}
+          saved={requiresRestartPending}
+          onSave={onSave}
+        />
+      </SettingsGroup>
+    </section>
   );
 }
 

@@ -243,6 +243,58 @@ def test_update_agent_settings_accepts_context_window_options(
     assert saved.agents.defaults.context_window_tokens == 200000
 
 
+def test_update_agent_settings_saves_global_agents_and_reasoning_language(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config_path = tmp_path / "config.json"
+    config = Config()
+    save_config(config, config_path)
+    monkeypatch.setattr("nanobot.config.loader._current_config_path", config_path)
+
+    payload = update_agent_settings(
+        {
+            "global_agents_content": ["Always apply KISS.\nPrefer clear reasoning."],
+            "reasoning_language": ["zh"],
+        }
+    )
+
+    global_agents = config_path.parent / "AGENTS.md"
+    assert global_agents.read_text(encoding="utf-8") == "Always apply KISS.\nPrefer clear reasoning."
+    assert payload["personalization"]["global_agents"]["path"] == str(global_agents)
+    assert (
+        payload["personalization"]["global_agents"]["content"]
+        == "Always apply KISS.\nPrefer clear reasoning."
+    )
+    assert payload["personalization"]["global_agents"]["exists"] is True
+    assert payload["personalization"]["reasoning_language"] == "zh"
+    assert payload["requires_restart"] is True
+    saved = load_config(config_path)
+    assert saved.agents.defaults.reasoning_language == "zh"
+
+
+def test_settings_payload_includes_global_agents_file(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    config_path = tmp_path / "config.json"
+    config = Config()
+    config.agents.defaults.reasoning_language = "en"
+    save_config(config, config_path)
+    global_agents = config_path.parent / "AGENTS.md"
+    global_agents.write_text("Use KISS globally.", encoding="utf-8")
+    monkeypatch.setattr("nanobot.config.loader._current_config_path", config_path)
+
+    payload = settings_payload()
+
+    assert payload["personalization"]["global_agents"] == {
+        "path": str(global_agents),
+        "content": "Use KISS globally.",
+        "exists": True,
+    }
+    assert payload["personalization"]["reasoning_language"] == "en"
+
+
 def test_update_model_configuration_accepts_context_window_options(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,

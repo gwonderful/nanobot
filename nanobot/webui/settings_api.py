@@ -22,6 +22,7 @@ from nanobot.audio.transcription_registry import (
     resolve_transcription_provider,
     transcription_provider_names,
 )
+from nanobot.config.global_instructions import get_global_instructions_store
 from nanobot.config.loader import get_config_path, load_config, resolve_config_env_vars, save_config
 from nanobot.config.schema import ModelPresetConfig, ProviderConfig
 from nanobot.providers.image_generation import (
@@ -207,6 +208,19 @@ def _resolve_env_placeholders(value: str | None) -> str | None:
     if missing and not resolved:
         return None
     return resolved or None
+
+
+def _global_agents_payload() -> dict[str, Any]:
+    document = get_global_instructions_store().read()
+    return {
+        "path": document.source,
+        "content": document.content,
+        "exists": document.exists,
+    }
+
+
+def _write_global_agents_content(content: str) -> bool:
+    return get_global_instructions_store().write(content)
 
 
 def _provider_requires_api_key(spec: Any) -> bool:
@@ -773,6 +787,10 @@ def settings_payload(
             "bot_icon": defaults.bot_icon,
             "tool_hint_max_length": defaults.tool_hint_max_length,
         },
+        "personalization": {
+            "global_agents": _global_agents_payload(),
+            "reasoning_language": defaults.reasoning_language,
+        },
         "model_presets": model_presets,
         "providers": providers,
         "web_search": {
@@ -939,6 +957,29 @@ def update_agent_settings(query: QueryParams) -> dict[str, Any]:
         bot_icon = bot_icon.strip()
         if defaults.bot_icon != bot_icon:
             defaults.bot_icon = bot_icon
+            changed = True
+            restart_required = True
+
+    global_agents_content = _query_first_alias(
+        query,
+        "global_agents_content",
+        "globalAgentsContent",
+    )
+    if global_agents_content is not None:
+        if _write_global_agents_content(global_agents_content):
+            restart_required = True
+
+    reasoning_language = _query_first_alias(
+        query,
+        "reasoning_language",
+        "reasoningLanguage",
+    )
+    if reasoning_language is not None:
+        reasoning_language = reasoning_language.strip().lower()
+        if reasoning_language not in {"default", "zh", "en"}:
+            raise WebUISettingsError("invalid reasoning_language")
+        if defaults.reasoning_language != reasoning_language:
+            defaults.reasoning_language = reasoning_language
             changed = True
             restart_required = True
 

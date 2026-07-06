@@ -202,10 +202,12 @@ describe("webui API helpers", () => {
       botName: "nanobot",
       botIcon: "nb",
       toolHintMaxLength: 120,
+      globalAgentsContent: "Reply in Chinese.",
+      reasoningLanguage: "zh",
     });
 
     expect(fetch).toHaveBeenCalledWith(
-      "/api/settings/update?model_preset=default&model=openrouter%2Ftest&provider=openrouter&context_window_tokens=262144&timezone=Asia%2FShanghai&bot_name=nanobot&bot_icon=nb&tool_hint_max_length=120",
+      "/api/settings/update?model_preset=default&model=openrouter%2Ftest&provider=openrouter&context_window_tokens=262144&timezone=Asia%2FShanghai&bot_name=nanobot&bot_icon=nb&tool_hint_max_length=120&global_agents_content=Reply+in+Chinese.&reasoning_language=zh",
       expect.objectContaining({
         headers: { Authorization: "Bearer tok" },
       }),

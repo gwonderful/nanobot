@@ -216,6 +216,9 @@ class AgentLoop:
         hooks: list[AgentHook] | None = None,
         unified_session: bool = False,
         disabled_skills: list[str] | None = None,
+        global_agents_path: Path | None = None,
+        global_instructions_store: Any | None = None,
+        reasoning_language: str = "default",
         tools_config: ToolsConfig | None = None,
         image_generation_provider_config: ProviderConfig | None = None,
         image_generation_provider_configs: dict[str, ProviderConfig] | None = None,
@@ -285,7 +288,14 @@ class AgentLoop:
         self._last_usage: dict[str, int] = {}
         self._extra_hooks: list[AgentHook] = hooks or []
 
-        self.context = ContextBuilder(workspace, timezone=timezone, disabled_skills=disabled_skills)
+        self.context = ContextBuilder(
+            workspace,
+            timezone=timezone,
+            disabled_skills=disabled_skills,
+            global_agents_path=global_agents_path,
+            global_instructions_store=global_instructions_store,
+            reasoning_language=reasoning_language,
+        )
         self.sessions = session_manager or SessionManager(workspace)
         self.tools = ToolRegistry()
         # One file-read/write tracker per logical session. The tool registry is
@@ -382,12 +392,14 @@ class AgentLoop:
         allowing callers to override or extend the standard config-derived
         parameters (e.g. ``cron_service``, ``session_manager``).
         """
+        from nanobot.config.global_instructions import get_global_instructions_store
         from nanobot.providers.factory import make_provider
 
         if bus is None:
             bus = MessageBus()
         defaults = config.agents.defaults
         provider = extra.pop("provider", None) or make_provider(config)
+        global_instructions_store = extra.pop("global_instructions_store", None)
         resolved = config.resolve_preset()
         model = extra.pop("model", None) or resolved.model
         context_window_tokens = extra.pop("context_window_tokens", None) or resolved.context_window_tokens
@@ -415,6 +427,8 @@ class AgentLoop:
             timezone=defaults.timezone,
             unified_session=defaults.unified_session,
             disabled_skills=defaults.disabled_skills,
+            global_instructions_store=global_instructions_store or get_global_instructions_store(),
+            reasoning_language=defaults.reasoning_language,
             session_ttl_minutes=defaults.session_ttl_minutes,
             consolidation_ratio=defaults.consolidation_ratio,
             tools_config=config.tools,

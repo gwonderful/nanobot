@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from nanobot.agent.loop import AgentLoop
 from nanobot.bus.queue import MessageBus
+from nanobot.config.global_instructions import GlobalInstructionsDocument
 from nanobot.config.loader import save_config
 from nanobot.config.schema import Config
 from nanobot.providers.factory import ProviderSnapshot, load_provider_snapshot
@@ -99,3 +100,56 @@ def test_settings_context_window_refreshes_runtime_state(
     assert payload["requires_restart"] is False
     assert loop.context_window_tokens == 262_144
     assert loop.consolidator.context_window_tokens == 262_144
+
+
+def test_from_config_passes_global_agents_and_reasoning_language_to_context(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    config_path = tmp_path / "config.json"
+    global_agents = config_path.parent / "AGENTS.md"
+    global_agents.write_text("Global KISS rule.", encoding="utf-8")
+    monkeypatch.setattr("nanobot.config.loader._current_config_path", config_path)
+    config = Config()
+    config.agents.defaults.workspace = str(tmp_path / "workspace")
+    config.agents.defaults.model = "openai/gpt-4o"
+    config.agents.defaults.provider = "openai"
+    config.agents.defaults.reasoning_language = "en"
+    config.providers.openai.api_key = "sk-test"
+
+    loop = AgentLoop.from_config(config, provider=_provider("openai/gpt-4o"))
+    prompt = loop.context.build_system_prompt()
+
+    assert "# Global Instructions" in prompt
+    assert "Global KISS rule." in prompt
+    assert "# Reasoning Language Preference" in prompt
+    assert "Use English for model-visible reasoning" in prompt
+
+
+def test_from_config_allows_injected_global_instructions_store(tmp_path: Path) -> None:
+    class FakeStore:
+        def read(self) -> GlobalInstructionsDocument:
+            return GlobalInstructionsDocument(
+                source="account:global",
+                content="Injected global rule.",
+                exists=True,
+            )
+
+        def write(self, content: str) -> bool:
+            raise AssertionError("from_config should not write global instructions")
+
+    config = Config()
+    config.agents.defaults.workspace = str(tmp_path / "workspace")
+    config.agents.defaults.model = "openai/gpt-4o"
+    config.agents.defaults.provider = "openai"
+    config.providers.openai.api_key = "sk-test"
+
+    loop = AgentLoop.from_config(
+        config,
+        provider=_provider("openai/gpt-4o"),
+        global_instructions_store=FakeStore(),
+    )
+    prompt = loop.context.build_system_prompt()
+
+    assert "Source: account:global" in prompt
+    assert "Injected global rule." in prompt

@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "Ứng dụng",
       "automations": "Tự động hóa",
-      "skills": "Kỹ năng"
+      "skills": "Kỹ năng",
+      "personalization": "Cá nhân hóa"
     },
     "sections": {
       "interface": "Giao diện",
@@ -104,7 +105,8 @@
       "apps": "Ứng dụng",
       "nativeHost": "Host gốc",
       "hostSafety": "An toàn ứng dụng",
-      "voiceInput": "Nhap giong noi"
+      "voiceInput": "Nhap giong noi",
+      "customInstructions": "Chỉ dẫn tùy chỉnh"
     },
     "rows": {
       "theme": "Chủ đề",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "Trang thai nha cung cap",
       "transcriptionModel": "Mo hinh",
       "transcriptionLanguage": "Ngon ngu",
-      "voiceLimits": "Gioi han"
+      "voiceLimits": "Gioi han",
+      "customInstructions": "Chỉ dẫn tùy chỉnh",
+      "reasoningLanguage": "Ngon ngu suy nghi",
+      "globalAgentsPath": "Vi tri luu"
     },
     "help": {
       "theme": "Chuyển giữa giao diện sáng và tối.",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "Dung thong tin xac thuc cua nha cung cap tu Providers.",
       "transcriptionProviderStatus": "API key nam trong providers, khong nam trong cai dat transcription.",
       "transcriptionModel": "Giu mac dinh da resolve tru khi nha cung cap can id model tuy chinh.",
-      "transcriptionLanguage": "Goi y ISO-639 tuy chon, nhu en, zh, ja hoac ko."
+      "transcriptionLanguage": "Goi y ISO-639 tuy chon, nhu en, zh, ja hoac ko.",
+      "customInstructions": "Chinh sua AGENTS.md toan cuc duoc dung cho moi luot agent moi cua cau hinh nanobot nay.",
+      "reasoningLanguage": "Chi anh huong den noi dung suy luan hien thi khi nha cung cap ho tro; khong doi ngon ngu cau tra loi cuoi."
     },
     "values": {
       "light": "Sáng",
@@ -657,6 +664,14 @@
       "selectProvider": "Chon nha cung cap",
       "configureProvider": "Cau hinh nha cung cap",
       "languageAuto": "Tu dong"
+    },
+    "placeholders": {
+      "customInstructions": "Vi du: ap dung KISS. Uu tien cau tra loi ngan gon, truc tiep tru khi duoc yeu cau chi tiet."
+    },
+    "reasoningLanguage": {
+      "default": "Mac dinh",
+      "zh": "Suy nghi bang tieng Trung",
+      "en": "Suy nghi bang tieng Anh"
     }
   },
   "chat": {

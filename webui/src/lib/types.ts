@@ -306,6 +306,7 @@ export interface BootstrapResponse {
 
 export type RuntimeSurface = "browser" | "native";
 export type RestartBehavior = "none" | "nextTurn" | "engineRestart" | "appRestart";
+export type ReasoningLanguagePreference = "default" | "zh" | "en";
 export type SettingsApplyStatus =
   | "idle"
   | "pending"
@@ -366,6 +367,14 @@ export interface SettingsPayload {
     bot_name: string;
     bot_icon: string;
     tool_hint_max_length: number;
+  };
+  personalization?: {
+    global_agents: {
+      path: string;
+      content: string;
+      exists: boolean;
+    };
+    reasoning_language: ReasoningLanguagePreference;
   };
   model_presets: Array<{
     name: string;
@@ -724,6 +733,8 @@ export interface SettingsUpdate {
   timezone?: string;
   botName?: string;
   botIcon?: string;
+  globalAgentsContent?: string;
+  reasoningLanguage?: ReasoningLanguagePreference;
   toolHintMaxLength?: number;
 }
 

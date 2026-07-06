@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "Applications",
       "automations": "Automatisations",
-      "skills": "Compétences"
+      "skills": "Compétences",
+      "personalization": "Personnalisation"
     },
     "sections": {
       "interface": "Interface utilisateur",
@@ -104,7 +105,8 @@
       "apps": "Applications",
       "nativeHost": "Hôte natif",
       "hostSafety": "Sécurité de l’app",
-      "voiceInput": "Saisie vocale"
+      "voiceInput": "Saisie vocale",
+      "customInstructions": "Instructions personnalisées"
     },
     "rows": {
       "theme": "Thème",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "Etat du fournisseur",
       "transcriptionModel": "Modele",
       "transcriptionLanguage": "Langue",
-      "voiceLimits": "Limites"
+      "voiceLimits": "Limites",
+      "customInstructions": "Instructions personnalisées",
+      "reasoningLanguage": "Langue de raisonnement",
+      "globalAgentsPath": "Emplacement"
     },
     "help": {
       "theme": "Basculer entre l’apparence claire et sombre.",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "Utilise les identifiants du fournisseur correspondant dans Fournisseurs.",
       "transcriptionProviderStatus": "Les cles API restent dans les fournisseurs, pas dans les reglages de transcription.",
       "transcriptionModel": "Laissez le modele resolu par defaut sauf si votre fournisseur exige un id personnalise.",
-      "transcriptionLanguage": "Indice ISO-639 facultatif, comme en, zh, ja ou ko."
+      "transcriptionLanguage": "Indice ISO-639 facultatif, comme en, zh, ja ou ko.",
+      "customInstructions": "Modifie le AGENTS.md global utilise par chaque nouveau tour agent de cette configuration nanobot.",
+      "reasoningLanguage": "Affecte seulement le raisonnement visible quand le fournisseur l expose; ne change pas la langue de la reponse finale."
     },
     "values": {
       "light": "Clair",
@@ -657,6 +664,14 @@
       "selectProvider": "Choisir un fournisseur",
       "configureProvider": "Configurer le fournisseur",
       "languageAuto": "Auto"
+    },
+    "placeholders": {
+      "customInstructions": "Exemple : applique KISS. Prefere des reponses courtes et directes sauf si des details sont demandes."
+    },
+    "reasoningLanguage": {
+      "default": "Par defaut",
+      "zh": "Raisonnement en chinois",
+      "en": "Raisonnement en anglais"
     }
   },
   "chat": {

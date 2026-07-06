@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "Aplikasi",
       "automations": "Otomasi",
-      "skills": "Skill"
+      "skills": "Skill",
+      "personalization": "Personalisasi"
     },
     "sections": {
       "interface": "Antarmuka",
@@ -104,7 +105,8 @@
       "apps": "Aplikasi",
       "nativeHost": "Host native",
       "hostSafety": "Keamanan aplikasi",
-      "voiceInput": "Input suara"
+      "voiceInput": "Input suara",
+      "customInstructions": "Instruksi kustom"
     },
     "rows": {
       "theme": "Tema",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "Status penyedia",
       "transcriptionModel": "Model",
       "transcriptionLanguage": "Bahasa",
-      "voiceLimits": "Batas"
+      "voiceLimits": "Batas",
+      "customInstructions": "Instruksi kustom",
+      "reasoningLanguage": "Bahasa berpikir",
+      "globalAgentsPath": "Lokasi simpan"
     },
     "help": {
       "theme": "Beralih antara tampilan terang dan gelap.",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "Menggunakan kredensial penyedia yang sesuai dari Providers.",
       "transcriptionProviderStatus": "API key tetap berada di providers, bukan di pengaturan transkripsi.",
       "transcriptionModel": "Biarkan memakai default yang teresolusi kecuali penyedia membutuhkan id model khusus.",
-      "transcriptionLanguage": "Petunjuk ISO-639 opsional, seperti en, zh, ja, atau ko."
+      "transcriptionLanguage": "Petunjuk ISO-639 opsional, seperti en, zh, ja, atau ko.",
+      "customInstructions": "Mengedit AGENTS.md global yang digunakan oleh setiap giliran agent baru dari konfigurasi nanobot ini.",
+      "reasoningLanguage": "Hanya memengaruhi penalaran yang terlihat saat penyedia mengeksposnya; bahasa jawaban akhir tidak berubah."
     },
     "values": {
       "light": "Terang",
@@ -657,6 +664,14 @@
       "selectProvider": "Pilih penyedia",
       "configureProvider": "Konfigurasi penyedia",
       "languageAuto": "Auto"
+    },
+    "placeholders": {
+      "customInstructions": "Contoh: terapkan KISS. Gunakan jawaban singkat dan langsung kecuali diminta detail."
+    },
+    "reasoningLanguage": {
+      "default": "Default",
+      "zh": "Berpikir dalam Mandarin",
+      "en": "Berpikir dalam Inggris"
     }
   },
   "chat": {

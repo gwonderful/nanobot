@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "アプリ",
       "automations": "自動タスク",
-      "skills": "スキル"
+      "skills": "スキル",
+      "personalization": "パーソナライズ"
     },
     "sections": {
       "interface": "インターフェース",
@@ -104,7 +105,8 @@
       "apps": "アプリ",
       "nativeHost": "ネイティブホスト",
       "hostSafety": "アプリの安全性",
-      "voiceInput": "音声入力"
+      "voiceInput": "音声入力",
+      "customInstructions": "カスタム指示"
     },
     "rows": {
       "theme": "テーマ",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "プロバイダー状態",
       "transcriptionModel": "モデル",
       "transcriptionLanguage": "言語",
-      "voiceLimits": "制限"
+      "voiceLimits": "制限",
+      "customInstructions": "カスタム指示",
+      "globalAgentsPath": "グローバル指示のパス",
+      "reasoningLanguage": "思考言語"
     },
     "help": {
       "theme": "ライト表示とダーク表示を切り替えます。",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "プロバイダー設定にある対応する認証情報を使います。",
       "transcriptionProviderStatus": "APIキーは文字起こし設定ではなくプロバイダー側に保存されます。",
       "transcriptionModel": "プロバイダーがカスタムモデルIDを必要としない限り、解決済みのデフォルトのままにします。",
-      "transcriptionLanguage": "en、zh、ja、ko などの任意の ISO-639 ヒント。"
+      "transcriptionLanguage": "en、zh、ja、ko などの任意の ISO-639 ヒント。",
+      "customInstructions": "この nanobot 設定のすべての新しい agent ターンで読み込まれるグローバル AGENTS.md を編集します。",
+      "reasoningLanguage": "モデルに見える思考/推論内容の言語だけに影響し、返信言語は変更しません。"
     },
     "values": {
       "light": "ライト",
@@ -657,6 +664,14 @@
       "selectProvider": "プロバイダーを選択",
       "configureProvider": "プロバイダーを設定",
       "languageAuto": "自動"
+    },
+    "placeholders": {
+      "customInstructions": "例: KISS 原則に従う。詳細を求められない限り、短く直接答える。"
+    },
+    "reasoningLanguage": {
+      "default": "デフォルト",
+      "zh": "中国語で思考",
+      "en": "英語で思考"
     }
   },
   "chat": {

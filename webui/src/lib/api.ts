@@ -561,6 +561,12 @@ export async function updateSettings(
   if (update.toolHintMaxLength !== undefined) {
     query.set("tool_hint_max_length", String(update.toolHintMaxLength));
   }
+  if (update.globalAgentsContent !== undefined) {
+    query.set("global_agents_content", update.globalAgentsContent);
+  }
+  if (update.reasoningLanguage !== undefined) {
+    query.set("reasoning_language", update.reasoningLanguage);
+  }
   return request<SettingsPayload>(`${base}/api/settings/update?${query}`, token);
 }
 

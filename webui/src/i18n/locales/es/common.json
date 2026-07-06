@@ -82,7 +82,8 @@
       "mcp": "MCP",
       "apps": "Aplicaciones",
       "automations": "Automatizaciones",
-      "skills": "Habilidades"
+      "skills": "Habilidades",
+      "personalization": "Personalización"
     },
     "sections": {
       "interface": "Interfaz",
@@ -104,7 +105,8 @@
       "apps": "Aplicaciones",
       "nativeHost": "Host nativo",
       "hostSafety": "Seguridad de la app",
-      "voiceInput": "Entrada de voz"
+      "voiceInput": "Entrada de voz",
+      "customInstructions": "Instrucciones personalizadas"
     },
     "rows": {
       "theme": "Tema",
@@ -153,7 +155,10 @@
       "transcriptionProviderStatus": "Estado del proveedor",
       "transcriptionModel": "Modelo",
       "transcriptionLanguage": "Idioma",
-      "voiceLimits": "Limites"
+      "voiceLimits": "Limites",
+      "customInstructions": "Instrucciones personalizadas",
+      "reasoningLanguage": "Idioma de pensamiento",
+      "globalAgentsPath": "Ubicacion de guardado"
     },
     "help": {
       "theme": "Cambia entre apariencia clara y oscura.",
@@ -197,7 +202,9 @@
       "transcriptionProvider": "Usa las credenciales del proveedor correspondiente en Proveedores.",
       "transcriptionProviderStatus": "Las claves API permanecen en proveedores, no en la configuracion de transcripcion.",
       "transcriptionModel": "Dejalo como el valor predeterminado resuelto salvo que el proveedor necesite un id de modelo personalizado.",
-      "transcriptionLanguage": "Pista ISO-639 opcional, como en, zh, ja o ko."
+      "transcriptionLanguage": "Pista ISO-639 opcional, como en, zh, ja o ko.",
+      "customInstructions": "Edita el AGENTS.md global usado por cada nuevo turno de agente de esta configuracion nanobot.",
+      "reasoningLanguage": "Solo afecta el razonamiento visible cuando el proveedor lo expone; no cambia el idioma de la respuesta final."
     },
     "values": {
       "light": "Claro",
@@ -657,6 +664,14 @@
       "selectProvider": "Seleccionar proveedor",
       "configureProvider": "Configurar proveedor",
       "languageAuto": "Auto"
+    },
+    "placeholders": {
+      "customInstructions": "Ejemplo: aplica KISS. Prefiere respuestas breves y directas salvo que se pidan detalles."
+    },
+    "reasoningLanguage": {
+      "default": "Predeterminado",
+      "zh": "Pensar en chino",
+      "en": "Pensar en ingles"
     }
   },
   "chat": {

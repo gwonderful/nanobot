@@ -418,11 +418,11 @@ def test_template_memory_md_is_skipped(tmp_path) -> None:
     builder = ContextBuilder(workspace)
     prompt = builder.build_system_prompt()
 
-    # The "# Memory\n\n## Long-term Memory" block is produced only by
+    # The "# Memory" / "## Long-term Memory" block is produced only by
     # build_system_prompt() when MEMORY.md is injected.  The memory skill
     # also contains "# Memory" but is followed by "## Structure", not
     # "## Long-term Memory".
-    assert "# Memory\n\n## Long-term Memory" not in prompt
+    assert "## Long-term Memory" not in prompt
     assert "This file is automatically updated by nanobot" not in prompt
 
 
@@ -439,5 +439,6 @@ def test_customized_memory_md_is_injected(tmp_path) -> None:
     builder = ContextBuilder(workspace)
     prompt = builder.build_system_prompt()
 
-    assert "# Memory\n\n## Long-term Memory" in prompt
+    assert "# Memory\nSource:" in prompt
+    assert "## Long-term Memory" in prompt
     assert "User prefers dark mode" in prompt
