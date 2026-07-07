@@ -1189,6 +1189,54 @@ describe("App layout", () => {
     );
   });
 
+  it("keeps the project selected when starting a blank chat from the project row", async () => {
+    window.history.replaceState(null, "", "/#/chat/websocket:project-chat");
+    mockSessions = [
+      {
+        key: "websocket:project-chat",
+        channel: "websocket",
+        chatId: "project-chat",
+        createdAt: "2026-04-16T10:00:00Z",
+        updatedAt: "2026-04-16T10:00:00Z",
+        title: "Existing project chat",
+        preview: "",
+        workspaceScope: {
+          project_path: "/Users/test/nanobot",
+          project_name: "nanobot",
+          access_mode: "restricted",
+          restrict_to_workspace: true,
+        },
+      },
+    ];
+    mockFetchRoutes({
+      "/api/workspaces": workspacesPayload(),
+      "/api/webui/sidebar-state": sidebarState(),
+    });
+
+    render(<App />);
+
+    await waitFor(() => expect(connectSpy).toHaveBeenCalled());
+    const sidebar = screen.getByRole("navigation", { name: "Sidebar navigation" });
+    fireEvent.click(within(sidebar).getByRole("button", { name: "Start a new chat in nanobot" }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Choose project" })).toHaveTextContent(
+        "nanobot",
+      ),
+    );
+    fireEvent.change(screen.getByLabelText("Message input"), {
+      target: { value: "Plan from project row" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+
+    await waitFor(() =>
+      expect(createChatSpy).toHaveBeenCalledWith(expect.objectContaining({
+        project_path: "/Users/test/nanobot",
+        project_name: "nanobot",
+      })),
+    );
+  });
+
   it("adds a folder from the blank-page project picker without creating a chat", async () => {
     const pickFolder = vi.fn().mockResolvedValue("/Users/test/goose-study");
     let persistedSidebarState = sidebarState();
@@ -1225,7 +1273,7 @@ describe("App layout", () => {
 
     await waitFor(() => expect(connectSpy).toHaveBeenCalled());
     fireEvent.pointerDown(await screen.findByRole("button", { name: "Choose project" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: /New project/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Use folder" }));
 
     await waitFor(() => expect(pickFolder).toHaveBeenCalled());
     expect(createChatSpy).not.toHaveBeenCalled();

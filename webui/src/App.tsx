@@ -360,14 +360,6 @@ function AddProjectDialog({
     [baseScope, onAddProject, onOpenChange, t],
   );
 
-  const onSubmit = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      addProjectPath(pathDraft);
-    },
-    [addProjectPath, pathDraft],
-  );
-
   const pickNativeFolder = useCallback(async () => {
     if (!hostApi || pickingFolder) return;
     setPickingFolder(true);
@@ -381,6 +373,24 @@ function AddProjectDialog({
     }
   }, [addProjectPath, hostApi, pickingFolder]);
 
+  const useFolder = useCallback(() => {
+    if (pathDraft.trim()) {
+      addProjectPath(pathDraft);
+      return;
+    }
+    if (hostApi) {
+      void pickNativeFolder();
+    }
+  }, [addProjectPath, hostApi, pathDraft, pickNativeFolder]);
+
+  const onSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      useFolder();
+    },
+    [useFolder],
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="w-[min(calc(100vw-2rem),25rem)] rounded-[24px] border border-border/70 bg-card/95 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.20)] backdrop-blur-xl">
@@ -389,24 +399,6 @@ function AddProjectDialog({
           <DialogDescription>{useExistingFolder}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          {hostApi ? (
-            <Button
-              type="button"
-              variant="outline"
-              disabled={pickingFolder || !baseScope}
-              onClick={() => void pickNativeFolder()}
-              className="h-auto w-full justify-start rounded-[16px] px-3 py-2.5 text-left"
-            >
-              <span className="min-w-0">
-                <span className="block text-[13px] font-semibold">
-                  {t("workspace.dialog.newProject", { defaultValue: "New project" })}
-                </span>
-                <span className="block text-[11.5px] font-normal text-muted-foreground">
-                  {useExistingFolder}
-                </span>
-              </span>
-            </Button>
-          ) : null}
           <form className="flex items-center gap-2" onSubmit={onSubmit}>
             <Input
               value={pathDraft}
@@ -421,8 +413,9 @@ function AddProjectDialog({
               className="h-9 rounded-full border-border/55 bg-background/80 px-3 text-[12.5px]"
             />
             <Button
-              type="submit"
-              disabled={!baseScope || !pathDraft.trim()}
+              type="button"
+              disabled={!baseScope || pickingFolder || (!hostApi && !pathDraft.trim())}
+              onClick={useFolder}
               className="h-9 shrink-0 rounded-full px-3 text-[12px]"
             >
               {t("workspace.dialog.useFolder", { defaultValue: "Use folder" })}
@@ -731,6 +724,7 @@ function Shell({
     useState<WorkspaceScopePayload | null>(null);
   const [workspaceOverrides, setWorkspaceOverrides] =
     useState<Record<string, WorkspaceScopePayload>>({});
+  const preserveBlankDraftScopeOnRouteRef = useRef(false);
   const runningChatIdsRef = useRef<Set<string>>(new Set());
   const activeChatIdRef = useRef<string | null>(null);
   const hostSidebarPreviewCloseTimerRef = useRef<number | null>(null);
@@ -757,7 +751,13 @@ function Shell({
       setSettingsInitialSection(route.settingsSection);
       setWorkspaceError(null);
       if (route.view === "chat" && !route.activeKey) {
-        setDraftWorkspaceScope(null);
+        if (preserveBlankDraftScopeOnRouteRef.current) {
+          preserveBlankDraftScopeOnRouteRef.current = false;
+        } else {
+          setDraftWorkspaceScope(null);
+        }
+      } else {
+        preserveBlankDraftScopeOnRouteRef.current = false;
       }
     };
     window.addEventListener("hashchange", applyRoute);
@@ -1121,13 +1121,19 @@ function Shell({
         onNewChat();
         return;
       }
-      navigate(defaultShellRoute());
+      const route = defaultShellRoute();
+      const routeHash = shellRouteHash(route);
+      const willChangeHash =
+        typeof window !== "undefined" && window.location.hash !== routeHash;
+      preserveBlankDraftScopeOnRouteRef.current = willChangeHash;
+      navigate(route);
       setDraftWorkspaceScope(normalizeWorkspaceScope({
         project_path: trimmed,
         project_name: projectName || projectNameFromPath(trimmed),
         access_mode: base.access_mode,
         restrict_to_workspace: base.access_mode === "restricted",
       }));
+      if (!willChangeHash) preserveBlankDraftScopeOnRouteRef.current = false;
       setWorkspaceError(null);
       setMobileSidebarOpen(false);
     },

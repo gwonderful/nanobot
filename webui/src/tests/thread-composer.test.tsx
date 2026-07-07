@@ -770,7 +770,7 @@ describe("ThreadComposer", () => {
     expect(screen.getByText(".../client-b/app")).toBeInTheDocument();
   });
 
-  it("uses the native folder picker from New project and selects the added project", async () => {
+  it("uses the native folder picker from Use folder and selects the added project", async () => {
     const onWorkspaceScopeChange = vi.fn();
     const onAddProject = vi.fn();
     const pickFolder = vi.fn().mockResolvedValue("/Users/test/native-project");
@@ -805,7 +805,7 @@ describe("ThreadComposer", () => {
     fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
 
     expect(pickFolder).not.toHaveBeenCalled();
-    fireEvent.click(await screen.findByRole("menuitem", { name: /New project/ }));
+    fireEvent.click(await screen.findByRole("button", { name: "Use folder" }));
     await waitFor(() => expect(pickFolder).toHaveBeenCalled());
     expect(onWorkspaceScopeChange).toHaveBeenCalledWith(expect.objectContaining({
       project_path: "/Users/test/native-project",

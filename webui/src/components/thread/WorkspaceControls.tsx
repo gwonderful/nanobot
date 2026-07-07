@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { AlertTriangle, Check, ChevronDown, Folder, Hand, Plus, Search } from "lucide-react";
+import { AlertTriangle, Check, ChevronDown, Folder, Hand, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -141,7 +141,7 @@ export function WorkspaceProjectPicker({
   );
 
   const pickNativeFolder = useCallback(async () => {
-    if (!hostApi || disabled) return;
+    if (!hostApi || disabled || pickingFolder) return;
     setPickingFolder(true);
     try {
       const picked = await hostApi.pickFolder();
@@ -151,7 +151,17 @@ export function WorkspaceProjectPicker({
     } finally {
       setPickingFolder(false);
     }
-  }, [applyProjectPath, disabled, hostApi]);
+  }, [applyProjectPath, disabled, hostApi, pickingFolder]);
+
+  const useFolder = useCallback(() => {
+    if (pathDraft.trim()) {
+      applyProjectPath(pathDraft, undefined, true);
+      return;
+    }
+    if (nativeProjectPicker) {
+      void pickNativeFolder();
+    }
+  }, [applyProjectPath, nativeProjectPicker, pathDraft, pickNativeFolder]);
 
   if (!visible || !defaultScope || !onChange) return null;
 
@@ -261,30 +271,6 @@ export function WorkspaceProjectPicker({
             </div>
           ) : null}
           <div className="my-1 h-px bg-border/45" />
-          {nativeProjectPicker ? (
-            <DropdownMenuItem
-              disabled={disabled || pickingFolder}
-              onSelect={(event) => {
-                event.preventDefault();
-                void pickNativeFolder();
-              }}
-              className="flex min-h-[46px] cursor-default gap-3 rounded-[16px] px-3 py-2.5 focus:bg-muted/55"
-            >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] bg-muted text-foreground/80">
-                <Plus className="h-4 w-4" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-semibold text-foreground">
-                  {t("workspace.dialog.newProject", { defaultValue: "New project" })}
-                </span>
-                <span className="block truncate text-[11.5px] text-muted-foreground">
-                  {t("workspace.dialog.useExistingFolder", {
-                    defaultValue: "Use existing folder",
-                  })}
-                </span>
-              </span>
-            </DropdownMenuItem>
-          ) : null}
           <div
             className="space-y-1.5 px-1.5 py-1.5"
             onKeyDown={(event) => {
@@ -295,7 +281,7 @@ export function WorkspaceProjectPicker({
               className="flex items-center gap-2"
               onSubmit={(event) => {
                 event.preventDefault();
-                applyProjectPath(pathDraft, undefined, true);
+                useFolder();
               }}
             >
               <Input
@@ -315,8 +301,9 @@ export function WorkspaceProjectPicker({
                 )}
               />
               <Button
-                type="submit"
-                disabled={disabled || !pathDraft.trim()}
+                type="button"
+                disabled={disabled || pickingFolder || (!nativeProjectPicker && !pathDraft.trim())}
+                onClick={useFolder}
                 className="h-9 shrink-0 rounded-full px-3 text-[12px]"
               >
                 {t("workspace.dialog.useFolder", { defaultValue: "Use folder" })}
