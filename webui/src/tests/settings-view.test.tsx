@@ -1,9 +1,13 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { SettingsView } from "@/components/settings/SettingsView";
 import { ClientProvider } from "@/providers/ClientProvider";
-import type { SettingsPayload } from "@/lib/types";
+import type { ChatSummary, SettingsPayload } from "@/lib/types";
+import type {
+  ArchivedConversationGroup,
+  SidebarProjectOption,
+} from "@/lib/sidebar-model";
 
 function jsonResponse(body: unknown): Response {
   return {
@@ -11,6 +15,10 @@ function jsonResponse(body: unknown): Response {
     status: 200,
     json: async () => body,
   } as Response;
+}
+
+function mockSettingsFetch(): void {
+  vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>(() => {})));
 }
 
 function settingsPayload(): SettingsPayload {
@@ -170,6 +178,7 @@ function renderSettingsView(
     initialSection?:
       | "overview"
       | "apps"
+      | "archived"
       | "automations"
       | "advanced"
       | "models"
@@ -179,6 +188,11 @@ function renderSettingsView(
     showSidebar?: boolean;
     onSettingsChange?: (payload: SettingsPayload) => void;
     onNativeEngineRestart?: () => Promise<string>;
+    archivedGroups?: ArchivedConversationGroup[];
+    archivedCount?: number;
+    projectOptions?: SidebarProjectOption[];
+    onUnarchiveChat?: (key: string) => void;
+    onDeleteArchivedChats?: (keys: string[]) => Promise<void>;
   } = {},
 ) {
   render(
@@ -193,15 +207,218 @@ function renderSettingsView(
         onModelNameChange={() => {}}
         onSettingsChange={options.onSettingsChange}
         onNativeEngineRestart={options.onNativeEngineRestart}
+        archivedGroups={options.archivedGroups}
+        archivedCount={options.archivedCount}
+        projectOptions={options.projectOptions}
+        onUnarchiveChat={options.onUnarchiveChat}
+        onDeleteArchivedChats={options.onDeleteArchivedChats}
       />
     </ClientProvider>,
   );
+}
+
+function archivedChat(
+  overrides: Partial<ChatSummary> & Pick<ChatSummary, "key" | "chatId" | "preview">,
+): ChatSummary {
+  return {
+    channel: "websocket",
+    createdAt: "2026-07-04T08:00:00Z",
+    updatedAt: "2026-07-04T08:00:00Z",
+    ...overrides,
+  };
+}
+
+function sampleArchivedGroups(): ArchivedConversationGroup[] {
+  return [
+    {
+      key: "/Users/test/goose-study",
+      label: "goose-study",
+      projectPath: "/Users/test/goose-study",
+      sessions: [
+        archivedChat({
+          key: "websocket:goose-a",
+          chatId: "goose-a",
+          title: "Analyze CLI mismatch",
+          preview: "Compare CLI and model behavior",
+          updatedAt: "2026-07-04T16:44:00Z",
+        }),
+        archivedChat({
+          key: "websocket:goose-b",
+          chatId: "goose-b",
+          title: "Add answer detail",
+          preview: "Improve answer expansion",
+          updatedAt: "2026-07-04T13:02:00Z",
+        }),
+      ],
+    },
+    {
+      key: "conversations",
+      label: "Chats",
+      projectPath: null,
+      sessions: [
+        archivedChat({
+          key: "websocket:plain-a",
+          chatId: "plain-a",
+          title: "Plain archived chat",
+          preview: "No project context",
+          updatedAt: "2026-06-23T18:05:00Z",
+        }),
+      ],
+    },
+  ];
 }
 
 describe("SettingsView Apps catalog", () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.unstubAllGlobals();
+  });
+
+  it("shows archived conversations in the settings navigation", () => {
+    mockSettingsFetch();
+    renderSettingsView({
+      initialSection: "overview",
+      initialSettings: settingsPayload(),
+      archivedGroups: sampleArchivedGroups(),
+      archivedCount: 3,
+    });
+
+    const nav = screen.getByRole("navigation", { name: "Settings sections" });
+    expect(
+      within(nav).getByRole("button", { name: "Archived conversations" }),
+    ).toBeInTheDocument();
+  });
+
+  it("groups archived conversations and filters only archived rows", async () => {
+    mockSettingsFetch();
+    renderSettingsView({
+      initialSection: "archived",
+      initialSettings: settingsPayload(),
+      archivedGroups: sampleArchivedGroups(),
+      archivedCount: 3,
+      projectOptions: [
+        {
+          key: "/Users/test/goose-study",
+          path: "/Users/test/goose-study",
+          label: "goose-study",
+          shortPath: ".../test/goose-study",
+          hasUnarchivedSessions: false,
+          hasArchivedSessions: true,
+          isExplicit: false,
+          isRemoved: false,
+        },
+      ],
+    });
+
+    expect(screen.getByRole("heading", { name: "Archived conversations" })).toBeInTheDocument();
+    expect(screen.getByText("goose-study")).toBeInTheDocument();
+    expect(screen.getByText("Chats")).toBeInTheDocument();
+    expect(screen.getByText("Analyze CLI mismatch")).toBeInTheDocument();
+    expect(screen.getByText("Plain archived chat")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search archived chats" }), {
+      target: { value: "plain" },
+    });
+
+    expect(screen.queryByText("Analyze CLI mismatch")).not.toBeInTheDocument();
+    expect(screen.getByText("Plain archived chat")).toBeInTheDocument();
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: "All projects" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "goose-study" }));
+
+    expect(screen.queryByText("Plain archived chat")).not.toBeInTheDocument();
+    expect(screen.getByText("No archived conversations match your filters.")).toBeInTheDocument();
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: "goose-study" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "No project chats" }));
+
+    expect(screen.getByText("Plain archived chat")).toBeInTheDocument();
+  });
+
+  it("keeps archived rows non-opening and limits row actions to unarchive and delete", () => {
+    mockSettingsFetch();
+    const onUnarchiveChat = vi.fn();
+    renderSettingsView({
+      initialSection: "archived",
+      initialSettings: settingsPayload(),
+      archivedGroups: sampleArchivedGroups(),
+      archivedCount: 3,
+      onUnarchiveChat,
+    });
+
+    const row = screen.getByText("Analyze CLI mismatch").closest("[data-archived-row]");
+    expect(row).not.toBeNull();
+    expect(within(row as HTMLElement).queryByRole("link")).not.toBeInTheDocument();
+    expect(within(row as HTMLElement).queryByRole("button", { name: /Open/ })).not.toBeInTheDocument();
+
+    const actions = within(row as HTMLElement).getByRole("group", {
+      name: "Actions for Analyze CLI mismatch",
+    });
+    expect(
+      within(actions).getByRole("button", { name: "Unarchive Analyze CLI mismatch" }),
+    ).toBeInTheDocument();
+    expect(
+      within(actions).getByRole("button", { name: "Delete Analyze CLI mismatch" }),
+    ).toBeInTheDocument();
+    expect(within(actions).queryByRole("button", { name: /Pin/ })).not.toBeInTheDocument();
+    expect(within(actions).queryByRole("button", { name: /Archive/ })).not.toBeInTheDocument();
+
+    fireEvent.click(within(actions).getByRole("button", {
+      name: "Unarchive Analyze CLI mismatch",
+    }));
+    expect(onUnarchiveChat).toHaveBeenCalledWith("websocket:goose-a");
+  });
+
+  it("confirms project and global archived deletions without offering bulk unarchive", async () => {
+    mockSettingsFetch();
+    const onDeleteArchivedChats = vi.fn().mockResolvedValue(undefined);
+    renderSettingsView({
+      initialSection: "archived",
+      initialSettings: settingsPayload(),
+      archivedGroups: sampleArchivedGroups(),
+      archivedCount: 3,
+      onDeleteArchivedChats,
+    });
+
+    fireEvent.pointerDown(screen.getByRole("button", {
+      name: "More actions for goose-study",
+    }));
+
+    expect(
+      await screen.findByRole("menuitem", { name: "Delete this project's archived chats" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: /Unarchive all/ })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("menuitem", {
+      name: "Delete this project's archived chats",
+    }));
+    expect(screen.getByRole("heading", {
+      name: "Delete this project's archived conversations?",
+    })).toBeInTheDocument();
+    expect(screen.getByText(/will not delete project files on disk/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Delete archived conversations" }));
+
+    await waitFor(() =>
+      expect(onDeleteArchivedChats).toHaveBeenCalledWith([
+        "websocket:goose-a",
+        "websocket:goose-b",
+      ]),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Delete all archived conversations" }));
+    expect(screen.getByRole("heading", {
+      name: "Delete all archived conversations?",
+    })).toBeInTheDocument();
+    expect(screen.getByText(/will not delete project files on disk/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Delete archived conversations" }));
+
+    await waitFor(() =>
+      expect(onDeleteArchivedChats).toHaveBeenLastCalledWith([
+        "websocket:goose-a",
+        "websocket:goose-b",
+        "websocket:plain-a",
+      ]),
+    );
   });
 
   it("does not show the Settings kicker on the standalone Automations surface", async () => {

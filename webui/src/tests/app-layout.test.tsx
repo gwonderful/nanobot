@@ -1824,6 +1824,68 @@ describe("App layout", () => {
     expect(window.location.hash).toBe("#/settings?section=voice");
   });
 
+  it("restores a removed project when unarchiving from archived settings", async () => {
+    mockSessions = [
+      {
+        key: "websocket:archived-project-chat",
+        channel: "websocket",
+        chatId: "archived-project-chat",
+        createdAt: "2026-07-04T08:00:00Z",
+        updatedAt: "2026-07-04T16:44:00Z",
+        title: "Restore archived work",
+        preview: "Bring this back to the project",
+        workspaceScope: {
+          project_path: "/Users/test/goose-study",
+          project_name: "goose-study",
+          access_mode: "restricted",
+          restrict_to_workspace: true,
+        },
+      },
+    ];
+    let persistedSidebarState = sidebarState({
+      archived_keys: ["websocket:archived-project-chat"],
+      removed_project_keys: ["/Users/test/goose-study"],
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href === "/api/settings") {
+          return { ok: true, json: async () => baseSettingsPayload() };
+        }
+        if (href === "/api/workspaces") {
+          return { ok: true, json: async () => workspacesPayload() };
+        }
+        if (href === "/api/webui/sidebar-state") {
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        if (href.startsWith("/api/webui/sidebar-state/update?")) {
+          const encoded = new URLSearchParams(href.split("?", 2)[1]).get("state");
+          persistedSidebarState = JSON.parse(encoded ?? "{}");
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        return { ok: false, status: 404, json: async () => ({}) };
+      }),
+    );
+    window.history.replaceState(null, "", "/#/settings?section=archived");
+
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Archived conversations" }))
+      .toBeInTheDocument();
+    expect(screen.getByText("Restore archived work")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Unarchive Restore archived work" }));
+
+    await waitFor(() => {
+      expect(persistedSidebarState.archived_keys).toEqual([]);
+      expect(persistedSidebarState.removed_project_keys).toEqual([]);
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Back to chat" }));
+    const sidebar = await screen.findByRole("navigation", { name: "Sidebar navigation" });
+    expect(within(sidebar).getByRole("region", { name: "goose-study" })).toBeInTheDocument();
+  });
+
   it("updates the URL hash when switching settings sections", async () => {
     mockFetchRoutes({ "/api/settings": baseSettingsPayload() });
 

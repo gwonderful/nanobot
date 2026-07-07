@@ -96,6 +96,7 @@ const SETTINGS_SECTION_KEYS: SettingsSectionKey[] = [
   "image",
   "voice",
   "browser",
+  "archived",
   "apps",
   "automations",
   "skills",
@@ -1729,6 +1730,12 @@ function Shell({
                   onNativeEngineRestart={onNativeEngineRestart}
                   isRestarting={isRestarting}
                   hostChromeInset={showHostChrome}
+                  archivedGroups={sidebarModel.archivedGroups}
+                  archivedCount={sidebarModel.archivedCount}
+                  projectOptions={sidebarModel.projectOptions}
+                  archivedTitleOverrides={sidebarState.title_overrides}
+                  onUnarchiveChat={onUnarchiveChat}
+                  onDeleteArchivedChats={onDeleteArchivedChats}
                 />
               </div>
             )}

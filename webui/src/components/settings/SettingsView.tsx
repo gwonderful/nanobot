@@ -11,6 +11,7 @@ import {
 } from "react";
 import {
   Activity,
+  Archive,
   ArrowUpCircle,
   ArrowUpDown,
   Bot,
@@ -60,6 +61,7 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ArchivedConversationsSettings } from "@/components/settings/ArchivedConversationsSettings";
 import { SkillsCatalogSettings } from "@/components/settings/SkillsCatalogSettings";
 import { TokenUsageHeatmap } from "@/components/settings/TokenUsageHeatmap";
 import { Button } from "@/components/ui/button";
@@ -119,6 +121,10 @@ import {
   providerBrand,
   providerDisplayLabel,
 } from "@/lib/provider-brand";
+import type {
+  ArchivedConversationGroup,
+  SidebarProjectOption,
+} from "@/lib/sidebar-model";
 import { cn } from "@/lib/utils";
 import { shortWorkspacePath } from "@/lib/workspace";
 import { useClient } from "@/providers/ClientProvider";
@@ -151,6 +157,7 @@ export type SettingsSectionKey =
   | "image"
   | "voice"
   | "browser"
+  | "archived"
   | "apps"
   | "automations"
   | "skills"
@@ -320,6 +327,12 @@ interface SettingsViewProps {
   onNativeEngineRestart?: () => Promise<string>;
   isRestarting?: boolean;
   hostChromeInset?: boolean;
+  archivedGroups?: ArchivedConversationGroup[];
+  archivedCount?: number;
+  projectOptions?: SidebarProjectOption[];
+  archivedTitleOverrides?: Record<string, string>;
+  onUnarchiveChat?: (key: string) => void;
+  onDeleteArchivedChats?: (keys: string[]) => Promise<void> | void;
 }
 
 function readLocalPreferences(): LocalPreferences {
@@ -557,6 +570,12 @@ export function SettingsView({
   onNativeEngineRestart,
   isRestarting = false,
   hostChromeInset = false,
+  archivedGroups = [],
+  archivedCount = 0,
+  projectOptions = [],
+  archivedTitleOverrides = {},
+  onUnarchiveChat,
+  onDeleteArchivedChats,
 }: SettingsViewProps) {
   const { t } = useTranslation();
   const { token } = useClient();
@@ -1733,6 +1752,17 @@ export function SettingsView({
             requiresRestartPending={pendingRestartSections.browser}
           />
         );
+      case "archived":
+        return (
+          <ArchivedConversationsSettings
+            groups={archivedGroups}
+            totalCount={archivedCount}
+            projectOptions={projectOptions}
+            titleOverrides={archivedTitleOverrides}
+            onUnarchiveChat={onUnarchiveChat}
+            onDeleteArchivedChats={onDeleteArchivedChats}
+          />
+        );
       case "apps":
         return (
           <AppsCatalogSettings
@@ -1964,6 +1994,7 @@ const SETTINGS_NAV_ITEMS: Array<{ key: SettingsSectionKey; icon: LucideIcon; fal
   { key: "image", icon: ImageIcon, fallback: "Image" },
   { key: "voice", icon: Mic, fallback: "Voice" },
   { key: "browser", icon: Globe2, fallback: "Web" },
+  { key: "archived", icon: Archive, fallback: "Archived conversations" },
   { key: "runtime", icon: Server, fallback: "System" },
   { key: "advanced", icon: ShieldCheck, fallback: "Security" },
 ];
