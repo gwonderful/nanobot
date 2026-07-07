@@ -704,8 +704,8 @@
     "collapsed": "{{count}} 件のチャットを折りたたみ中",
     "showLess": "折りたたむ",
     "actions": "「{{title}}」のチャット操作",
-    "addProject": "?????????",
-    "newPlainChat": "?????????????",
+    "addProject": "プロジェクトを追加",
+    "newPlainChat": "プロジェクトなしの新規チャット",
     "newInProject": "「{{project}}」で新しいチャットを開始",
     "activity": {
       "running": "Agent running",
@@ -739,7 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
-      "workspace": "???????",
+      "workspace": "ワークスペース",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1125,16 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "既定のワークスペース",
-      "searchProjects": "?????????",
-      "noProject": "????????",
-      "noProjectDescription": "??????????",
-      "noProjectResults": "?????????????????",
-      "newProject": "????????",
-      "useExistingFolder": "???????????",
+      "searchProjects": "プロジェクトを検索",
+      "noProject": "プロジェクトなし",
+      "noProjectDescription": "通常のチャットとして送信",
+      "noProjectResults": "一致するプロジェクトはありません。",
+      "newProject": "新規プロジェクト",
+      "useExistingFolder": "既存のフォルダーを使用",
       "manual": "パスを貼り付け",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "パスを使用",
-      "useFolder": "????????",
+      "useFolder": "フォルダーを使用",
       "absolutePathRequired": "このマシン上の絶対フォルダーパスを入力してください。"
     }
   }

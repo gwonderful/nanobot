@@ -152,6 +152,9 @@ const LOCALIZED_WORKSPACE_COPY_KEYS = [
   "workspace.dialog.absolutePathRequired",
 ];
 const SIDEBAR_PROJECT_ACTION_KEYS = [
+  "chat.addProject",
+  "chat.newPlainChat",
+  "chat.groups.workspace",
   "chat.removeFromSidebar",
   "chat.projectArchiveTitle",
   "chat.projectArchiveTitle_other",
@@ -160,6 +163,13 @@ const SIDEBAR_PROJECT_ACTION_KEYS = [
   "chat.projectRemoveTitle",
   "chat.projectRemoveDescription",
   "chat.projectRemoveConfirm",
+  "workspace.dialog.searchProjects",
+  "workspace.dialog.noProject",
+  "workspace.dialog.noProjectDescription",
+  "workspace.dialog.noProjectResults",
+  "workspace.dialog.newProject",
+  "workspace.dialog.useExistingFolder",
+  "workspace.dialog.useFolder",
 ];
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);

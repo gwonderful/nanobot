@@ -704,8 +704,8 @@
     "collapsed": "{{count}}개 채팅 접힘",
     "showLess": "접기",
     "actions": "{{title}} 채팅 작업",
-    "addProject": "???? ??",
-    "newPlainChat": "???? ?? ? ??",
+    "addProject": "프로젝트 추가",
+    "newPlainChat": "프로젝트 없는 새 채팅",
     "newInProject": "{{project}}에서 새 채팅 시작",
     "activity": {
       "running": "Agent running",
@@ -739,7 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
-      "workspace": "????",
+      "workspace": "작업공간",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1125,16 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "기본 작업공간",
-      "searchProjects": "???? ??",
-      "noProject": "???? ??",
-      "noProjectDescription": "?? ??? ???",
-      "noProjectResults": "???? ????? ????.",
-      "newProject": "? ????",
-      "useExistingFolder": "?? ?? ??",
+      "searchProjects": "프로젝트 검색",
+      "noProject": "프로젝트 없음",
+      "noProjectDescription": "일반 채팅으로 보내기",
+      "noProjectResults": "일치하는 프로젝트가 없습니다.",
+      "newProject": "새 프로젝트",
+      "useExistingFolder": "기존 폴더 사용",
       "manual": "경로 붙여넣기",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "경로 사용",
-      "useFolder": "?? ??",
+      "useFolder": "폴더 사용",
       "absolutePathRequired": "이 머신의 절대 폴더 경로를 입력하세요."
     }
   }

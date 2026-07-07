@@ -704,8 +704,8 @@
     "collapsed": "已折疊 {{count}} 個對話",
     "showLess": "收起",
     "actions": "「{{title}}」的會話操作",
-    "addProject": "????",
-    "newPlainChat": "?????",
+    "addProject": "添加專案",
+    "newPlainChat": "新增純對話",
     "newInProject": "在 {{project}} 中開始新對話",
     "activity": {
       "running": "Agent 正在執行",
@@ -739,7 +739,7 @@
     "groups": {
       "pinned": "置頂",
       "all": "對話",
-      "workspace": "????",
+      "workspace": "工作空間",
       "projects": "專案",
       "today": "今天",
       "yesterday": "昨天",
@@ -1125,16 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "預設工作區",
-      "searchProjects": "????",
-      "noProject": "?????",
-      "noProjectDescription": "???????",
-      "noProjectResults": "????????",
-      "newProject": "????",
-      "useExistingFolder": "???????",
+      "searchProjects": "搜尋專案",
+      "noProject": "不使用專案",
+      "noProjectDescription": "作為純對話傳送",
+      "noProjectResults": "沒有符合的專案。",
+      "newProject": "新建專案",
+      "useExistingFolder": "使用現有資料夾",
       "manual": "貼上路徑",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "使用路徑",
-      "useFolder": "?????",
+      "useFolder": "使用資料夾",
       "absolutePathRequired": "請輸入這台機器上的絕對資料夾路徑。"
     }
   }

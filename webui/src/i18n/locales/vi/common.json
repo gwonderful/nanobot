@@ -704,8 +704,8 @@
     "collapsed": "Đã thu gọn {{count}} cuộc trò chuyện",
     "showLess": "Thu gọn",
     "actions": "Tác vụ cho cuộc trò chuyện {{title}}",
-    "addProject": "Th?m d? ?n",
-    "newPlainChat": "Cu?c tr? chuy?n m?i kh?ng c? d? ?n",
+    "addProject": "Thêm dự án",
+    "newPlainChat": "Cuộc trò chuyện mới không có dự án",
     "newInProject": "Bắt đầu cuộc trò chuyện mới trong {{project}}",
     "activity": {
       "running": "Agent running",
@@ -1125,16 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "Workspace mặc định",
-      "searchProjects": "T?m d? ?n",
-      "noProject": "Kh?ng d?ng d? ?n",
-      "noProjectDescription": "G?i nh? cu?c tr? chuy?n th??ng",
-      "noProjectResults": "Kh?ng c? d? ?n kh?p.",
-      "newProject": "D? ?n m?i",
-      "useExistingFolder": "D?ng th? m?c hi?n c?",
+      "searchProjects": "Tìm dự án",
+      "noProject": "Không dùng dự án",
+      "noProjectDescription": "Gửi như cuộc trò chuyện thường",
+      "noProjectResults": "Không có dự án khớp.",
+      "newProject": "Dự án mới",
+      "useExistingFolder": "Dùng thư mục hiện có",
       "manual": "Dán đường dẫn",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "Dùng đường dẫn",
-      "useFolder": "D?ng th? m?c",
+      "useFolder": "Dùng thư mục",
       "absolutePathRequired": "Nhập đường dẫn thư mục tuyệt đối trên máy này."
     }
   }
