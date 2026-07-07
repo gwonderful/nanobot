@@ -895,7 +895,14 @@ function Shell({
   }, [closeHostSidebarPreview]);
 
   const applyWorkspaceScope = useCallback(
-    (scope: WorkspaceScopePayload) => {
+    (scope: WorkspaceScopePayload | null) => {
+      if (!scope) {
+        setWorkspaceError(null);
+        if (!activeChatId) {
+          setDraftWorkspaceScope(null);
+        }
+        return;
+      }
       const next = normalizeWorkspaceScope(scope);
       setWorkspaceError(null);
       if (activeChatId) {
@@ -1695,7 +1702,9 @@ function Shell({
                 workspaceControls={workspaces?.controls ?? null}
                 workspaceScopeDisabled={activeChatRunning}
                 workspaceError={workspaceError}
+                projectOptions={sidebarModel.projectOptions}
                 onWorkspaceScopeChange={applyWorkspaceScope}
+                onAddProject={onAddProject}
                 settingsSnapshot={settingsSnapshot}
                 onOpenModelSettings={onOpenModelSettings}
                 skills={skills}

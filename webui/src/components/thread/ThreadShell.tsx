@@ -28,6 +28,7 @@ import {
   isMcpPresetsPayload,
 } from "@/lib/mcp-preset-events";
 import { inferProviderFromModelName, providerDisplayLabel } from "@/lib/provider-brand";
+import type { SidebarProjectOption } from "@/lib/sidebar-model";
 import type {
   ChatSummary,
   SettingsPayload,
@@ -140,7 +141,9 @@ interface ThreadShellProps {
   workspaceControls?: WorkspacesPayload["controls"] | null;
   workspaceScopeDisabled?: boolean;
   workspaceError?: string | null;
-  onWorkspaceScopeChange?: (scope: WorkspaceScopePayload) => void;
+  projectOptions?: SidebarProjectOption[];
+  onWorkspaceScopeChange?: (scope: WorkspaceScopePayload | null) => void;
+  onAddProject?: (scope: WorkspaceScopePayload) => void;
   settingsSnapshot?: SettingsPayload | null;
   onOpenModelSettings?: () => void;
   skills?: SkillSummary[];
@@ -291,7 +294,9 @@ export function ThreadShell({
   workspaceControls = null,
   workspaceScopeDisabled = false,
   workspaceError = null,
+  projectOptions = [],
   onWorkspaceScopeChange,
+  onAddProject,
   settingsSnapshot = null,
   onOpenModelSettings,
   skills = [],
@@ -739,7 +744,9 @@ export function ThreadShell({
           workspaceControls={workspaceControls}
           workspaceScopeDisabled={workspaceScopeDisabled}
           workspaceError={workspaceError}
+          projectOptions={projectOptions}
           onWorkspaceScopeChange={onWorkspaceScopeChange}
+          onAddProject={onAddProject}
           pendingQueueKey={chatId}
           transcriptionProvider={settingsSnapshot?.transcription?.provider}
         />
@@ -771,7 +778,9 @@ export function ThreadShell({
           workspaceControls={workspaceControls}
           workspaceScopeDisabled={workspaceScopeDisabled}
           workspaceError={workspaceError}
+          projectOptions={projectOptions}
           onWorkspaceScopeChange={onWorkspaceScopeChange}
+          onAddProject={onAddProject}
           transcriptionProvider={settingsSnapshot?.transcription?.provider}
         />
       )}

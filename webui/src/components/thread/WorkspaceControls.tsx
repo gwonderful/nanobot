@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
-import { AlertTriangle, Check, ChevronDown, Folder, Hand } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { AlertTriangle, Check, ChevronDown, Folder, Hand, Plus, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import type {
   WorkspaceScopePayload,
   WorkspacesPayload,
 } from "@/lib/types";
+import type { SidebarProjectOption } from "@/lib/sidebar-model";
 import { getHostApi } from "@/lib/runtime";
 import { cn } from "@/lib/utils";
 import {
@@ -22,7 +23,6 @@ import {
   projectNameFromPath,
   scopeWithAccessMode,
   selectedProjectScope,
-  shortWorkspacePath,
 } from "@/lib/workspace";
 
 export function WorkspaceProjectPicker({
@@ -32,7 +32,9 @@ export function WorkspaceProjectPicker({
   defaultScope,
   controls,
   error,
+  projectOptions = [],
   onChange,
+  onAddProject,
 }: {
   isHero: boolean;
   disabled?: boolean;
@@ -40,10 +42,13 @@ export function WorkspaceProjectPicker({
   defaultScope: WorkspaceScopePayload | null;
   controls: WorkspacesPayload["controls"] | null;
   error?: string | null;
-  onChange?: (scope: WorkspaceScopePayload) => void;
+  projectOptions?: SidebarProjectOption[];
+  onChange?: (scope: WorkspaceScopePayload | null) => void;
+  onAddProject?: (scope: WorkspaceScopePayload) => void;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
   const [pathDraft, setPathDraft] = useState("");
   const [pathError, setPathError] = useState<string | null>(null);
   const [pickingFolder, setPickingFolder] = useState(false);
@@ -57,36 +62,82 @@ export function WorkspaceProjectPicker({
     && controls?.can_change_project !== false;
   const hostApi = getHostApi();
   const nativeProjectPicker = !!hostApi;
+  const duplicateLabels = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const option of projectOptions) {
+      const key = option.label.trim().toLocaleLowerCase("en");
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    return counts;
+  }, [projectOptions]);
+  const filteredProjectOptions = useMemo(() => {
+    const query = projectSearch.trim().toLocaleLowerCase("en");
+    if (!query) return projectOptions;
+    return projectOptions.filter((option) => {
+      const haystack = [
+        option.label,
+        option.path,
+        option.shortPath ?? "",
+      ].join(" ").toLocaleLowerCase("en");
+      return haystack.includes(query);
+    });
+  }, [projectOptions, projectSearch]);
 
   useEffect(() => {
     if (!open) return;
-    setPathDraft(currentProjectScope?.project_path ?? "");
+    setProjectSearch("");
+    setPathDraft("");
     setPathError(null);
-  }, [currentProjectScope?.project_path, open]);
+  }, [open]);
 
   useEffect(() => {
     if (error && visible) setOpen(true);
   }, [error, visible]);
 
-  const applyProjectPath = useCallback(
-    (projectPath: string, projectName?: string) => {
+  const scopeForProject = useCallback(
+    (projectPath: string, projectName?: string): WorkspaceScopePayload | null => {
       const base = scope ?? defaultScope;
       const trimmed = projectPath.trim();
-      if (!base || !onChange) return;
+      if (!base) return null;
       if (!trimmed || !isAbsoluteWorkspacePath(trimmed)) {
         setPathError(t("workspace.dialog.absolutePathRequired"));
-        return;
+        return null;
       }
-      onChange({
+      return {
         ...base,
         project_path: trimmed,
         project_name: projectName || projectNameFromPath(trimmed),
         restrict_to_workspace: base.access_mode === "restricted",
-      });
+      };
+    },
+    [defaultScope, scope, t],
+  );
+
+  const selectScope = useCallback(
+    (next: WorkspaceScopePayload | null) => {
+      if (!onChange) return;
+      onChange(next);
       setPathError(null);
       setOpen(false);
     },
-    [defaultScope, onChange, scope, t],
+    [onChange],
+  );
+
+  const applyProjectPath = useCallback(
+    (projectPath: string, projectName?: string, addProject = false) => {
+      const next = scopeForProject(projectPath, projectName);
+      if (!next) return;
+      if (addProject) onAddProject?.(next);
+      selectScope(next);
+    },
+    [onAddProject, scopeForProject, selectScope],
+  );
+
+  const selectProjectOption = useCallback(
+    (option: SidebarProjectOption) => {
+      applyProjectPath(option.path, option.label);
+    },
+    [applyProjectPath],
   );
 
   const pickNativeFolder = useCallback(async () => {
@@ -94,7 +145,7 @@ export function WorkspaceProjectPicker({
     setPickingFolder(true);
     try {
       const picked = await hostApi.pickFolder();
-      if (picked) applyProjectPath(picked);
+      if (picked) applyProjectPath(picked, undefined, true);
     } catch (err) {
       setPathError((err as Error).message);
     } finally {
@@ -103,34 +154,6 @@ export function WorkspaceProjectPicker({
   }, [applyProjectPath, disabled, hostApi]);
 
   if (!visible || !defaultScope || !onChange) return null;
-
-  if (nativeProjectPicker) {
-    return (
-      <div className="flex min-w-0 items-center rounded-b-[28px] border-t border-border/25 bg-muted/60 px-3 py-1.5 dark:bg-white/[0.055] sm:px-4">
-        <button
-          type="button"
-          disabled={disabled || pickingFolder}
-          aria-label={t("thread.composer.workspace.projectAria")}
-          title={currentProjectScope?.project_path}
-          onClick={() => void pickNativeFolder()}
-          className={cn(
-            "inline-flex h-7 max-w-full items-center gap-2 rounded-full px-2.5 sm:max-w-[18rem]",
-            "text-[12px] font-medium text-muted-foreground/90 transition-colors",
-            "hover:bg-background/70 hover:text-foreground disabled:pointer-events-none disabled:opacity-55",
-            currentProjectScope && "text-foreground/82",
-          )}
-        >
-          <Folder className={cn("h-3.5 w-3.5 shrink-0", currentProjectScope && "text-primary")} />
-          <span className="truncate">{projectLabel}</span>
-        </button>
-        {pathError || error ? (
-          <span role="alert" className="ml-2 min-w-0 truncate text-[11.5px] font-medium text-destructive">
-            {pathError ?? error}
-          </span>
-        ) : null}
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-w-0 items-center rounded-b-[28px] border-t border-border/25 bg-muted/60 px-3 py-1.5 dark:bg-white/[0.055] sm:px-4">
@@ -158,8 +181,31 @@ export function WorkspaceProjectPicker({
           sideOffset={8}
           className="w-[min(25rem,calc(100vw-2rem))] rounded-[22px]"
         >
+          <div
+            className="px-2 pb-1.5 pt-1"
+            onKeyDown={(event) => {
+              if (event.key !== "Escape") event.stopPropagation();
+            }}
+          >
+            <div className="flex h-9 items-center gap-2 rounded-full border border-border/55 bg-background/80 px-3">
+              <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <input
+                type="search"
+                value={projectSearch}
+                disabled={disabled}
+                onChange={(event) => setProjectSearch(event.target.value)}
+                placeholder={t("workspace.dialog.searchProjects", {
+                  defaultValue: "Search projects",
+                })}
+                aria-label={t("workspace.dialog.searchProjects", {
+                  defaultValue: "Search projects",
+                })}
+                className="min-w-0 flex-1 bg-transparent text-[12.5px] text-foreground outline-none placeholder:text-muted-foreground/70"
+              />
+            </div>
+          </div>
           <DropdownMenuItem
-            onSelect={() => applyProjectPath(defaultScope.project_path, defaultScope.project_name)}
+            onSelect={() => selectScope(null)}
             className="flex min-h-[48px] cursor-default gap-3 rounded-[16px] px-3 py-2.5 focus:bg-muted/55"
           >
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] bg-muted text-foreground/80">
@@ -167,15 +213,78 @@ export function WorkspaceProjectPicker({
             </span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[13px] font-semibold text-foreground">
-                {t("workspace.dialog.defaultProject")}
+                {t("workspace.dialog.noProject", { defaultValue: "No project" })}
               </span>
               <span className="block truncate text-[11.5px] text-muted-foreground">
-                {shortWorkspacePath(defaultScope.project_path)}
+                {t("workspace.dialog.noProjectDescription", {
+                  defaultValue: "Send as a plain chat",
+                })}
               </span>
             </span>
             {!currentProjectScope ? <Check className="h-4 w-4 text-foreground/80" /> : null}
           </DropdownMenuItem>
+          {filteredProjectOptions.length ? (
+            <div className="max-h-56 overflow-y-auto overscroll-contain px-1 pb-1 scrollbar-thin scrollbar-track-transparent">
+              {filteredProjectOptions.map((option) => {
+                const normalizedLabel = option.label.trim().toLocaleLowerCase("en");
+                const showPath = (duplicateLabels.get(normalizedLabel) ?? 0) > 1;
+                const selected = currentProjectScope?.project_path === option.path;
+                return (
+                  <DropdownMenuItem
+                    key={option.key}
+                    onSelect={() => selectProjectOption(option)}
+                    className="flex min-h-[46px] cursor-default gap-3 rounded-[16px] px-3 py-2.5 focus:bg-muted/55"
+                  >
+                    <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] bg-muted text-foreground/80">
+                      <Folder className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-semibold text-foreground">
+                        {option.label}
+                      </span>
+                      {showPath && option.shortPath ? (
+                        <span className="block truncate text-[11.5px] text-muted-foreground">
+                          {option.shortPath}
+                        </span>
+                      ) : null}
+                    </span>
+                    {selected ? <Check className="h-4 w-4 text-foreground/80" /> : null}
+                  </DropdownMenuItem>
+                );
+              })}
+            </div>
+          ) : projectSearch.trim() ? (
+            <div className="px-4 py-3 text-[12px] text-muted-foreground">
+              {t("workspace.dialog.noProjectResults", {
+                defaultValue: "No matching projects.",
+              })}
+            </div>
+          ) : null}
           <div className="my-1 h-px bg-border/45" />
+          {nativeProjectPicker ? (
+            <DropdownMenuItem
+              disabled={disabled || pickingFolder}
+              onSelect={(event) => {
+                event.preventDefault();
+                void pickNativeFolder();
+              }}
+              className="flex min-h-[46px] cursor-default gap-3 rounded-[16px] px-3 py-2.5 focus:bg-muted/55"
+            >
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] bg-muted text-foreground/80">
+                <Plus className="h-4 w-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] font-semibold text-foreground">
+                  {t("workspace.dialog.newProject", { defaultValue: "New project" })}
+                </span>
+                <span className="block truncate text-[11.5px] text-muted-foreground">
+                  {t("workspace.dialog.useExistingFolder", {
+                    defaultValue: "Use existing folder",
+                  })}
+                </span>
+              </span>
+            </DropdownMenuItem>
+          ) : null}
           <div
             className="space-y-1.5 px-1.5 py-1.5"
             onKeyDown={(event) => {
@@ -186,7 +295,7 @@ export function WorkspaceProjectPicker({
               className="flex items-center gap-2"
               onSubmit={(event) => {
                 event.preventDefault();
-                applyProjectPath(pathDraft);
+                applyProjectPath(pathDraft, undefined, true);
               }}
             >
               <Input
@@ -197,7 +306,9 @@ export function WorkspaceProjectPicker({
                   setPathError(null);
                 }}
                 placeholder={t("workspace.dialog.manualPlaceholder")}
-                aria-label={t("workspace.dialog.manual")}
+                aria-label={t("workspace.dialog.useExistingFolder", {
+                  defaultValue: "Use existing folder",
+                })}
                 className={cn(
                   "h-9 rounded-full border-border/55 bg-background/80 px-3 text-[12.5px]",
                   "focus-visible:ring-1 focus-visible:ring-foreground/10 focus-visible:ring-offset-0",
@@ -208,7 +319,7 @@ export function WorkspaceProjectPicker({
                 disabled={disabled || !pathDraft.trim()}
                 className="h-9 shrink-0 rounded-full px-3 text-[12px]"
               >
-                {t("workspace.dialog.usePath")}
+                {t("workspace.dialog.useFolder", { defaultValue: "Use folder" })}
               </Button>
             </form>
             {pathError || error ? (

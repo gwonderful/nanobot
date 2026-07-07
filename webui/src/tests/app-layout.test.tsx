@@ -2,7 +2,12 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import i18n from "@/i18n";
-import type { ChatSummary, SessionAutomationJob } from "@/lib/types";
+import type {
+  ChatSummary,
+  SessionAutomationJob,
+  SidebarStatePayload,
+  WorkspacesPayload,
+} from "@/lib/types";
 
 const connectSpy = vi.fn();
 const refreshSpy = vi.fn();
@@ -135,6 +140,47 @@ function baseSettingsPayload() {
   };
 }
 
+function sidebarState(overrides: Partial<SidebarStatePayload> = {}): SidebarStatePayload {
+  return {
+    schema_version: 2,
+    pinned_keys: [],
+    archived_keys: [],
+    title_overrides: {},
+    project_name_overrides: {},
+    tags_by_key: {},
+    collapsed_groups: {},
+    view: {
+      density: "comfortable",
+      show_previews: false,
+      show_timestamps: false,
+      show_archived: false,
+      sort: "updated_desc",
+    },
+    pinned_project_keys: [],
+    removed_project_keys: [],
+    explicit_projects: {},
+    updated_at: null,
+    ...overrides,
+  };
+}
+
+function workspacesPayload(): WorkspacesPayload {
+  return {
+    schema_version: 1,
+    default_access_mode: "default",
+    default_scope: {
+      project_path: "/Users/test/.nanobot/workspace",
+      project_name: "workspace",
+      access_mode: "restricted",
+      restrict_to_workspace: true,
+    },
+    controls: {
+      can_change_project: true,
+      can_use_full_access: true,
+    },
+  };
+}
+
 vi.mock("@/hooks/useSessions", async (importOriginal) => {
   const React = await import("react");
   const actual = await importOriginal<typeof import("@/hooks/useSessions")>();
@@ -234,6 +280,7 @@ describe("App layout", () => {
     sessionUpdateHandlers.clear();
     window.history.replaceState(null, "", "/");
     setNavigatorPlatform("Linux x86_64");
+    Reflect.deleteProperty(window, "nanobotHost");
     localStorage.removeItem("nanobot-webui.sidebar");
     localStorage.removeItem("nanobot-webui.sidebar.completed-runs.v1");
     localStorage.removeItem("nanobot-webui.sidebar.session-updates.v1");
@@ -1094,6 +1141,98 @@ describe("App layout", () => {
       .filter(Boolean);
 
     expect(labels).toEqual(["Alpha plan", "New chat", "Zulu work"]);
+  });
+
+  it("creates the first blank-page chat in the selected project", async () => {
+    mockSessions = [
+      {
+        key: "websocket:project-chat",
+        channel: "websocket",
+        chatId: "project-chat",
+        createdAt: "2026-04-16T10:00:00Z",
+        updatedAt: "2026-04-16T10:00:00Z",
+        title: "Existing project chat",
+        preview: "",
+        workspaceScope: {
+          project_path: "/Users/test/nanobot",
+          project_name: "nanobot",
+          access_mode: "restricted",
+          restrict_to_workspace: true,
+        },
+      },
+    ];
+    mockFetchRoutes({
+      "/api/workspaces": workspacesPayload(),
+      "/api/webui/sidebar-state": sidebarState(),
+    });
+
+    render(<App />);
+
+    await waitFor(() => expect(connectSpy).toHaveBeenCalled());
+    const sidebar = screen.getByRole("navigation", { name: "Sidebar navigation" });
+    fireEvent.click(within(sidebar).getByRole("button", { name: "New chat" }));
+
+    fireEvent.pointerDown(await screen.findByRole("button", { name: "Choose project" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: /nanobot/ }));
+    expect(screen.getByRole("button", { name: "Choose project" })).toHaveTextContent("nanobot");
+
+    fireEvent.change(screen.getByLabelText("Message input"), {
+      target: { value: "Plan the project" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Send message" }));
+
+    await waitFor(() =>
+      expect(createChatSpy).toHaveBeenCalledWith(expect.objectContaining({
+        project_path: "/Users/test/nanobot",
+        project_name: "nanobot",
+      })),
+    );
+  });
+
+  it("adds a folder from the blank-page project picker without creating a chat", async () => {
+    const pickFolder = vi.fn().mockResolvedValue("/Users/test/goose-study");
+    let persistedSidebarState = sidebarState();
+    Object.defineProperty(window, "nanobotHost", {
+      configurable: true,
+      value: {
+        getRuntimeInfo: vi.fn(),
+        restartEngine: vi.fn(),
+        pickFolder,
+        openLogs: vi.fn(),
+        exportDiagnostics: vi.fn(),
+      },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href === "/api/workspaces") {
+          return { ok: true, json: async () => workspacesPayload() };
+        }
+        if (href === "/api/webui/sidebar-state") {
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        if (href.startsWith("/api/webui/sidebar-state/update?")) {
+          const encoded = new URLSearchParams(href.split("?", 2)[1]).get("state");
+          persistedSidebarState = JSON.parse(encoded ?? "{}");
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        return { ok: false, status: 404 };
+      }),
+    );
+
+    render(<App />);
+
+    await waitFor(() => expect(connectSpy).toHaveBeenCalled());
+    fireEvent.pointerDown(await screen.findByRole("button", { name: "Choose project" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: /New project/ }));
+
+    await waitFor(() => expect(pickFolder).toHaveBeenCalled());
+    expect(createChatSpy).not.toHaveBeenCalled();
+    const sidebar = screen.getByRole("navigation", { name: "Sidebar navigation" });
+    await waitFor(() =>
+      expect(within(sidebar).getByRole("region", { name: "goose-study" })).toBeInTheDocument(),
+    );
   });
 
   it("shows running and completed session indicators in the sidebar", async () => {

@@ -2,7 +2,13 @@ import { act, fireEvent, render, screen, waitFor, within } from "@testing-librar
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ThreadComposer } from "@/components/thread/ThreadComposer";
-import type { CliAppInfo, McpPresetInfo, SlashCommand } from "@/lib/types";
+import type {
+  CliAppInfo,
+  McpPresetInfo,
+  SlashCommand,
+  WorkspaceScopePayload,
+} from "@/lib/types";
+import type { SidebarProjectOption } from "@/lib/sidebar-model";
 
 vi.mock("@/lib/imageEncode", () => ({
   encodeImage: vi.fn(async (file: File) => ({
@@ -28,6 +34,34 @@ const COMMANDS: SlashCommand[] = [
     argHint: "[n]",
   },
 ];
+
+function defaultWorkspaceScope(
+  overrides: Partial<WorkspaceScopePayload> = {},
+): WorkspaceScopePayload {
+  return {
+    project_path: "/Users/test/.nanobot/workspace",
+    project_name: "workspace",
+    access_mode: "restricted",
+    restrict_to_workspace: true,
+    ...overrides,
+  };
+}
+
+function projectOption(
+  overrides: Partial<SidebarProjectOption> & Pick<SidebarProjectOption, "path" | "label">,
+): SidebarProjectOption {
+  return {
+    key: overrides.path,
+    path: overrides.path,
+    label: overrides.label,
+    shortPath: overrides.shortPath,
+    hasUnarchivedSessions: true,
+    hasArchivedSessions: false,
+    isExplicit: false,
+    isRemoved: false,
+    ...overrides,
+  };
+}
 
 const CLI_APPS: CliAppInfo[] = [
   {
@@ -646,76 +680,104 @@ describe("ThreadComposer", () => {
     );
   });
 
-  it("keeps project selection as a compact composer dropdown", async () => {
+  it("searches project options and clears the selected project", async () => {
     const onWorkspaceScopeChange = vi.fn();
-    const defaultScope = {
-      project_path: "/Users/test/.nanobot/workspace",
-      project_name: "workspace",
-      access_mode: "restricted" as const,
-      restrict_to_workspace: true,
+    const defaultScope = defaultWorkspaceScope();
+    const projectAlpha = {
+      ...defaultScope,
+      project_path: "/Users/test/projects/alpha",
+      project_name: "Alpha",
     };
     render(
       <ThreadComposer
         onSend={vi.fn()}
         placeholder="Ask anything..."
         variant="hero"
-        workspaceScope={{
-          ...defaultScope,
-          access_mode: "full",
-          restrict_to_workspace: false,
-        }}
+        workspaceScope={projectAlpha}
         workspaceDefaultScope={defaultScope}
         workspaceControls={{ can_change_project: true, can_use_full_access: true }}
+        projectOptions={[
+          projectOption({
+            path: "/Users/test/projects/alpha",
+            label: "Alpha",
+            shortPath: ".../projects/alpha",
+          }),
+          projectOption({
+            path: "/Users/test/projects/beta",
+            label: "Beta",
+            shortPath: ".../projects/beta",
+          }),
+        ]}
         onWorkspaceScopeChange={onWorkspaceScopeChange}
       />,
     );
 
     fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
 
-    expect(await screen.findByRole("menuitem", { name: /Default workspace/ })).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: /No project/ })).toBeInTheDocument();
+    expect(screen.getByRole("searchbox", { name: "Search projects" })).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    const input = screen.getByLabelText("Paste path");
-    fireEvent.change(input, { target: { value: "relative/project" } });
-    fireEvent.click(screen.getByRole("button", { name: "Use Path" }));
+    fireEvent.change(screen.getByRole("searchbox", { name: "Search projects" }), {
+      target: { value: "beta" },
+    });
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "Enter an absolute folder path on this machine.",
-    );
-    expect(onWorkspaceScopeChange).not.toHaveBeenCalled();
-
-    fireEvent.change(input, { target: { value: "/Users/test/project-alpha" } });
-    fireEvent.click(screen.getByRole("button", { name: "Use Path" }));
+    expect(screen.queryByRole("menuitem", { name: /Alpha/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("menuitem", { name: /Beta/ }));
 
     expect(onWorkspaceScopeChange).toHaveBeenCalledWith(expect.objectContaining({
-      project_path: "/Users/test/project-alpha",
-      project_name: "project-alpha",
-      access_mode: "full",
-      restrict_to_workspace: false,
+      project_path: "/Users/test/projects/beta",
+      project_name: "Beta",
+      access_mode: "restricted",
+      restrict_to_workspace: true,
     }));
 
     fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
-    const reopenedInput = await screen.findByLabelText("Paste path");
-    fireEvent.change(reopenedInput, { target: { value: "~/Pictures/Photos" } });
-    fireEvent.click(screen.getByRole("button", { name: "Use Path" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: /No project/ }));
 
-    expect(onWorkspaceScopeChange).toHaveBeenLastCalledWith(expect.objectContaining({
-      project_path: "~/Pictures/Photos",
-      project_name: "Photos",
-      access_mode: "full",
-      restrict_to_workspace: false,
-    }));
+    expect(onWorkspaceScopeChange).toHaveBeenLastCalledWith(null);
   });
 
-  it("uses the native folder picker for project selection on native host", async () => {
+  it("shows duplicate project names with short paths", async () => {
+    const defaultScope = defaultWorkspaceScope();
+    render(
+      <ThreadComposer
+        onSend={vi.fn()}
+        placeholder="Ask anything..."
+        variant="hero"
+        workspaceScope={defaultScope}
+        workspaceDefaultScope={defaultScope}
+        workspaceControls={{ can_change_project: true, can_use_full_access: true }}
+        projectOptions={[
+          projectOption({
+            path: "/Users/test/client-a/app",
+            label: "app",
+            shortPath: ".../client-a/app",
+          }),
+          projectOption({
+            path: "/Users/test/client-b/app",
+            label: "app",
+            shortPath: ".../client-b/app",
+          }),
+        ]}
+        onWorkspaceScopeChange={vi.fn()}
+      />,
+    );
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
+
+    expect(await screen.findByText(".../client-a/app")).toBeInTheDocument();
+    expect(screen.getByText(".../client-b/app")).toBeInTheDocument();
+  });
+
+  it("uses the native folder picker from New project without selecting immediately", async () => {
     const onWorkspaceScopeChange = vi.fn();
+    const onAddProject = vi.fn();
     const pickFolder = vi.fn().mockResolvedValue("/Users/test/native-project");
-    const defaultScope = {
-      project_path: "/Users/test/.nanobot/workspace",
-      project_name: "workspace",
-      access_mode: "full" as const,
+    const defaultScope = defaultWorkspaceScope({
+      access_mode: "full",
       restrict_to_workspace: false,
-    };
+    });
     Object.defineProperty(window, "nanobotHost", {
       configurable: true,
       value: {
@@ -736,28 +798,34 @@ describe("ThreadComposer", () => {
         workspaceDefaultScope={defaultScope}
         workspaceControls={{ can_change_project: true, can_use_full_access: true }}
         onWorkspaceScopeChange={onWorkspaceScopeChange}
+        onAddProject={onAddProject}
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Choose project" }));
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
 
+    expect(pickFolder).not.toHaveBeenCalled();
+    fireEvent.click(await screen.findByRole("menuitem", { name: /New project/ }));
     await waitFor(() => expect(pickFolder).toHaveBeenCalled());
-    expect(screen.queryByRole("menuitem", { name: /Default workspace/ })).not.toBeInTheDocument();
     expect(onWorkspaceScopeChange).toHaveBeenCalledWith(expect.objectContaining({
       project_path: "/Users/test/native-project",
       project_name: "native-project",
       access_mode: "full",
       restrict_to_workspace: false,
     }));
+    expect(onAddProject).toHaveBeenCalledWith(expect.objectContaining({
+      project_path: "/Users/test/native-project",
+      project_name: "native-project",
+    }));
   });
 
   it("uses the web path menu when no native host picker is available", async () => {
-    const defaultScope = {
-      project_path: "/Users/test/.nanobot/workspace",
-      project_name: "workspace",
-      access_mode: "full" as const,
+    const onWorkspaceScopeChange = vi.fn();
+    const onAddProject = vi.fn();
+    const defaultScope = defaultWorkspaceScope({
+      access_mode: "full",
       restrict_to_workspace: false,
-    };
+    });
 
     render(
       <ThreadComposer
@@ -767,14 +835,36 @@ describe("ThreadComposer", () => {
         workspaceScope={defaultScope}
         workspaceDefaultScope={defaultScope}
         workspaceControls={{ can_change_project: true, can_use_full_access: true }}
-        onWorkspaceScopeChange={vi.fn()}
+        onWorkspaceScopeChange={onWorkspaceScopeChange}
+        onAddProject={onAddProject}
       />,
     );
 
     fireEvent.pointerDown(screen.getByRole("button", { name: "Choose project" }));
 
-    expect(await screen.findByRole("menuitem", { name: /Default workspace/ })).toBeInTheDocument();
-    expect(screen.getByLabelText("Paste path")).toBeInTheDocument();
+    expect(await screen.findByRole("menuitem", { name: /No project/ })).toBeInTheDocument();
+    const input = screen.getByLabelText("Use existing folder");
+    fireEvent.change(input, { target: { value: "relative/project" } });
+    fireEvent.click(screen.getByRole("button", { name: "Use folder" }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Enter an absolute folder path on this machine.",
+    );
+    expect(onWorkspaceScopeChange).not.toHaveBeenCalled();
+
+    fireEvent.change(input, { target: { value: "~/Pictures/Photos" } });
+    fireEvent.click(screen.getByRole("button", { name: "Use folder" }));
+
+    expect(onWorkspaceScopeChange).toHaveBeenCalledWith(expect.objectContaining({
+      project_path: "~/Pictures/Photos",
+      project_name: "Photos",
+      access_mode: "full",
+      restrict_to_workspace: false,
+    }));
+    expect(onAddProject).toHaveBeenCalledWith(expect.objectContaining({
+      project_path: "~/Pictures/Photos",
+      project_name: "Photos",
+    }));
   });
 
   it("shows turn run timer when runStartedAt is set", () => {

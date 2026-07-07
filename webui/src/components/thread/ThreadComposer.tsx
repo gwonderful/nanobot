@@ -67,6 +67,7 @@ import {
 import { useClipboardAndDrop } from "@/hooks/useClipboardAndDrop";
 import type { SendImage, SendOptions } from "@/hooks/useNanobotStream";
 import { useVoiceRecorder, type VoiceRecorderErrorKey } from "@/hooks/useVoiceRecorder";
+import type { SidebarProjectOption } from "@/lib/sidebar-model";
 import type {
   CliAppInfo,
   GoalStateWsPayload,
@@ -172,7 +173,9 @@ interface ThreadComposerProps {
   workspaceControls?: WorkspacesPayload["controls"] | null;
   workspaceScopeDisabled?: boolean;
   workspaceError?: string | null;
-  onWorkspaceScopeChange?: (scope: WorkspaceScopePayload) => void;
+  projectOptions?: SidebarProjectOption[];
+  onWorkspaceScopeChange?: (scope: WorkspaceScopePayload | null) => void;
+  onAddProject?: (scope: WorkspaceScopePayload) => void;
   pendingQueueKey?: string | null;
   transcriptionProvider?: string | null;
 }
@@ -784,7 +787,9 @@ export function ThreadComposer({
   workspaceControls = null,
   workspaceScopeDisabled = false,
   workspaceError = null,
+  projectOptions = [],
   onWorkspaceScopeChange,
+  onAddProject,
   pendingQueueKey = null,
   transcriptionProvider = null,
 }: ThreadComposerProps) {
@@ -820,6 +825,12 @@ export function ThreadComposer({
     && !!workspaceDefaultScope
     && !!onWorkspaceScopeChange
     && workspaceControls?.can_change_project !== false;
+  const handleWorkspaceAccessChange = useCallback(
+    (next: WorkspaceScopePayload) => {
+      onWorkspaceScopeChange?.(next);
+    },
+    [onWorkspaceScopeChange],
+  );
 
   useEffect(() => {
     skipQueuedPromptPersistRef.current = true;
@@ -1825,7 +1836,7 @@ export function ThreadComposer({
                 disabled={disabled || workspaceScopeDisabled}
                 canUseFullAccess={workspaceControls?.can_use_full_access !== false}
                 isHero={isHero}
-                onChange={onWorkspaceScopeChange}
+                onChange={handleWorkspaceAccessChange}
               />
             ) : null}
           </div>
@@ -1927,7 +1938,9 @@ export function ThreadComposer({
           defaultScope={workspaceDefaultScope}
           controls={workspaceControls}
           error={workspaceError}
+          projectOptions={projectOptions}
           onChange={onWorkspaceScopeChange}
+          onAddProject={onAddProject}
         />
       </div>
     </form>
