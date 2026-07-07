@@ -370,6 +370,8 @@ describe("AgentActivityCluster", () => {
     );
 
     expect(screen.getByText("Worked for 12s")).toBeInTheDocument();
+    const activityHeader = screen.getByText("Worked for 12s").closest("button");
+    expect(activityHeader).toHaveClass("rounded-lg", "bg-muted/35", "px-2");
     expect(screen.queryByText("Thought for 12s")).not.toBeInTheDocument();
   });
 

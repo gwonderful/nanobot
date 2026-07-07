@@ -449,8 +449,10 @@ export function AgentActivityCluster({
         type="button"
         onClick={toggleOuter}
         className={cn(
-          "group flex max-w-full items-center gap-1.5 rounded-md px-1 py-1",
-          "text-[12.5px] text-muted-foreground/72 transition-colors hover:text-muted-foreground",
+          "group flex max-w-full items-center gap-1.5 rounded-lg bg-muted/35 px-2 py-1.5",
+          "text-[12.5px] text-muted-foreground/76 transition-colors",
+          "hover:bg-muted/55 hover:text-muted-foreground",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         )}
         aria-expanded={outerExpanded}
         aria-label={summary}

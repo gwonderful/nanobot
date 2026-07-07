@@ -4,6 +4,18 @@ import { describe, expect, it, vi } from "vitest";
 import MarkdownTextRenderer from "@/components/MarkdownTextRenderer";
 
 describe("MarkdownTextRenderer", () => {
+  it("uses the chat prose rhythm for readable assistant messages", () => {
+    const { container } = render(
+      <MarkdownTextRenderer>
+        {"First paragraph.\n\n- One\n- Two"}
+      </MarkdownTextRenderer>,
+    );
+
+    const root = container.querySelector(".markdown-content");
+    expect(root).toHaveClass("text-[15.5px]", "text-foreground/92");
+    expect(root).toHaveClass("prose-p:my-2.5", "prose-li:my-1");
+  });
+
   it("renders clickable markdown links in blue", () => {
     render(<MarkdownTextRenderer>[local server](http://127.0.0.1:7891/)</MarkdownTextRenderer>);
 

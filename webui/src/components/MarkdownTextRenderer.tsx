@@ -582,10 +582,11 @@ export default function MarkdownTextRenderer({
     <div
       className={cn(
         "markdown-content prose max-w-none dark:prose-invert",
+        "text-[15.5px] text-foreground/92",
         "prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold prose-headings:tracking-tight",
         "prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-h4:text-[13px]",
-        "prose-p:my-2",
-        "prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5",
+        "prose-p:my-2.5",
+        "prose-ul:my-2.5 prose-ol:my-2.5 prose-li:my-1",
         "prose-blockquote:my-3 prose-blockquote:border-l-2 prose-blockquote:font-normal",
         "prose-blockquote:not-italic prose-blockquote:text-foreground/80",
         "prose-a:text-blue-500 prose-a:underline-offset-2 hover:prose-a:text-blue-600 dark:prose-a:text-blue-300 dark:hover:prose-a:text-blue-200",

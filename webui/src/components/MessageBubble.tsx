@@ -71,6 +71,73 @@ function ForkArrowIcon({ className }: { className?: string }) {
   );
 }
 
+function UserAvatarMark() {
+  return (
+    <span
+      data-testid="user-avatar-mark"
+      data-avatar-variant="six-blade-aperture"
+      aria-hidden="true"
+      className={cn(
+        "mt-1 grid h-7 w-7 shrink-0 place-items-center overflow-hidden rounded-full",
+        "border border-black/10 bg-[#292A29] text-white",
+        "shadow-[0_2px_6px_rgba(15,23,42,0.14)] dark:border-white/10",
+      )}
+    >
+      <svg
+        viewBox="0 0 28 28"
+        fill="none"
+        className="h-full w-full"
+        focusable="false"
+      >
+        <circle cx="14" cy="14" r="13.2" fill="#292A29" />
+        <path
+          data-avatar-blade
+          data-avatar-tone="peach"
+          d="M9.5 2.2A13 13 0 0 1 24.3 8.1l-8.4 3.4-8.8-3.2Z"
+          fill="#F6C4B4"
+        />
+        <path
+          data-avatar-blade
+          data-avatar-tone="charcoal"
+          d="M24.3 8.1A13 13 0 0 1 26.1 21l-7.9-3.9-2.3-5.6Z"
+          fill="#343433"
+        />
+        <path
+          data-avatar-blade
+          data-avatar-tone="charcoal"
+          d="M26.1 21A13 13 0 0 1 14.9 26.9l-.8-8.9 4.1-.9Z"
+          fill="#262726"
+        />
+        <path
+          data-avatar-blade
+          data-avatar-tone="charcoal"
+          d="M14.9 26.9A13 13 0 0 1 3.8 20.8l6.5-5.3 3.8 2.5Z"
+          fill="#202120"
+        />
+        <path
+          data-avatar-blade
+          data-avatar-tone="peach"
+          d="M3.8 20.8A13 13 0 0 1 2.3 8.1l7.8 3.6.2 3.8Z"
+          fill="#F2B7A7"
+        />
+        <path
+          data-avatar-blade
+          data-avatar-tone="charcoal"
+          d="M2.3 8.1A13 13 0 0 1 9.5 2.2L7.1 8.3l3 3.4Z"
+          fill="#2F302F"
+        />
+        <polygon
+          data-testid="user-avatar-aperture-center"
+          points="10.1,11.7 15.9,9.5 19.6,14 17.7,19 11.8,20 8.2,15.6"
+          fill="#FFF8EF"
+          stroke="#E8DED1"
+          strokeWidth="0.35"
+        />
+      </svg>
+    </span>
+  );
+}
+
 /**
  * Render a single message. Following agent-chat-ui: user turns are a rounded
  * "pill" right-aligned with a muted fill; assistant turns render as bare
@@ -136,28 +203,32 @@ export function MessageBubble({
     return (
       <div
         className={cn(
-          "group ml-auto flex max-w-[min(85%,36rem)] flex-col items-end gap-1.5",
+          "group ml-auto flex max-w-[min(90%,39rem)] items-start justify-end gap-2",
           baseAnim,
         )}
       >
-        {hasImages ? <UserImages images={images} align="right" /> : null}
-        {!hasImages && hasMedia ? (
-          <MessageMedia media={media} align="right" />
-        ) : null}
-        {hasText ? (
-          <p
-            className={cn(
-              "ml-auto w-fit rounded-[18px] bg-secondary/70 px-4 py-2",
-              "text-left text-[16px]/[1.75] whitespace-pre-wrap break-words",
-            )}
-          >
-            <CliAppMentionText
-              text={message.content}
-              cliApps={mentionCliApps}
-              mcpPresets={mentionMcpPresets}
-            />
-          </p>
-        ) : null}
+        <div className="flex min-w-0 flex-col items-end gap-1.5">
+          {hasImages ? <UserImages images={images} align="right" /> : null}
+          {!hasImages && hasMedia ? (
+            <MessageMedia media={media} align="right" />
+          ) : null}
+          {hasText ? (
+            <p
+              className={cn(
+                "ml-auto w-fit rounded-[16px] bg-secondary/70 px-4 py-2",
+                "text-left text-[16px]/[1.75] whitespace-pre-wrap break-words",
+                "shadow-[inset_0_0_0_1px_hsl(var(--border)/0.58)]",
+              )}
+            >
+              <CliAppMentionText
+                text={message.content}
+                cliApps={mentionCliApps}
+                mcpPresets={mentionMcpPresets}
+              />
+            </p>
+          ) : null}
+        </div>
+        <UserAvatarMark />
       </div>
     );
   }
@@ -183,6 +254,12 @@ export function MessageBubble({
   const showForkButton = showAssistantActions && !!onForkFromHere;
   const copyReplyLabel = copied ? t("message.copiedReply") : t("message.copyReply");
   const forkLabel = t("message.forkFromHere");
+  const assistantActionButtonClass = cn(
+    "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
+    "text-muted-foreground/80 transition-colors",
+    "hover:bg-muted/70 hover:text-foreground active:bg-muted",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  );
   const latencyMs = message.latencyMs;
   const showLatencyFooter =
     message.role === "assistant"
@@ -191,7 +268,7 @@ export function MessageBubble({
     && (!empty || hasReasoning || media.length > 0);
   const showAssistantFooterRow = showCopyButton || showForkButton || showLatencyFooter;
   return (
-    <div className={cn("w-full text-[15px]", baseAnim)} style={{ lineHeight: "var(--cjk-line-height)" }}>
+    <div className={cn("w-full text-[15.5px] text-foreground/92", baseAnim)} style={{ lineHeight: "var(--cjk-line-height)" }}>
       {hasReasoning ? (
         <ReasoningBubble
           text={reasoning}
@@ -219,7 +296,7 @@ export function MessageBubble({
           {media.length > 0 ? <MessageMedia media={media} align="left" /> : null}
           {showAssistantFooterRow ? (
             <TooltipProvider delayDuration={220} skipDelayDuration={80}>
-              <div className="mt-2 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
+              <div className="mt-2.5 flex min-h-7 flex-wrap items-center gap-x-1.5 gap-y-1 text-muted-foreground">
                 {showCopyButton ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -227,11 +304,7 @@ export function MessageBubble({
                         type="button"
                         onClick={onCopyAssistantReply}
                         aria-label={copyReplyLabel}
-                        className={cn(
-                          "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                          "transition-colors hover:bg-muted/55 hover:text-foreground",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        )}
+                        className={assistantActionButtonClass}
                       >
                         {copied ? (
                           <Check className="h-4 w-4" aria-hidden />
@@ -250,11 +323,7 @@ export function MessageBubble({
                         type="button"
                         onClick={onForkFromHere}
                         aria-label={forkLabel}
-                        className={cn(
-                          "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                          "transition-colors hover:bg-muted/55 hover:text-foreground",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        )}
+                        className={assistantActionButtonClass}
                       >
                         <ForkArrowIcon className="h-4 w-4" />
                       </button>
@@ -264,7 +333,7 @@ export function MessageBubble({
                 ) : null}
                 {showLatencyFooter ? (
                   <span
-                    className="text-[11px] leading-none text-muted-foreground/70 tabular-nums"
+                    className="inline-flex h-7 items-center rounded-lg px-1 text-[11px] leading-none text-muted-foreground/70 tabular-nums"
                     title={t("message.turnLatencyTitle")}
                   >
                     {formatTurnLatency(latencyMs)}

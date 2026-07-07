@@ -364,9 +364,9 @@ describe("ThreadComposer", () => {
     expect(input.className).toContain("min-h-[50px]");
     expect(input.className).toContain("text-[16px]");
     expect(input.parentElement?.parentElement?.className).toContain("max-w-[49.5rem]");
-    expect(input.parentElement?.parentElement?.className).toContain("rounded-[22px]");
-    expect(input.parentElement?.parentElement?.className).toContain("shadow-[0_12px_30px_rgba(15,23,42,0.07)]");
-    expect(screen.getByRole("button", { name: "Attach image" }).className).toContain("bg-card");
+    expect(input.parentElement?.parentElement?.className).toContain("rounded-[18px]");
+    expect(input.parentElement?.parentElement?.className).toContain("shadow-[0_8px_22px_rgba(15,23,42,0.055)]");
+    expect(screen.getByRole("button", { name: "Attach image" }).className).toContain("bg-background");
     expect(screen.getByRole("button", { name: "Send message" }).className).toContain("bg-foreground");
     expect(screen.queryByText(/Enter to send/)).not.toBeInTheDocument();
   });

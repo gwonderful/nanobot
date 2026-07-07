@@ -95,7 +95,7 @@ export function Sidebar(props: SidebarProps) {
       className={cn(
         "flex h-full w-full min-w-0 flex-col text-sidebar-foreground",
         props.hostChromeInset ? "bg-transparent" : "bg-sidebar",
-        !props.hostChromeInset && "border-r border-sidebar-border/60",
+        !props.hostChromeInset && "border-r border-sidebar-border/75",
       )}
     >
       <div
@@ -115,7 +115,7 @@ export function Sidebar(props: SidebarProps) {
           className={cn(
             "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl transition-colors",
             collapsed
-              ? "-ml-0.5 hover:bg-sidebar-accent/75"
+              ? "-ml-0.5 hover:bg-sidebar-accent"
               : "pointer-events-none -ml-0.5",
           )}
         >
@@ -132,7 +132,7 @@ export function Sidebar(props: SidebarProps) {
             size="icon"
             aria-label={t("sidebar.collapse")}
             onClick={props.onCollapse}
-            className="h-7 w-7 rounded-lg text-muted-foreground/85 hover:bg-sidebar-accent/75 hover:text-sidebar-foreground"
+            className="h-7 w-7 rounded-lg text-muted-foreground/85 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           >
             <Menu className="h-3.5 w-3.5" />
           </Button>
@@ -277,12 +277,12 @@ function SidebarActionButton({
       title={title}
       onClick={() => onClick()}
       className={cn(
-        "group h-8 min-w-0 gap-2 overflow-hidden rounded-full font-medium text-sidebar-foreground/85 hover:bg-sidebar-accent/75 hover:text-sidebar-foreground",
-        "transition-[width,padding,border-radius,color,background-color] duration-300 ease-out",
+        "group h-8 min-w-0 gap-2 overflow-hidden rounded-lg font-medium text-sidebar-foreground/78 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+        "transition-[width,padding,color,background-color,box-shadow] duration-200 ease-out",
         collapsed
           ? "w-9 justify-center gap-0 rounded-xl px-0"
           : "w-full justify-start gap-2 px-3 text-[12.5px]",
-        active && "bg-sidebar-accent text-sidebar-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.55)]",
+        active && "bg-[hsl(var(--brand)/0.10)] text-sidebar-foreground shadow-[inset_0_0_0_1px_hsl(var(--brand)/0.22)]",
         className,
       )}
     >

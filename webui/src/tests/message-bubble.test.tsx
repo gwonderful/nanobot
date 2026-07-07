@@ -73,10 +73,36 @@ describe("MessageBubble", () => {
     const { container } = render(<MessageBubble message={message} />);
     const row = container.firstElementChild;
     const pill = screen.getByText("hello");
+    const avatar = screen.getByTestId("user-avatar-mark");
 
-    expect(row).toHaveClass("ml-auto", "flex");
-    expect(pill).toHaveClass("ml-auto", "w-fit", "rounded-[18px]");
+    expect(row).toHaveClass("ml-auto", "flex", "items-start");
+    expect(pill).toHaveClass("ml-auto", "w-fit", "rounded-[16px]");
+    expect(avatar).toHaveAttribute("aria-hidden", "true");
+    expect(avatar.querySelector("svg")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Fork" })).not.toBeInTheDocument();
+  });
+
+  it("uses the selected six-blade aperture mark for user avatars", () => {
+    const message: UIMessage = {
+      id: "u-avatar",
+      role: "user",
+      content: "avatar check",
+      createdAt: Date.now(),
+    };
+
+    render(<MessageBubble message={message} />);
+
+    const avatar = screen.getByTestId("user-avatar-mark");
+    const blades = avatar.querySelectorAll("[data-avatar-blade]");
+    const peachBlades = avatar.querySelectorAll('[data-avatar-tone="peach"]');
+    const charcoalBlades = avatar.querySelectorAll('[data-avatar-tone="charcoal"]');
+    const aperture = screen.getByTestId("user-avatar-aperture-center");
+
+    expect(avatar).toHaveAttribute("data-avatar-variant", "six-blade-aperture");
+    expect(blades).toHaveLength(6);
+    expect(peachBlades).toHaveLength(2);
+    expect(charcoalBlades).toHaveLength(4);
+    expect(aperture).toHaveAttribute("fill", "#FFF8EF");
   });
 
   it("renders fork control in completed assistant action rows", () => {
@@ -91,7 +117,11 @@ describe("MessageBubble", () => {
 
     render(<MessageBubble message={message} onForkFromHere={onForkFromHere} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Fork" }));
+    const forkButton = screen.getByRole("button", { name: "Fork" });
+    expect(forkButton).toHaveClass("rounded-lg", "text-muted-foreground/80");
+    expect(forkButton).not.toHaveClass("rounded-full");
+
+    fireEvent.click(forkButton);
     expect(onForkFromHere).toHaveBeenCalledTimes(1);
   });
 

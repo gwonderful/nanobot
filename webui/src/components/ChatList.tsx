@@ -258,7 +258,7 @@ export const ChatList = memo(function ChatList({
           return (
             <section key={group.id} aria-label={group.label}>
               {index === firstProjectGroupIndex ? (
-                <div className="px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
+                <div className="px-2 pb-1 text-[12px] font-medium text-muted-foreground/72">
                   {labels.projects}
                 </div>
               ) : null}
@@ -315,11 +315,11 @@ export const ChatList = memo(function ChatList({
                       <li key={s.key} className="min-w-0">
                         <div
                           className={cn(
-                            "group flex min-w-0 max-w-full items-center gap-2 rounded-xl px-2 text-[13px] transition-colors",
+                            "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
                             compact ? "min-h-7" : "min-h-8",
                             active
-                              ? "bg-sidebar-accent/70 text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.28)]"
-                              : "text-sidebar-foreground/82 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+                              ? "bg-[hsl(var(--brand)/0.10)] text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--brand)/0.20)]"
+                              : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
                           )}
                         >
                           <button
@@ -363,7 +363,7 @@ export const ChatList = memo(function ChatList({
                           <DropdownMenu modal={false}>
                             <DropdownMenuTrigger
                               className={cn(
-                                "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-40 transition-opacity",
+                                "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
                                 "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
                                 "focus-visible:opacity-100",
                                 active && "opacity-100",
@@ -734,7 +734,7 @@ function ModelSectionHeader({
   const canToggle = Boolean(onToggle);
 
   return (
-    <div className="group/section flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
+    <div className="group/section flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/72">
       {canToggle ? (
         <button
           type="button"
@@ -847,11 +847,11 @@ function ModelSessionRow({
     <li className="min-w-0">
       <div
         className={cn(
-          "group flex min-w-0 max-w-full items-center gap-2 rounded-xl px-2 text-[13px] transition-colors",
+          "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
           compact ? "min-h-7" : "min-h-8",
           active
-            ? "bg-sidebar-accent/70 text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.28)]"
-            : "text-sidebar-foreground/82 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+            ? "bg-[hsl(var(--brand)/0.10)] text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--brand)/0.20)]"
+            : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
         )}
       >
         <button
@@ -898,7 +898,7 @@ function ModelSessionRow({
           title={pinLabel}
           onClick={() => onTogglePin(session.key)}
           className={cn(
-            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-100 transition-opacity sm:opacity-0",
+            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-100 transition-opacity sm:opacity-0",
             "hover:bg-sidebar-accent hover:text-sidebar-foreground sm:group-hover:opacity-100 focus-visible:opacity-100",
             (active || isPinned) && "opacity-100 sm:opacity-100",
           )}
@@ -912,7 +912,7 @@ function ModelSessionRow({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
-              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-40 transition-opacity",
+              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
               "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
               "focus-visible:opacity-100",
               active && "opacity-100",
@@ -1081,7 +1081,7 @@ function ProjectGroupHeader({
         onClick={onToggle}
         className={cn(
           "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors",
-          "hover:bg-sidebar-accent/45 hover:text-sidebar-foreground focus-visible:bg-sidebar-accent/45 focus-visible:text-sidebar-foreground",
+          "hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:bg-sidebar-accent/70 focus-visible:text-sidebar-foreground",
           collapsed && "text-sidebar-foreground/88",
         )}
       >
@@ -1205,7 +1205,7 @@ function ChatsFoldFooter({
       <button
         type="button"
         onClick={onToggle}
-        className="h-7 w-full rounded-xl text-left text-[12px] font-medium text-muted-foreground/65 transition-colors hover:bg-sidebar-accent/50 hover:text-muted-foreground"
+        className="h-7 w-full rounded-lg text-left text-[12px] font-medium text-muted-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-foreground"
       >
         <span className="px-2">
           {folded
@@ -1248,7 +1248,7 @@ function SessionActivityIndicator({
         title={label}
         className="grid h-4 w-4 shrink-0 place-items-center"
       >
-        <span className="h-2 w-2 rounded-full bg-[#ff8a3d] shadow-[0_0_0_2px_rgba(255,138,61,0.16)]" />
+        <span className="h-2 w-2 rounded-full bg-[hsl(var(--brand))] shadow-[0_0_0_2px_hsl(var(--brand)/0.16)]" />
       </span>
     );
   }
