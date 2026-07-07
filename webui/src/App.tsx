@@ -1161,6 +1161,20 @@ function Shell({
     [updateSidebarState],
   );
 
+  const onRequestAddProject = useCallback(async () => {
+    const hostApi = getHostApi();
+    const base = workspaces?.default_scope ?? activeWorkspaceScope;
+    if (!hostApi || !base) return;
+    const picked = await hostApi.pickFolder();
+    if (!picked) return;
+    onAddProject({
+      ...base,
+      project_path: picked,
+      project_name: projectNameFromPath(picked),
+      restrict_to_workspace: base.access_mode === "restricted",
+    });
+  }, [activeWorkspaceScope, onAddProject, workspaces?.default_scope]);
+
   const onToggleProjectPin = useCallback(
     (projectKey: string) => {
       void updateSidebarState((current) => toggleProjectPin(current, projectKey));
@@ -1488,7 +1502,7 @@ function Shell({
     onToggleGroup,
     onRequestRenameProject,
     onNewChatInProject,
-    onAddProject,
+    onRequestAddProject,
     onToggleProjectPin,
     onArchiveProject,
     onRemoveProject,

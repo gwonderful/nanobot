@@ -2,7 +2,8 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { ChatList } from "@/components/ChatList";
-import type { ChatSummary } from "@/lib/types";
+import { buildSidebarModel } from "@/lib/sidebar-model";
+import type { ChatSummary, SidebarStatePayload } from "@/lib/types";
 
 function session(overrides: Partial<ChatSummary>): ChatSummary {
   const chatId = overrides.chatId ?? "chat";
@@ -13,6 +14,30 @@ function session(overrides: Partial<ChatSummary>): ChatSummary {
     createdAt: "2026-05-20T10:00:00Z",
     updatedAt: "2026-05-20T10:00:00Z",
     preview: "",
+    ...overrides,
+  };
+}
+
+function sidebarState(overrides: Partial<SidebarStatePayload> = {}): SidebarStatePayload {
+  return {
+    schema_version: 2,
+    pinned_keys: [],
+    archived_keys: [],
+    title_overrides: {},
+    project_name_overrides: {},
+    tags_by_key: {},
+    collapsed_groups: {},
+    view: {
+      density: "comfortable",
+      show_previews: false,
+      show_timestamps: false,
+      show_archived: false,
+      sort: "updated_desc",
+    },
+    pinned_project_keys: [],
+    removed_project_keys: [],
+    explicit_projects: {},
+    updated_at: null,
     ...overrides,
   };
 }
@@ -161,6 +186,204 @@ describe("ChatList", () => {
     const chatsSection = screen.getByRole("region", { name: "Chats" });
     expect(within(chatsSection).getByText("Default workspace chat")).toBeInTheDocument();
     expect(within(chatsSection).queryByText("Project chat")).not.toBeInTheDocument();
+  });
+
+  it("renders pinned, workspace, and chats sections from the sidebar model", () => {
+    const sessions = [
+      session({
+        chatId: "project-chat",
+        title: "Project chat",
+        workspaceScope: {
+          project_path: "/Users/me/nanobot",
+          project_name: "nanobot",
+          access_mode: "restricted",
+        },
+      }),
+      session({
+        chatId: "pinned-chat",
+        title: "Pinned pure chat",
+      }),
+      session({
+        chatId: "plain-chat",
+        title: "Plain chat",
+      }),
+    ];
+    const state = sidebarState({
+      pinned_keys: ["websocket:pinned-chat"],
+      pinned_project_keys: ["/Users/me/nanobot"],
+      explicit_projects: {
+        "/Users/me/empty": {
+          path: "/Users/me/empty",
+          name: "empty",
+          created_at: null,
+          updated_at: null,
+        },
+      },
+    });
+    const sidebarModel = buildSidebarModel({ sessions, sidebarState: state });
+
+    render(
+      <ChatList
+        sessions={sessions}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+      />,
+    );
+
+    const pinnedSection = screen.getByRole("region", { name: "Pinned" });
+    const workspaceSection = screen.getByRole("region", { name: "Workspace" });
+    const chatsSection = screen.getByRole("region", { name: "Chats" });
+
+    expect(within(pinnedSection).getByRole("region", { name: "nanobot" })).toBeInTheDocument();
+    expect(within(pinnedSection).getByText("Project chat")).toBeInTheDocument();
+    expect(within(pinnedSection).getByText("Pinned pure chat")).toBeInTheDocument();
+    expect(within(workspaceSection).getByRole("region", { name: "empty" })).toBeInTheDocument();
+    expect(within(workspaceSection).queryByRole("region", { name: "nanobot" })).not.toBeInTheDocument();
+    expect(within(chatsSection).getByText("Plain chat")).toBeInTheDocument();
+  });
+
+  it("exposes workspace and chats header creation actions", () => {
+    const onAddProjectRequest = vi.fn();
+    const onNewChat = vi.fn();
+    const sidebarModel = buildSidebarModel({
+      sessions: [],
+      sidebarState: sidebarState(),
+    });
+
+    render(
+      <ChatList
+        sessions={[]}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+        onAddProjectRequest={onAddProjectRequest}
+        onNewChat={onNewChat}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add project" }));
+    fireEvent.click(screen.getByRole("button", { name: "New plain chat" }));
+
+    expect(onAddProjectRequest).toHaveBeenCalledTimes(1);
+    expect(onNewChat).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows project menu actions and disables archive for empty projects", async () => {
+    const onRequestRenameProject = vi.fn();
+    const onToggleProjectPin = vi.fn();
+    const onArchiveProject = vi.fn();
+    const onRemoveProject = vi.fn();
+    const sessions = [
+      session({
+        chatId: "project-chat",
+        title: "Project chat",
+        workspaceScope: {
+          project_path: "/Users/me/nanobot",
+          project_name: "nanobot",
+          access_mode: "restricted",
+        },
+      }),
+    ];
+    const state = sidebarState({
+      explicit_projects: {
+        "/Users/me/empty": {
+          path: "/Users/me/empty",
+          name: "empty",
+          created_at: null,
+          updated_at: null,
+        },
+      },
+    });
+    const sidebarModel = buildSidebarModel({ sessions, sidebarState: state });
+
+    render(
+      <ChatList
+        sessions={sessions}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+        onRequestRenameProject={onRequestRenameProject}
+        onToggleProjectPin={onToggleProjectPin}
+        onArchiveProject={onArchiveProject}
+        onRemoveProject={onRemoveProject}
+      />,
+    );
+
+    const nanobotSection = screen.getByRole("region", { name: "nanobot" });
+    fireEvent.pointerDown(within(nanobotSection).getByLabelText("Chat actions for nanobot"));
+    expect(await screen.findByRole("menuitem", { name: "Rename" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("menuitem", { name: "Pin" }));
+    expect(onToggleProjectPin).toHaveBeenCalledWith("/Users/me/nanobot");
+
+    fireEvent.pointerDown(within(nanobotSection).getByLabelText("Chat actions for nanobot"));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Archive" }));
+    expect(await screen.findByRole("alertdialog", { name: "Archive 1 chat?" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Archive all" }));
+    expect(onArchiveProject).toHaveBeenCalledWith("/Users/me/nanobot");
+
+    fireEvent.pointerDown(within(nanobotSection).getByLabelText("Chat actions for nanobot"));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Remove from sidebar" }));
+    expect(
+      await screen.findByText(/disk files will not be deleted/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/chats will not be deleted or archived/i),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Remove from sidebar" }));
+    expect(onRemoveProject).toHaveBeenCalledWith("/Users/me/nanobot");
+
+    const emptySection = screen.getByRole("region", { name: "empty" });
+    fireEvent.pointerDown(within(emptySection).getByLabelText("Chat actions for empty"));
+    expect(await screen.findByRole("menuitem", { name: "Archive" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+  });
+
+  it("keeps a chat pin shortcut while leaving archive in the action menu", async () => {
+    const onTogglePin = vi.fn();
+    const sessions = [
+      session({
+        chatId: "plain-chat",
+        title: "Plain chat",
+      }),
+    ];
+    const sidebarModel = buildSidebarModel({
+      sessions,
+      sidebarState: sidebarState(),
+    });
+
+    render(
+      <ChatList
+        sessions={sessions}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={onTogglePin}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Pin Plain chat" }));
+    expect(onTogglePin).toHaveBeenCalledWith("websocket:plain-chat");
+
+    fireEvent.pointerDown(screen.getByLabelText("Chat actions for Plain chat"));
+    expect(await screen.findByRole("menuitem", { name: "Archive" })).toBeInTheDocument();
   });
 
   it("can collapse a project group and keeps project rename separate from chat titles", async () => {

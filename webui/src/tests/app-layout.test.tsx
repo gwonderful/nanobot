@@ -1007,17 +1007,14 @@ describe("App layout", () => {
     expect(within(sidebar).getByRole("button", { name: /^Roadmap$/ })).toBeInTheDocument();
     expect(within(sidebar).queryByRole("button", { name: /^First chat$/ })).not.toBeInTheDocument();
 
-    fireEvent.click(within(sidebar).getByRole("button", { name: "Show archived" }));
-    await waitFor(() =>
-      expect(within(sidebar).getByText("Archived")).toBeInTheDocument(),
-    );
-    expect(within(sidebar).getByRole("button", { name: /^First chat$/ })).toBeInTheDocument();
-    const updateUrl = vi.mocked(fetch).mock.calls
-      .map(([url]) => String(url))
-      .find((url) => url.startsWith("/api/webui/sidebar-state/update?"));
-    expect(updateUrl).toBeTruthy();
-    const encoded = new URLSearchParams(updateUrl?.split("?", 2)[1]).get("state");
-    expect(JSON.parse(encoded ?? "{}").view.show_archived).toBe(true);
+    expect(within(sidebar).queryByRole("button", { name: "Show archived" })).not.toBeInTheDocument();
+    expect(within(sidebar).queryByText("Archived")).not.toBeInTheDocument();
+    expect(within(sidebar).queryByRole("button", { name: /^First chat$/ })).not.toBeInTheDocument();
+    expect(
+      vi.mocked(fetch).mock.calls.some(([url]) =>
+        String(url).startsWith("/api/webui/sidebar-state/update?"),
+      ),
+    ).toBe(false);
 
     expect(within(sidebar).queryByRole("button", { name: "View" })).not.toBeInTheDocument();
   });

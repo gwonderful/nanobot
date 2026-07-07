@@ -18,6 +18,16 @@ import {
 import { useTranslation } from "react-i18next";
 
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -35,6 +45,7 @@ import {
   visibleSessionsForGroup,
   type ChatGroupLabels,
 } from "@/lib/chat-groups";
+import type { SidebarModel, SidebarProjectGroup } from "@/lib/sidebar-model";
 import { cn } from "@/lib/utils";
 import type { ChatSummary, SidebarDensity, SidebarSortMode } from "@/lib/types";
 
@@ -45,7 +56,10 @@ const ACTION_MENU_ITEM_CLASS = "grid w-[7.75rem] grid-cols-[1rem_minmax(0,1fr)] 
 
 interface ChatListProps {
   sessions: ChatSummary[];
+  sidebarModel?: SidebarModel;
   activeKey: string | null;
+  onNewChat?: () => void;
+  onAddProjectRequest?: () => void;
   onSelect: (key: string) => void;
   onRequestDelete: (key: string, label: string) => void;
   onTogglePin: (key: string) => void;
@@ -54,6 +68,9 @@ interface ChatListProps {
   onToggleGroup?: (groupId: string) => void;
   onRequestRenameProject?: (projectKey: string, label: string) => void;
   onNewChatInProject?: (projectPath: string, projectName: string) => void;
+  onToggleProjectPin?: (projectKey: string) => void;
+  onArchiveProject?: (projectKey: string) => void;
+  onRemoveProject?: (projectKey: string) => void;
   pinnedKeys?: string[];
   archivedKeys?: string[];
   titleOverrides?: Record<string, string>;
@@ -74,7 +91,10 @@ interface ChatListProps {
 
 export const ChatList = memo(function ChatList({
   sessions,
+  sidebarModel,
   activeKey,
+  onNewChat,
+  onAddProjectRequest,
   onSelect,
   onRequestDelete,
   onTogglePin,
@@ -83,6 +103,9 @@ export const ChatList = memo(function ChatList({
   onToggleGroup,
   onRequestRenameProject,
   onNewChatInProject,
+  onToggleProjectPin,
+  onArchiveProject,
+  onRemoveProject,
   pinnedKeys = [],
   archivedKeys = [],
   titleOverrides = {},
@@ -155,6 +178,40 @@ export const ChatList = memo(function ChatList({
   useEffect(() => {
     setVisibleLimit(INITIAL_VISIBLE_SESSIONS);
   }, [showArchived, sort]);
+
+  if (sidebarModel) {
+    return (
+      <SidebarModelContent
+        model={sidebarModel}
+        activeKey={activeKey}
+        onNewChat={onNewChat}
+        onAddProjectRequest={onAddProjectRequest}
+        onSelect={onSelect}
+        onRequestDelete={onRequestDelete}
+        onTogglePin={onTogglePin}
+        onRequestRename={onRequestRename}
+        onToggleArchive={onToggleArchive}
+        onToggleGroup={onToggleGroup}
+        onRequestRenameProject={onRequestRenameProject}
+        onNewChatInProject={onNewChatInProject}
+        onToggleProjectPin={onToggleProjectPin}
+        onArchiveProject={onArchiveProject}
+        onRemoveProject={onRemoveProject}
+        pinnedKeys={pinnedKeys}
+        archivedKeys={archivedKeys}
+        titleOverrides={titleOverrides}
+        collapsedGroups={collapsedGroups}
+        runningChatIds={runningChatIds}
+        updatedChatIds={updatedChatIds}
+        compact={density === "compact"}
+        showPreviews={showPreviews}
+        showTimestamps={showTimestamps}
+        actionMenuPortalContainer={actionMenuPortalContainer}
+        emptyLabel={emptyLabel}
+        loading={loading}
+      />
+    );
+  }
 
   if (loading && sessions.length === 0) {
     return (
@@ -394,12 +451,526 @@ export const ChatList = memo(function ChatList({
   );
 });
 
+interface SidebarModelContentProps {
+  model: SidebarModel;
+  activeKey: string | null;
+  onNewChat?: () => void;
+  onAddProjectRequest?: () => void;
+  onSelect: (key: string) => void;
+  onRequestDelete: (key: string, label: string) => void;
+  onTogglePin: (key: string) => void;
+  onRequestRename: (key: string, label: string) => void;
+  onToggleArchive: (key: string) => void;
+  onToggleGroup?: (groupId: string) => void;
+  onRequestRenameProject?: (projectKey: string, label: string) => void;
+  onNewChatInProject?: (projectPath: string, projectName: string) => void;
+  onToggleProjectPin?: (projectKey: string) => void;
+  onArchiveProject?: (projectKey: string) => void;
+  onRemoveProject?: (projectKey: string) => void;
+  pinnedKeys: string[];
+  archivedKeys: string[];
+  titleOverrides: Record<string, string>;
+  collapsedGroups: Record<string, boolean>;
+  runningChatIds: string[];
+  updatedChatIds: string[];
+  compact: boolean;
+  showPreviews: boolean;
+  showTimestamps: boolean;
+  actionMenuPortalContainer?: HTMLElement | null;
+  emptyLabel?: string;
+  loading?: boolean;
+}
+
+function SidebarModelContent({
+  model,
+  activeKey,
+  onNewChat,
+  onAddProjectRequest,
+  onSelect,
+  onRequestDelete,
+  onTogglePin,
+  onRequestRename,
+  onToggleArchive,
+  onToggleGroup,
+  onRequestRenameProject,
+  onNewChatInProject,
+  onToggleProjectPin,
+  onArchiveProject,
+  onRemoveProject,
+  pinnedKeys,
+  archivedKeys,
+  titleOverrides,
+  collapsedGroups,
+  runningChatIds,
+  updatedChatIds,
+  compact,
+  showPreviews,
+  showTimestamps,
+  actionMenuPortalContainer,
+  emptyLabel,
+  loading,
+}: SidebarModelContentProps) {
+  const { t } = useTranslation();
+  const [projectConfirm, setProjectConfirm] = useState<{
+    type: "archive" | "remove";
+    project: SidebarProjectGroup;
+  } | null>(null);
+  const [visibleLimit, setVisibleLimit] = useState(INITIAL_VISIBLE_SESSIONS);
+  const pinned = useMemo(() => new Set(pinnedKeys), [pinnedKeys]);
+  const archived = useMemo(() => new Set(archivedKeys), [archivedKeys]);
+  const running = useMemo(() => new Set(runningChatIds), [runningChatIds]);
+  const updated = useMemo(() => new Set(updatedChatIds), [updatedChatIds]);
+  const pinnedLabel = t("chat.groups.pinned");
+  const workspaceLabel = t("chat.groups.workspace", { defaultValue: "Workspace" });
+  const chatsLabel = t("chat.groups.all");
+
+  const renderSession = (session: ChatSummary, projectMode = false) => (
+    <ModelSessionRow
+      key={session.key}
+      session={session}
+      active={session.key === activeKey}
+      projectMode={projectMode}
+      compact={compact}
+      isPinned={pinned.has(session.key)}
+      isArchived={archived.has(session.key)}
+      isRunning={running.has(session.chatId)}
+      isUpdated={updated.has(session.chatId) && session.key !== activeKey}
+      titleOverrides={titleOverrides}
+      showPreviews={showPreviews}
+      showTimestamps={showTimestamps}
+      actionMenuPortalContainer={actionMenuPortalContainer}
+      onSelect={onSelect}
+      onRequestDelete={onRequestDelete}
+      onTogglePin={onTogglePin}
+      onRequestRename={onRequestRename}
+      onToggleArchive={onToggleArchive}
+    />
+  );
+
+  const renderProject = (project: SidebarProjectGroup) => {
+    const groupId = `project:${project.key}`;
+    const collapsed = Boolean(collapsedGroups[groupId]);
+    const archiveCount = project.sessions.length;
+
+    return (
+      <section key={project.key} aria-label={project.label}>
+        <ProjectGroupHeader
+          label={project.label}
+          path={project.path}
+          collapsed={collapsed}
+          isPinned={project.isPinned}
+          archiveDisabled={archiveCount === 0}
+          onToggle={() => onToggleGroup?.(groupId)}
+          onRequestRename={
+            onRequestRenameProject
+              ? () => onRequestRenameProject(project.key, project.label)
+              : undefined
+          }
+          onTogglePin={
+            onToggleProjectPin
+              ? () => onToggleProjectPin(project.key)
+              : undefined
+          }
+          onRequestArchive={
+            onArchiveProject
+              ? () => setProjectConfirm({ type: "archive", project })
+              : undefined
+          }
+          onRequestRemove={
+            onRemoveProject
+              ? () => setProjectConfirm({ type: "remove", project })
+              : undefined
+          }
+          onNewChat={
+            onNewChatInProject
+              ? () => onNewChatInProject(project.path, project.label)
+              : undefined
+          }
+          actionMenuPortalContainer={actionMenuPortalContainer}
+          updatedAt={
+            showTimestamps && project.updatedAt > 0
+              ? new Date(project.updatedAt).toISOString()
+              : null
+          }
+        />
+        {collapsed ? null : (
+          <ul className="space-y-0.5">
+            {project.sessions.map((session) => renderSession(session, true))}
+          </ul>
+        )}
+      </section>
+    );
+  };
+
+  const hasPinned = model.pinnedProjects.length > 0 || model.pinnedChats.length > 0;
+  const hasWorkspace = model.workspaceProjects.length > 0;
+  const visibleConversations = model.conversations.slice(0, visibleLimit);
+  const hasChats = visibleConversations.length > 0;
+  const hiddenSessionCount = Math.max(0, model.conversations.length - visibleConversations.length);
+
+  useEffect(() => {
+    setVisibleLimit(INITIAL_VISIBLE_SESSIONS);
+  }, [model]);
+
+  return (
+    <>
+      <div className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain scrollbar-thin scrollbar-track-transparent">
+        <div className="min-w-0 space-y-3 px-2 py-1.5">
+          {hasPinned ? (
+            <section aria-label={pinnedLabel}>
+              <ModelSectionHeader label={pinnedLabel} />
+              <div className="space-y-2">
+                {model.pinnedProjects.map(renderProject)}
+                {model.pinnedChats.length ? (
+                  <ul className="space-y-0.5">
+                    {model.pinnedChats.map((session) => renderSession(session))}
+                  </ul>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
+
+          <section aria-label={workspaceLabel}>
+            <ModelSectionHeader
+              label={workspaceLabel}
+              actionLabel={t("chat.addProject", { defaultValue: "Add project" })}
+              onAction={onAddProjectRequest}
+            />
+            {hasWorkspace ? (
+              <div className="space-y-2">
+                {model.workspaceProjects.map(renderProject)}
+              </div>
+            ) : loading ? (
+              <div className="px-2 py-1 text-[12px] text-muted-foreground">
+                {t("chat.loading")}
+              </div>
+            ) : null}
+          </section>
+
+          <section aria-label={chatsLabel}>
+            <ModelSectionHeader
+              label={chatsLabel}
+              actionLabel={t("chat.newPlainChat", { defaultValue: "New plain chat" })}
+              onAction={onNewChat}
+            />
+            {hasChats ? (
+              <ul className="space-y-0.5">
+                {visibleConversations.map((session) => renderSession(session))}
+              </ul>
+            ) : !hasPinned && !hasWorkspace && !loading ? (
+              <div className="px-2 py-1 text-[12px] leading-5 text-muted-foreground/80">
+                {emptyLabel ?? t("chat.noSessions")}
+              </div>
+            ) : null}
+          </section>
+          {hiddenSessionCount > 0 ? (
+            <div className="px-2 pb-2 pt-1">
+              <button
+                type="button"
+                onClick={() =>
+                  setVisibleLimit((limit) =>
+                    Math.min(model.conversations.length, limit + VISIBLE_SESSIONS_INCREMENT),
+                  )
+                }
+                className="h-8 w-full rounded-full text-[12px] font-medium text-muted-foreground/65 transition-colors hover:bg-sidebar-accent/65 hover:text-muted-foreground"
+              >
+                {t("chat.showMore", { count: hiddenSessionCount })}
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <ProjectActionConfirmDialog
+        action={projectConfirm}
+        onCancel={() => setProjectConfirm(null)}
+        onArchiveProject={onArchiveProject}
+        onRemoveProject={onRemoveProject}
+      />
+    </>
+  );
+}
+
+function ModelSectionHeader({
+  label,
+  actionLabel,
+  onAction,
+}: {
+  label: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
+      <span className="min-w-0 flex-1 truncate">{label}</span>
+      {actionLabel && onAction ? (
+        <button
+          type="button"
+          aria-label={actionLabel}
+          title={actionLabel}
+          onClick={onAction}
+          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function ModelSessionRow({
+  session,
+  active,
+  projectMode,
+  compact,
+  isPinned,
+  isArchived,
+  isRunning,
+  isUpdated,
+  titleOverrides,
+  showPreviews,
+  showTimestamps,
+  actionMenuPortalContainer,
+  onSelect,
+  onRequestDelete,
+  onTogglePin,
+  onRequestRename,
+  onToggleArchive,
+}: {
+  session: ChatSummary;
+  active: boolean;
+  projectMode: boolean;
+  compact: boolean;
+  isPinned: boolean;
+  isArchived: boolean;
+  isRunning: boolean;
+  isUpdated: boolean;
+  titleOverrides: Record<string, string>;
+  showPreviews: boolean;
+  showTimestamps: boolean;
+  actionMenuPortalContainer?: HTMLElement | null;
+  onSelect: (key: string) => void;
+  onRequestDelete: (key: string, label: string) => void;
+  onTogglePin: (key: string) => void;
+  onRequestRename: (key: string, label: string) => void;
+  onToggleArchive: (key: string) => void;
+}) {
+  const { t } = useTranslation();
+  const fallbackTitle = t("chat.fallbackTitle", { id: session.chatId.slice(0, 6) });
+  const generatedTitle = session.title?.trim() || "";
+  const title = displayTitle(session, titleOverrides, t("chat.newChat"));
+  const tooltipTitle =
+    titleOverrides[session.key]?.trim()
+    || generatedTitle
+    || deriveTitle(session.preview, fallbackTitle);
+  const preview = session.preview.trim();
+  const showPreview = showPreviews && preview && preview !== title;
+  const timestamp = showTimestamps
+    ? relativeTime(session.updatedAt ?? session.createdAt)
+    : "";
+  const activityState = isRunning ? "running" : isUpdated && !active ? "updated" : null;
+  const pinLabel = `${isPinned ? t("chat.unpin") : t("chat.pin")} ${title}`;
+
+  return (
+    <li className="min-w-0">
+      <div
+        className={cn(
+          "group flex min-w-0 max-w-full items-center gap-2 rounded-xl px-2 text-[13px] transition-colors",
+          compact ? "min-h-7" : "min-h-8",
+          active
+            ? "bg-sidebar-accent/70 text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.28)]"
+            : "text-sidebar-foreground/82 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
+        )}
+      >
+        <button
+          type="button"
+          onClick={() => onSelect(session.key)}
+          title={tooltipTitle}
+          className={cn(
+            "min-w-0 flex-1 overflow-hidden text-left",
+            compact ? "py-1" : "py-1.5",
+            projectMode && "pl-7",
+          )}
+        >
+          {projectMode ? (
+            <span className="flex w-full min-w-0 items-baseline gap-2">
+              <span className="min-w-0 flex-1 truncate font-medium leading-5">
+                {title}
+              </span>
+              {timestamp ? (
+                <span className="shrink-0 text-[11.5px] font-medium text-muted-foreground/58">
+                  {timestamp}
+                </span>
+              ) : null}
+            </span>
+          ) : (
+            <span className="block w-full truncate font-medium leading-5">
+              {title}
+            </span>
+          )}
+          {showPreview ? (
+            <span className="block w-full truncate text-[11.5px] leading-4 text-muted-foreground/72">
+              {preview}
+            </span>
+          ) : null}
+          {timestamp && !projectMode ? (
+            <span className="block w-full truncate text-[11px] leading-4 text-muted-foreground/58">
+              {timestamp}
+            </span>
+          ) : null}
+        </button>
+        <SessionActivityIndicator state={activityState} />
+        <button
+          type="button"
+          aria-label={pinLabel}
+          title={pinLabel}
+          onClick={() => onTogglePin(session.key)}
+          className={cn(
+            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-0 transition-opacity",
+            "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
+            (active || isPinned) && "opacity-100",
+          )}
+        >
+          {isPinned ? (
+            <PinOff className="h-3.5 w-3.5" />
+          ) : (
+            <Pin className="h-3.5 w-3.5" />
+          )}
+        </button>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger
+            className={cn(
+              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-40 transition-opacity",
+              "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
+              "focus-visible:opacity-100",
+              active && "opacity-100",
+            )}
+            aria-label={t("chat.actions", { title })}
+          >
+            <MoreHorizontal className="h-3.5 w-3.5" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className={ACTION_MENU_CONTENT_CLASS}
+            portalContainer={actionMenuPortalContainer}
+            onCloseAutoFocus={(event) => event.preventDefault()}
+          >
+            <DropdownMenuItem
+              onSelect={() => onRequestRename(session.key, title)}
+              className={ACTION_MENU_ITEM_CLASS}
+            >
+              <Pencil className="h-4 w-4 shrink-0" />
+              {t("chat.rename")}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => onToggleArchive(session.key)}
+              className={ACTION_MENU_ITEM_CLASS}
+            >
+              {isArchived ? (
+                <ArchiveRestore className="h-4 w-4 shrink-0" />
+              ) : (
+                <Archive className="h-4 w-4 shrink-0" />
+              )}
+              {isArchived ? t("chat.unarchive") : t("chat.archive")}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => {
+                window.setTimeout(() => onRequestDelete(session.key, title), 0);
+              }}
+              className={cn(
+                ACTION_MENU_ITEM_CLASS,
+                "text-destructive focus:text-destructive",
+              )}
+            >
+              <Trash2 className="h-4 w-4 shrink-0" />
+              {t("chat.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </li>
+  );
+}
+
+function ProjectActionConfirmDialog({
+  action,
+  onCancel,
+  onArchiveProject,
+  onRemoveProject,
+}: {
+  action: { type: "archive" | "remove"; project: SidebarProjectGroup } | null;
+  onCancel: () => void;
+  onArchiveProject?: (projectKey: string) => void;
+  onRemoveProject?: (projectKey: string) => void;
+}) {
+  const { t } = useTranslation();
+  const project = action?.project;
+  const archiveCount = project?.sessions.length ?? 0;
+  const isArchive = action?.type === "archive";
+  const archiveNoun = archiveCount === 1 ? "chat" : "chats";
+  const title = isArchive
+    ? t("chat.projectArchiveTitle", {
+        count: archiveCount,
+        defaultValue: `Archive ${archiveCount} ${archiveNoun}?`,
+      })
+    : t("chat.projectRemoveTitle", {
+        project: project?.label ?? "",
+        defaultValue: `Remove ${project?.label ?? ""} from sidebar?`,
+      });
+
+  return (
+    <AlertDialog open={Boolean(action)} onOpenChange={(open) => (!open ? onCancel() : undefined)}>
+      <AlertDialogContent className="w-[min(calc(100vw-2rem),25rem)] rounded-[24px] border border-white/70 bg-card/95 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.20)] backdrop-blur-xl sm:rounded-[24px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription className="leading-6">
+            {isArchive
+              ? t("chat.projectArchiveDescription", {
+                  defaultValue:
+                    "These chats will be archived. You can find them later in Settings under Archived chats.",
+                })
+              : t("chat.projectRemoveDescription", {
+                  defaultValue:
+                    "This removes the project entry from the sidebar. The disk files will not be deleted. Project chats will not be deleted or archived.",
+                })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter className="mt-5">
+          <AlertDialogCancel onClick={onCancel}>
+            {t("deleteConfirm.cancel")}
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              if (!project || !action) return;
+              if (action.type === "archive") {
+                onArchiveProject?.(project.key);
+              } else {
+                onRemoveProject?.(project.key);
+              }
+              onCancel();
+            }}
+            className={isArchive ? undefined : "bg-destructive text-destructive-foreground hover:bg-destructive/90"}
+          >
+            {isArchive
+              ? t("chat.projectArchiveConfirm", { defaultValue: "Archive all" })
+              : t("chat.projectRemoveConfirm", { defaultValue: "Remove from sidebar" })}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 function ProjectGroupHeader({
   label,
   path,
   collapsed,
+  isPinned,
+  archiveDisabled,
   onToggle,
   onRequestRename,
+  onTogglePin,
+  onRequestArchive,
+  onRequestRemove,
   onNewChat,
   actionMenuPortalContainer,
   updatedAt,
@@ -407,13 +978,21 @@ function ProjectGroupHeader({
   label: string;
   path?: string;
   collapsed: boolean;
+  isPinned?: boolean;
+  archiveDisabled?: boolean;
   onToggle: () => void;
   onRequestRename?: () => void;
+  onTogglePin?: () => void;
+  onRequestArchive?: () => void;
+  onRequestRemove?: () => void;
   onNewChat?: () => void;
   actionMenuPortalContainer?: HTMLElement | null;
   updatedAt?: string | null;
 }) {
   const { t } = useTranslation();
+  const hasMenu = Boolean(
+    onRequestRename || onTogglePin || onRequestArchive || onRequestRemove,
+  );
 
   return (
     <div
@@ -434,7 +1013,7 @@ function ProjectGroupHeader({
           {relativeTime(updatedAt)}
         </span>
       ) : null}
-      {onRequestRename ? (
+      {hasMenu ? (
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
@@ -452,10 +1031,44 @@ function ProjectGroupHeader({
             portalContainer={actionMenuPortalContainer}
             onCloseAutoFocus={(event) => event.preventDefault()}
           >
-            <DropdownMenuItem onSelect={onRequestRename} className={ACTION_MENU_ITEM_CLASS}>
-              <Pencil className="h-4 w-4 shrink-0" />
-              {t("chat.rename")}
-            </DropdownMenuItem>
+            {onRequestRename ? (
+              <DropdownMenuItem onSelect={onRequestRename} className={ACTION_MENU_ITEM_CLASS}>
+                <Pencil className="h-4 w-4 shrink-0" />
+                {t("chat.rename")}
+              </DropdownMenuItem>
+            ) : null}
+            {onTogglePin ? (
+              <DropdownMenuItem onSelect={onTogglePin} className={ACTION_MENU_ITEM_CLASS}>
+                {isPinned ? (
+                  <PinOff className="h-4 w-4 shrink-0" />
+                ) : (
+                  <Pin className="h-4 w-4 shrink-0" />
+                )}
+                {isPinned ? t("chat.unpin") : t("chat.pin")}
+              </DropdownMenuItem>
+            ) : null}
+            {onRequestArchive ? (
+              <DropdownMenuItem
+                disabled={archiveDisabled}
+                onSelect={onRequestArchive}
+                className={ACTION_MENU_ITEM_CLASS}
+              >
+                <Archive className="h-4 w-4 shrink-0" />
+                {t("chat.archive")}
+              </DropdownMenuItem>
+            ) : null}
+            {onRequestRemove ? (
+              <DropdownMenuItem
+                onSelect={onRequestRemove}
+                className={cn(
+                  ACTION_MENU_ITEM_CLASS,
+                  "text-destructive focus:text-destructive",
+                )}
+              >
+                <Trash2 className="h-4 w-4 shrink-0" />
+                {t("chat.removeFromSidebar", { defaultValue: "Remove from sidebar" })}
+              </DropdownMenuItem>
+            ) : null}
           </DropdownMenuContent>
         </DropdownMenu>
       ) : null}

@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from "react";
 import {
-  Archive,
   Brain,
   CalendarClock,
   Menu,
@@ -19,6 +18,7 @@ import type {
   ChatSummary,
   SidebarViewState,
 } from "@/lib/types";
+import type { SidebarModel } from "@/lib/sidebar-model";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -34,6 +34,10 @@ interface SidebarProps {
   onToggleGroup: (groupId: string) => void;
   onRequestRenameProject: (projectKey: string, label: string) => void;
   onNewChatInProject: (projectPath: string, projectName: string) => void;
+  onRequestAddProject?: () => void;
+  onToggleProjectPin?: (projectKey: string) => void;
+  onArchiveProject?: (projectKey: string) => void;
+  onRemoveProject?: (projectKey: string) => void;
   onOpenSettings: () => void;
   onOpenApps: () => void;
   onOpenSkills: () => void;
@@ -56,6 +60,7 @@ interface SidebarProps {
   showArchived?: boolean;
   archivedCount?: number;
   defaultWorkspacePath?: string | null;
+  sidebarModel?: SidebarModel;
   hostChromeInset?: boolean;
 }
 
@@ -175,14 +180,6 @@ export function Sidebar(props: SidebarProps) {
           active={props.activeUtility === "automations"}
           icon={<CalendarClock className="h-4 w-4" />}
         />
-        {props.archivedCount ? (
-          <SidebarActionButton
-            collapsed={collapsed}
-            label={props.showArchived ? t("chat.hideArchived") : t("chat.showArchived")}
-            onClick={props.onToggleArchived}
-            icon={<Archive className="h-4 w-4" />}
-          />
-        ) : null}
       </div>
       <div
         className={cn(
@@ -193,9 +190,12 @@ export function Sidebar(props: SidebarProps) {
         {!collapsed && (
           <ChatList
             sessions={props.sessions}
+            sidebarModel={props.sidebarModel}
             activeKey={props.activeKey}
             loading={props.loading}
             emptyLabel={t("chat.noSessions")}
+            onNewChat={props.onNewChat}
+            onAddProjectRequest={props.onRequestAddProject}
             onSelect={props.onSelect}
             onRequestDelete={props.onRequestDelete}
             onTogglePin={props.onTogglePin}
@@ -204,6 +204,9 @@ export function Sidebar(props: SidebarProps) {
             onToggleGroup={props.onToggleGroup}
             onRequestRenameProject={props.onRequestRenameProject}
             onNewChatInProject={props.onNewChatInProject}
+            onToggleProjectPin={props.onToggleProjectPin}
+            onArchiveProject={props.onArchiveProject}
+            onRemoveProject={props.onRemoveProject}
             pinnedKeys={props.pinnedKeys}
             archivedKeys={props.archivedKeys}
             titleOverrides={props.titleOverrides}
