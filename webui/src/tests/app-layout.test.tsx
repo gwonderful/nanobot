@@ -1137,6 +1137,7 @@ describe("App layout", () => {
     expect(group).toBeTruthy();
     const labels = within(group as HTMLElement)
       .getAllByRole("button")
+      .filter((button) => !button.hasAttribute("aria-expanded"))
       .map((button) => button.textContent?.trim())
       .filter(Boolean);
 

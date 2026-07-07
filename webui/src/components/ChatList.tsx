@@ -7,6 +7,8 @@ import {
 import {
   Archive,
   ArchiveRestore,
+  ChevronDown,
+  ChevronRight,
   Folder,
   MoreHorizontal,
   Pencil,
@@ -53,6 +55,9 @@ const INITIAL_VISIBLE_SESSIONS = 160;
 const VISIBLE_SESSIONS_INCREMENT = 160;
 const ACTION_MENU_CONTENT_CLASS = "w-[8.5rem] min-w-[8.5rem]";
 const ACTION_MENU_ITEM_CLASS = "grid w-[7.75rem] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2";
+const PINNED_SECTION_GROUP_ID = "section:pinned";
+const WORKSPACE_SECTION_GROUP_ID = "section:workspace";
+const CHATS_SECTION_GROUP_ID = "section:chats";
 
 interface ChatListProps {
   sessions: ChatSummary[];
@@ -525,6 +530,9 @@ function SidebarModelContent({
   const pinnedLabel = t("chat.groups.pinned");
   const workspaceLabel = t("chat.groups.workspace", { defaultValue: "Workspace" });
   const chatsLabel = t("chat.groups.all");
+  const pinnedCollapsed = Boolean(collapsedGroups[PINNED_SECTION_GROUP_ID]);
+  const workspaceCollapsed = Boolean(collapsedGroups[WORKSPACE_SECTION_GROUP_ID]);
+  const chatsCollapsed = Boolean(collapsedGroups[CHATS_SECTION_GROUP_ID]);
 
   const renderSession = (session: ChatSummary, projectMode = false) => (
     <ModelSessionRow
@@ -620,25 +628,37 @@ function SidebarModelContent({
         <div className="min-w-0 space-y-3 px-2 py-1.5">
           {hasPinned ? (
             <section aria-label={pinnedLabel}>
-              <ModelSectionHeader label={pinnedLabel} />
-              <div className="space-y-2">
-                {model.pinnedProjects.map(renderProject)}
-                {model.pinnedChats.length ? (
-                  <ul className="space-y-0.5">
-                    {model.pinnedChats.map((session) => renderSession(session))}
-                  </ul>
-                ) : null}
-              </div>
+              <ModelSectionHeader
+                label={pinnedLabel}
+                collapsed={pinnedCollapsed}
+                onToggle={onToggleGroup ? () => onToggleGroup(PINNED_SECTION_GROUP_ID) : undefined}
+              />
+              {pinnedCollapsed ? null : (
+                <div className="space-y-2">
+                  {model.pinnedProjects.map(renderProject)}
+                  {model.pinnedChats.length ? (
+                    <ul className="space-y-0.5">
+                      {model.pinnedChats.map((session) => renderSession(session))}
+                    </ul>
+                  ) : null}
+                </div>
+              )}
             </section>
           ) : null}
 
           <section aria-label={workspaceLabel}>
-            <ModelSectionHeader
-              label={workspaceLabel}
-              actionLabel={t("chat.addProject", { defaultValue: "Add project" })}
-              onAction={onAddProjectRequest}
-            />
-            {hasWorkspace ? (
+              <ModelSectionHeader
+                label={workspaceLabel}
+                actionLabel={t("chat.addProject", { defaultValue: "Add project" })}
+                onAction={onAddProjectRequest}
+                collapsed={workspaceCollapsed}
+                onToggle={
+                  hasWorkspace && onToggleGroup
+                    ? () => onToggleGroup(WORKSPACE_SECTION_GROUP_ID)
+                    : undefined
+                }
+              />
+            {hasWorkspace && !workspaceCollapsed ? (
               <div className="space-y-2">
                 {model.workspaceProjects.map(renderProject)}
               </div>
@@ -650,12 +670,18 @@ function SidebarModelContent({
           </section>
 
           <section aria-label={chatsLabel}>
-            <ModelSectionHeader
-              label={chatsLabel}
-              actionLabel={t("chat.newPlainChat", { defaultValue: "New plain chat" })}
-              onAction={onNewChat}
-            />
-            {hasChats ? (
+              <ModelSectionHeader
+                label={chatsLabel}
+                actionLabel={t("chat.newPlainChat", { defaultValue: "New plain chat" })}
+                onAction={onNewChat}
+                collapsed={chatsCollapsed}
+                onToggle={
+                  hasChats && onToggleGroup
+                    ? () => onToggleGroup(CHATS_SECTION_GROUP_ID)
+                    : undefined
+                }
+              />
+            {hasChats && !chatsCollapsed ? (
               <ul className="space-y-0.5">
                 {visibleConversations.map((session) => renderSession(session))}
               </ul>
@@ -665,7 +691,7 @@ function SidebarModelContent({
               </div>
             ) : null}
           </section>
-          {hiddenSessionCount > 0 ? (
+          {hiddenSessionCount > 0 && !chatsCollapsed ? (
             <div className="px-2 pb-2 pt-1">
               <button
                 type="button"
@@ -696,14 +722,36 @@ function ModelSectionHeader({
   label,
   actionLabel,
   onAction,
+  collapsed,
+  onToggle,
 }: {
   label: string;
   actionLabel?: string;
   onAction?: () => void;
+  collapsed?: boolean;
+  onToggle?: () => void;
 }) {
+  const canToggle = Boolean(onToggle);
+
   return (
-    <div className="flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
-      <span className="min-w-0 flex-1 truncate">{label}</span>
+    <div className="group/section flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
+      {canToggle ? (
+        <button
+          type="button"
+          aria-expanded={!collapsed}
+          data-state={collapsed ? "collapsed" : "expanded"}
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md px-0.5 py-0.5 text-left transition-colors hover:text-sidebar-foreground focus-visible:text-sidebar-foreground"
+        >
+          <span className="min-w-0 flex-1 truncate">{label}</span>
+          <CollapseIndicator
+            collapsed={Boolean(collapsed)}
+            className="opacity-0 group-hover/section:opacity-100 group-focus-within/section:opacity-100"
+          />
+        </button>
+      ) : (
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+      )}
       {actionLabel && onAction ? (
         <button
           type="button"
@@ -716,6 +764,28 @@ function ModelSectionHeader({
         </button>
       ) : null}
     </div>
+  );
+}
+
+function CollapseIndicator({
+  collapsed,
+  className,
+}: {
+  collapsed: boolean;
+  className?: string;
+}) {
+  const Icon = collapsed ? ChevronRight : ChevronDown;
+
+  return (
+    <Icon
+      data-collapse-indicator
+      data-state={collapsed ? "collapsed" : "expanded"}
+      className={cn(
+        "h-3.5 w-3.5 shrink-0 text-muted-foreground/70 transition-opacity",
+        className,
+      )}
+      aria-hidden
+    />
   );
 }
 
@@ -1002,16 +1072,25 @@ function ProjectGroupHeader({
   return (
     <div
       title={path}
-      className="group flex min-w-0 items-center gap-1 px-1 pb-1 pt-1 text-[12px] font-medium text-muted-foreground/78"
+      className="group group/project flex min-w-0 items-center gap-1 px-1 pb-1 pt-1 text-[12px] font-medium text-muted-foreground/78"
     >
       <button
         type="button"
         aria-expanded={!collapsed}
+        data-state={collapsed ? "collapsed" : "expanded"}
         onClick={onToggle}
-        className="flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors hover:bg-sidebar-accent/45 hover:text-sidebar-foreground"
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors",
+          "hover:bg-sidebar-accent/45 hover:text-sidebar-foreground focus-visible:bg-sidebar-accent/45 focus-visible:text-sidebar-foreground",
+          collapsed && "text-sidebar-foreground/88",
+        )}
       >
         <Folder className="h-3.5 w-3.5 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1 truncate">{label}</span>
+        <CollapseIndicator
+          collapsed={collapsed}
+          className="opacity-0 group-hover/project:opacity-100 group-focus-within/project:opacity-100"
+        />
       </button>
       {updatedAt ? (
         <span className="shrink-0 text-[11px] text-muted-foreground/55">

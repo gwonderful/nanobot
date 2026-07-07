@@ -247,6 +247,106 @@ describe("ChatList", () => {
     expect(within(chatsSection).getByText("Plain chat")).toBeInTheDocument();
   });
 
+  it("collapses pinned, workspace, and chats sections from their headers", () => {
+    const onToggleGroup = vi.fn();
+    const sessions = [
+      session({
+        chatId: "project-chat",
+        title: "Project chat",
+        workspaceScope: {
+          project_path: "/Users/me/nanobot",
+          project_name: "nanobot",
+          access_mode: "restricted",
+        },
+      }),
+      session({
+        chatId: "pinned-chat",
+        title: "Pinned pure chat",
+      }),
+      session({
+        chatId: "plain-chat",
+        title: "Plain chat",
+      }),
+    ];
+    const state = sidebarState({
+      pinned_keys: ["websocket:pinned-chat"],
+      pinned_project_keys: ["/Users/me/nanobot"],
+      explicit_projects: {
+        "/Users/me/empty": {
+          path: "/Users/me/empty",
+          name: "empty",
+          created_at: null,
+          updated_at: null,
+        },
+      },
+    });
+    const sidebarModel = buildSidebarModel({ sessions, sidebarState: state });
+
+    const { rerender } = render(
+      <ChatList
+        sessions={sessions}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+        onToggleGroup={onToggleGroup}
+      />,
+    );
+
+    fireEvent.click(
+      within(screen.getByRole("region", { name: "Pinned" }))
+        .getByRole("button", { name: "Pinned" }),
+    );
+    fireEvent.click(
+      within(screen.getByRole("region", { name: "Workspace" }))
+        .getByRole("button", { name: "Workspace" }),
+    );
+    fireEvent.click(
+      within(screen.getByRole("region", { name: "Chats" }))
+        .getByRole("button", { name: "Chats" }),
+    );
+
+    expect(onToggleGroup).toHaveBeenNthCalledWith(1, "section:pinned");
+    expect(onToggleGroup).toHaveBeenNthCalledWith(2, "section:workspace");
+    expect(onToggleGroup).toHaveBeenNthCalledWith(3, "section:chats");
+
+    rerender(
+      <ChatList
+        sessions={sessions}
+        sidebarModel={sidebarModel}
+        activeKey={null}
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+        onToggleGroup={onToggleGroup}
+        collapsedGroups={{
+          "section:pinned": true,
+          "section:workspace": true,
+          "section:chats": true,
+        }}
+      />,
+    );
+
+    const pinnedToggle = within(screen.getByRole("region", { name: "Pinned" }))
+      .getByRole("button", { name: "Pinned" });
+    const workspaceToggle = within(screen.getByRole("region", { name: "Workspace" }))
+      .getByRole("button", { name: "Workspace" });
+    const chatsToggle = within(screen.getByRole("region", { name: "Chats" }))
+      .getByRole("button", { name: "Chats" });
+
+    expect(pinnedToggle).toHaveAttribute("aria-expanded", "false");
+    expect(workspaceToggle).toHaveAttribute("aria-expanded", "false");
+    expect(chatsToggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("Project chat")).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "empty" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Plain chat")).not.toBeInTheDocument();
+  });
+
   it("exposes workspace and chats header creation actions", () => {
     const onAddProjectRequest = vi.fn();
     const onNewChat = vi.fn();
@@ -429,7 +529,14 @@ describe("ChatList", () => {
     );
 
     const projectSection = screen.getByRole("region", { name: "Photos" });
-    fireEvent.click(within(projectSection).getByRole("button", { name: "Photos" }));
+    const projectToggle = within(projectSection).getByRole("button", { name: "Photos" });
+
+    expect(projectToggle).toHaveAttribute("aria-expanded", "false");
+    expect(projectToggle).toHaveAttribute("data-state", "collapsed");
+    expect(projectToggle.querySelector("[data-collapse-indicator]")?.getAttribute("class"))
+      .toContain("opacity-0");
+
+    fireEvent.click(projectToggle);
 
     expect(onToggleGroup).toHaveBeenCalledWith("project:/Users/me/nanobot");
     expect(within(projectSection).queryByText("Alpha task")).not.toBeInTheDocument();
