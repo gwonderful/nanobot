@@ -354,18 +354,21 @@ describe("SettingsView Apps catalog", () => {
     const actions = within(row as HTMLElement).getByRole("group", {
       name: "Actions for Analyze CLI mismatch",
     });
-    expect(
-      within(actions).getByRole("button", { name: "Unarchive Analyze CLI mismatch" }),
-    ).toBeInTheDocument();
-    expect(
-      within(actions).getByRole("button", { name: "Delete Analyze CLI mismatch" }),
-    ).toBeInTheDocument();
+    expect(actions.className).toContain("opacity-100");
+    expect(actions.className).toContain("sm:opacity-0");
+    expect(actions.className).toContain("group-focus-within:opacity-100");
+    const unarchiveButton = within(actions).getByRole("button", {
+      name: "Unarchive Analyze CLI mismatch",
+    });
+    const deleteButton = within(actions).getByRole("button", {
+      name: "Delete Analyze CLI mismatch",
+    });
+    expect(unarchiveButton).toHaveAttribute("title", "Unarchive Analyze CLI mismatch");
+    expect(deleteButton).toHaveAttribute("title", "Delete Analyze CLI mismatch");
     expect(within(actions).queryByRole("button", { name: /Pin/ })).not.toBeInTheDocument();
     expect(within(actions).queryByRole("button", { name: /Archive/ })).not.toBeInTheDocument();
 
-    fireEvent.click(within(actions).getByRole("button", {
-      name: "Unarchive Analyze CLI mismatch",
-    }));
+    fireEvent.click(unarchiveButton);
     expect(onUnarchiveChat).toHaveBeenCalledWith("websocket:goose-a");
   });
 

@@ -76,6 +76,7 @@
       "image": "이미지",
       "voice": "음성",
       "browser": "웹",
+      "archived": "보관된 대화",
       "runtime": "시스템",
       "advanced": "보안",
       "cliApps": "CLI 앱",
@@ -84,6 +85,26 @@
       "automations": "자동화",
       "skills": "스킬",
       "personalization": "개인화"
+    },
+    "archived": {
+      "search": "보관된 대화 검색",
+      "allProjects": "모든 프로젝트",
+      "noProjectChats": "프로젝트 없는 대화",
+      "deleteAll": "모든 보관된 대화 삭제",
+      "deleteProject": "이 프로젝트의 보관된 대화 삭제",
+      "deleteConfirm": "보관된 대화 삭제",
+      "empty": "보관된 대화가 없습니다.",
+      "emptyFiltered": "필터와 일치하는 보관된 대화가 없습니다.",
+      "confirmDescription": "보관된 대화만 삭제합니다. 디스크의 프로젝트 파일은 삭제되지 않으며 보관되지 않은 대화에는 영향을 주지 않습니다.",
+      "chatCount_one": "{{count}}개 대화",
+      "chatCount_other": "{{count}}개 대화",
+      "moreProjectActions": "{{project}} 추가 작업",
+      "actionsFor": "{{title}} 작업",
+      "unarchiveChat": "{{title}} 보관 해제",
+      "deleteChat": "{{title}} 삭제",
+      "deleteAllTitle": "모든 보관된 대화를 삭제할까요?",
+      "deleteProjectTitle": "이 프로젝트의 보관된 대화를 삭제할까요?",
+      "deleteChatTitle": "{{title}}을(를) 삭제할까요?"
     },
     "sections": {
       "interface": "인터페이스",
@@ -683,6 +704,8 @@
     "collapsed": "{{count}}개 채팅 접힘",
     "showLess": "접기",
     "actions": "{{title}} 채팅 작업",
+    "addProject": "???? ??",
+    "newPlainChat": "???? ?? ? ??",
     "newInProject": "{{project}}에서 새 채팅 시작",
     "activity": {
       "running": "Agent running",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "Choose a local sidebar name for this project.",
     "renameProjectPlaceholder": "Project name",
     "renameSave": "Save",
+    "removeFromSidebar": "?????? ??",
+    "projectArchiveTitle": "{{count}}? ??? ??????",
+    "projectArchiveTitle_other": "{{count}}? ??? ??????",
+    "projectArchiveDescription": "? ??? ?????. ??? ??? ??? ???? ?? ? ????.",
+    "projectArchiveConfirm": "?? ??",
+    "projectRemoveTitle": "{{project}}?(?) ?????? ??????",
+    "projectRemoveDescription": "???? ??? ?????? ?????. ???? ??? ???? ??? ???? ??? ????? ???? ????.",
+    "projectRemoveConfirm": "?????? ??",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "showArchived": "Show archived",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
+      "workspace": "????",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "기본 작업공간",
+      "searchProjects": "???? ??",
+      "noProject": "???? ??",
+      "noProjectDescription": "?? ??? ???",
+      "noProjectResults": "???? ????? ????.",
+      "newProject": "? ????",
+      "useExistingFolder": "?? ?? ??",
       "manual": "경로 붙여넣기",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "경로 사용",
+      "useFolder": "?? ??",
       "absolutePathRequired": "이 머신의 절대 폴더 경로를 입력하세요."
     }
   }

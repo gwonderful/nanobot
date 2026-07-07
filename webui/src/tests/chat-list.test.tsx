@@ -331,6 +331,7 @@ describe("ChatList", () => {
     fireEvent.pointerDown(within(nanobotSection).getByLabelText("Chat actions for nanobot"));
     fireEvent.click(await screen.findByRole("menuitem", { name: "Archive" }));
     expect(await screen.findByRole("alertdialog", { name: "Archive 1 chat?" })).toBeInTheDocument();
+    expect(screen.getByText(/Settings under Archived conversations/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Archive all" }));
     expect(onArchiveProject).toHaveBeenCalledWith("/Users/me/nanobot");
 
@@ -379,7 +380,15 @@ describe("ChatList", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "Pin Plain chat" }));
+    const pinButton = screen.getByRole("button", { name: "Pin Plain chat" });
+    expect(pinButton.className).toContain("opacity-100");
+    expect(pinButton.className).toContain("sm:opacity-0");
+    expect(screen.getByRole("button", { name: "Chat actions for Plain chat" })).toHaveAttribute(
+      "title",
+      "Chat actions for Plain chat",
+    );
+
+    fireEvent.click(pinButton);
     expect(onTogglePin).toHaveBeenCalledWith("websocket:plain-chat");
 
     fireEvent.pointerDown(screen.getByLabelText("Chat actions for Plain chat"));

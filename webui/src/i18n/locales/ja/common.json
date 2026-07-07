@@ -76,6 +76,7 @@
       "image": "画像",
       "voice": "音声",
       "browser": "ウェブ",
+      "archived": "アーカイブ済みの会話",
       "runtime": "システム",
       "advanced": "セキュリティ",
       "cliApps": "CLI アプリ",
@@ -84,6 +85,26 @@
       "automations": "自動タスク",
       "skills": "スキル",
       "personalization": "パーソナライズ"
+    },
+    "archived": {
+      "search": "アーカイブ済みの会話を検索",
+      "allProjects": "すべてのプロジェクト",
+      "noProjectChats": "プロジェクトなしの会話",
+      "deleteAll": "すべてのアーカイブ済み会話を削除",
+      "deleteProject": "このプロジェクトのアーカイブ済み会話を削除",
+      "deleteConfirm": "アーカイブ済み会話を削除",
+      "empty": "アーカイブ済みの会話はありません。",
+      "emptyFiltered": "条件に一致するアーカイブ済み会話はありません。",
+      "confirmDescription": "削除されるのはアーカイブ済みの会話のみです。ディスク上のプロジェクトファイルは削除されず、未アーカイブの会話にも影響しません。",
+      "chatCount_one": "{{count}} 件の会話",
+      "chatCount_other": "{{count}} 件の会話",
+      "moreProjectActions": "{{project}} のその他の操作",
+      "actionsFor": "{{title}} の操作",
+      "unarchiveChat": "{{title}} のアーカイブを解除",
+      "deleteChat": "{{title}} を削除",
+      "deleteAllTitle": "すべてのアーカイブ済み会話を削除しますか？",
+      "deleteProjectTitle": "このプロジェクトのアーカイブ済み会話を削除しますか？",
+      "deleteChatTitle": "{{title}} を削除しますか？"
     },
     "sections": {
       "interface": "インターフェース",
@@ -683,6 +704,8 @@
     "collapsed": "{{count}} 件のチャットを折りたたみ中",
     "showLess": "折りたたむ",
     "actions": "「{{title}}」のチャット操作",
+    "addProject": "?????????",
+    "newPlainChat": "?????????????",
     "newInProject": "「{{project}}」で新しいチャットを開始",
     "activity": {
       "running": "Agent running",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "Choose a local sidebar name for this project.",
     "renameProjectPlaceholder": "Project name",
     "renameSave": "Save",
+    "removeFromSidebar": "?????????",
+    "projectArchiveTitle": "{{count}} ???????????????",
+    "projectArchiveTitle_other": "{{count}} ???????????????",
+    "projectArchiveDescription": "??????????????????????????????????????????",
+    "projectArchiveConfirm": "????????",
+    "projectRemoveTitle": "{{project}} ???????????????",
+    "projectRemoveDescription": "?????????????????????????????????????????????????????????????????",
+    "projectRemoveConfirm": "?????????",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "showArchived": "Show archived",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
+      "workspace": "???????",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "既定のワークスペース",
+      "searchProjects": "?????????",
+      "noProject": "????????",
+      "noProjectDescription": "??????????",
+      "noProjectResults": "?????????????????",
+      "newProject": "????????",
+      "useExistingFolder": "???????????",
       "manual": "パスを貼り付け",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "パスを使用",
+      "useFolder": "????????",
       "absolutePathRequired": "このマシン上の絶対フォルダーパスを入力してください。"
     }
   }

@@ -76,6 +76,7 @@
       "image": "Gambar",
       "voice": "Suara",
       "browser": "Internet",
+      "archived": "Percakapan yang diarsipkan",
       "runtime": "Sistem",
       "advanced": "Keamanan",
       "cliApps": "Aplikasi CLI",
@@ -84,6 +85,26 @@
       "automations": "Otomasi",
       "skills": "Skill",
       "personalization": "Personalisasi"
+    },
+    "archived": {
+      "search": "Cari percakapan yang diarsipkan",
+      "allProjects": "Semua proyek",
+      "noProjectChats": "Percakapan tanpa proyek",
+      "deleteAll": "Hapus semua percakapan yang diarsipkan",
+      "deleteProject": "Hapus percakapan arsip proyek ini",
+      "deleteConfirm": "Hapus percakapan yang diarsipkan",
+      "empty": "Tidak ada percakapan yang diarsipkan.",
+      "emptyFiltered": "Tidak ada percakapan arsip yang cocok dengan filter.",
+      "confirmDescription": "Ini hanya menghapus percakapan yang diarsipkan. File proyek di disk tidak akan dihapus dan percakapan yang tidak diarsipkan tidak terpengaruh.",
+      "chatCount_one": "{{count}} percakapan",
+      "chatCount_other": "{{count}} percakapan",
+      "moreProjectActions": "Tindakan lain untuk {{project}}",
+      "actionsFor": "Tindakan untuk {{title}}",
+      "unarchiveChat": "Batalkan arsip {{title}}",
+      "deleteChat": "Hapus {{title}}",
+      "deleteAllTitle": "Hapus semua percakapan yang diarsipkan?",
+      "deleteProjectTitle": "Hapus percakapan arsip proyek ini?",
+      "deleteChatTitle": "Hapus {{title}}?"
     },
     "sections": {
       "interface": "Antarmuka",
@@ -683,6 +704,8 @@
     "collapsed": "{{count}} obrolan diciutkan",
     "showLess": "Tampilkan lebih sedikit",
     "actions": "Aksi obrolan untuk {{title}}",
+    "addProject": "Tambah proyek",
+    "newPlainChat": "Percakapan baru tanpa proyek",
     "newInProject": "Mulai obrolan baru di {{project}}",
     "activity": {
       "running": "Agent running",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "Choose a local sidebar name for this project.",
     "renameProjectPlaceholder": "Project name",
     "renameSave": "Save",
+    "removeFromSidebar": "Pindahkan dari sidebar",
+    "projectArchiveTitle": "Arsipkan {{count}} percakapan?",
+    "projectArchiveTitle_other": "Arsipkan {{count}} percakapan?",
+    "projectArchiveDescription": "Percakapan ini akan diarsipkan. Anda dapat menemukannya nanti di Pengaturan pada Percakapan yang diarsipkan.",
+    "projectArchiveConfirm": "Arsipkan semua",
+    "projectRemoveTitle": "Pindahkan {{project}} dari sidebar?",
+    "projectRemoveDescription": "Ini memindahkan entri proyek dari sidebar. File di disk tidak akan dihapus dan percakapan proyek tidak akan dihapus atau diarsipkan.",
+    "projectRemoveConfirm": "Pindahkan dari sidebar",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "showArchived": "Show archived",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
+      "workspace": "Ruang kerja",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "Workspace default",
+      "searchProjects": "Cari proyek",
+      "noProject": "Tanpa proyek",
+      "noProjectDescription": "Kirim sebagai percakapan biasa",
+      "noProjectResults": "Tidak ada proyek yang cocok.",
+      "newProject": "Proyek baru",
+      "useExistingFolder": "Gunakan folder yang ada",
       "manual": "Tempel path",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "Gunakan path",
+      "useFolder": "Gunakan folder",
       "absolutePathRequired": "Masukkan path folder absolut di mesin ini."
     }
   }

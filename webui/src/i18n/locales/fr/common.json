@@ -76,6 +76,7 @@
       "image": "Images",
       "voice": "Voix",
       "browser": "Internet",
+      "archived": "Conversations archivées",
       "runtime": "Système",
       "advanced": "Sécurité",
       "cliApps": "Apps CLI",
@@ -84,6 +85,26 @@
       "automations": "Automatisations",
       "skills": "Compétences",
       "personalization": "Personnalisation"
+    },
+    "archived": {
+      "search": "Rechercher dans les discussions archivées",
+      "allProjects": "Tous les projets",
+      "noProjectChats": "Discussions sans projet",
+      "deleteAll": "Supprimer toutes les conversations archivées",
+      "deleteProject": "Supprimer les discussions archivées de ce projet",
+      "deleteConfirm": "Supprimer les conversations archivées",
+      "empty": "Aucune conversation archivée.",
+      "emptyFiltered": "Aucune conversation archivée ne correspond aux filtres.",
+      "confirmDescription": "Cela supprime uniquement les conversations archivées. Les fichiers du projet sur disque ne seront pas supprimés et les conversations non archivées ne seront pas affectées.",
+      "chatCount_one": "{{count}} discussion",
+      "chatCount_other": "{{count}} discussions",
+      "moreProjectActions": "Plus d’actions pour {{project}}",
+      "actionsFor": "Actions pour {{title}}",
+      "unarchiveChat": "Désarchiver {{title}}",
+      "deleteChat": "Supprimer {{title}}",
+      "deleteAllTitle": "Supprimer toutes les conversations archivées ?",
+      "deleteProjectTitle": "Supprimer les conversations archivées de ce projet ?",
+      "deleteChatTitle": "Supprimer {{title}} ?"
     },
     "sections": {
       "interface": "Interface utilisateur",
@@ -683,6 +704,8 @@
     "collapsed": "{{count}} discussions masquées",
     "showLess": "Afficher moins",
     "actions": "Actions de la discussion {{title}}",
+    "addProject": "Ajouter un projet",
+    "newPlainChat": "Nouvelle discussion sans projet",
     "newInProject": "Démarrer une nouvelle discussion dans {{project}}",
     "activity": {
       "running": "Agent running",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "Choose a local sidebar name for this project.",
     "renameProjectPlaceholder": "Project name",
     "renameSave": "Save",
+    "removeFromSidebar": "Retirer de la barre lat?rale",
+    "projectArchiveTitle": "Archiver {{count}} discussion ?",
+    "projectArchiveTitle_other": "Archiver {{count}} discussions ?",
+    "projectArchiveDescription": "Ces discussions seront archiv?es. Vous les retrouverez plus tard dans Param?tres, sous Conversations archiv?es.",
+    "projectArchiveConfirm": "Tout archiver",
+    "projectRemoveTitle": "Retirer {{project}} de la barre lat?rale ?",
+    "projectRemoveDescription": "Cela retire l?entr?e du projet de la barre lat?rale. Les fichiers sur disque ne seront pas supprim?s et les discussions du projet ne seront ni supprim?es ni archiv?es.",
+    "projectRemoveConfirm": "Retirer de la barre lat?rale",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "showArchived": "Show archived",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
+      "workspace": "Espace de travail",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "Espace de travail par défaut",
+      "searchProjects": "Rechercher des projets",
+      "noProject": "Aucun projet",
+      "noProjectDescription": "Envoyer comme discussion sans projet",
+      "noProjectResults": "Aucun projet correspondant.",
+      "newProject": "Nouveau projet",
+      "useExistingFolder": "Utiliser un dossier existant",
       "manual": "Coller un chemin",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "Utiliser le chemin",
+      "useFolder": "Utiliser le dossier",
       "absolutePathRequired": "Saisissez un chemin absolu de dossier sur cette machine."
     }
   }

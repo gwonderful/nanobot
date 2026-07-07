@@ -300,6 +300,7 @@ export const ChatList = memo(function ChatList({
                       ? relativeTime(s.updatedAt ?? s.createdAt)
                       : "";
                     const projectMode = group.kind === "project";
+                    const actionsLabel = t("chat.actions", { title });
                     const activityState = running.has(s.chatId)
                       ? "running"
                       : updated.has(s.chatId) && !active
@@ -362,7 +363,8 @@ export const ChatList = memo(function ChatList({
                                 "focus-visible:opacity-100",
                                 active && "opacity-100",
                               )}
-                              aria-label={t("chat.actions", { title })}
+                              aria-label={actionsLabel}
+                              title={actionsLabel}
                             >
                               <MoreHorizontal className="h-3.5 w-3.5" />
                             </DropdownMenuTrigger>
@@ -769,6 +771,7 @@ function ModelSessionRow({
     : "";
   const activityState = isRunning ? "running" : isUpdated && !active ? "updated" : null;
   const pinLabel = `${isPinned ? t("chat.unpin") : t("chat.pin")} ${title}`;
+  const actionsLabel = t("chat.actions", { title });
 
   return (
     <li className="min-w-0">
@@ -825,9 +828,9 @@ function ModelSessionRow({
           title={pinLabel}
           onClick={() => onTogglePin(session.key)}
           className={cn(
-            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-0 transition-opacity",
-            "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
-            (active || isPinned) && "opacity-100",
+            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-100 transition-opacity sm:opacity-0",
+            "hover:bg-sidebar-accent hover:text-sidebar-foreground sm:group-hover:opacity-100 focus-visible:opacity-100",
+            (active || isPinned) && "opacity-100 sm:opacity-100",
           )}
         >
           {isPinned ? (
@@ -844,7 +847,8 @@ function ModelSessionRow({
               "focus-visible:opacity-100",
               active && "opacity-100",
             )}
-            aria-label={t("chat.actions", { title })}
+            aria-label={actionsLabel}
+            title={actionsLabel}
           >
             <MoreHorizontal className="h-3.5 w-3.5" />
           </DropdownMenuTrigger>
@@ -926,7 +930,7 @@ function ProjectActionConfirmDialog({
             {isArchive
               ? t("chat.projectArchiveDescription", {
                   defaultValue:
-                    "These chats will be archived. You can find them later in Settings under Archived chats.",
+                    "These chats will be archived. You can find them later in Settings under Archived conversations.",
                 })
               : t("chat.projectRemoveDescription", {
                   defaultValue:
@@ -993,6 +997,7 @@ function ProjectGroupHeader({
   const hasMenu = Boolean(
     onRequestRename || onTogglePin || onRequestArchive || onRequestRemove,
   );
+  const actionsLabel = t("chat.actions", { title: label });
 
   return (
     <div
@@ -1020,7 +1025,8 @@ function ProjectGroupHeader({
               "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
               "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
             )}
-            aria-label={t("chat.actions", { title: label })}
+            aria-label={actionsLabel}
+            title={actionsLabel}
             onClick={(event) => event.stopPropagation()}
           >
             <MoreHorizontal className="h-3.5 w-3.5" />

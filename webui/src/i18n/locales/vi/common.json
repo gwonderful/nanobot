@@ -76,6 +76,7 @@
       "image": "Hình ảnh",
       "voice": "Giọng nói",
       "browser": "Trang web",
+      "archived": "Cuộc trò chuyện đã lưu trữ",
       "runtime": "Hệ thống",
       "advanced": "Bảo mật",
       "cliApps": "Ứng dụng CLI",
@@ -84,6 +85,26 @@
       "automations": "Tự động hóa",
       "skills": "Kỹ năng",
       "personalization": "Cá nhân hóa"
+    },
+    "archived": {
+      "search": "Tìm cuộc trò chuyện đã lưu trữ",
+      "allProjects": "Tất cả dự án",
+      "noProjectChats": "Cuộc trò chuyện không có dự án",
+      "deleteAll": "Xóa tất cả cuộc trò chuyện đã lưu trữ",
+      "deleteProject": "Xóa các cuộc trò chuyện đã lưu trữ của dự án này",
+      "deleteConfirm": "Xóa cuộc trò chuyện đã lưu trữ",
+      "empty": "Không có cuộc trò chuyện đã lưu trữ.",
+      "emptyFiltered": "Không có cuộc trò chuyện đã lưu trữ khớp bộ lọc.",
+      "confirmDescription": "Thao tác này chỉ xóa các cuộc trò chuyện đã lưu trữ. Tệp dự án trên đĩa sẽ không bị xóa và các cuộc trò chuyện chưa lưu trữ không bị ảnh hưởng.",
+      "chatCount_one": "{{count}} cuộc trò chuyện",
+      "chatCount_other": "{{count}} cuộc trò chuyện",
+      "moreProjectActions": "Thao tác khác cho {{project}}",
+      "actionsFor": "Thao tác cho {{title}}",
+      "unarchiveChat": "Bỏ lưu trữ {{title}}",
+      "deleteChat": "Xóa {{title}}",
+      "deleteAllTitle": "Xóa tất cả cuộc trò chuyện đã lưu trữ?",
+      "deleteProjectTitle": "Xóa cuộc trò chuyện đã lưu trữ của dự án này?",
+      "deleteChatTitle": "Xóa {{title}}?"
     },
     "sections": {
       "interface": "Giao diện",
@@ -683,6 +704,8 @@
     "collapsed": "Đã thu gọn {{count}} cuộc trò chuyện",
     "showLess": "Thu gọn",
     "actions": "Tác vụ cho cuộc trò chuyện {{title}}",
+    "addProject": "Th?m d? ?n",
+    "newPlainChat": "Cu?c tr? chuy?n m?i kh?ng c? d? ?n",
     "newInProject": "Bắt đầu cuộc trò chuyện mới trong {{project}}",
     "activity": {
       "running": "Agent running",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "Choose a local sidebar name for this project.",
     "renameProjectPlaceholder": "Project name",
     "renameSave": "Save",
+    "removeFromSidebar": "??a ra kh?i thanh b?n",
+    "projectArchiveTitle": "L?u tr? {{count}} cu?c tr? chuy?n?",
+    "projectArchiveTitle_other": "L?u tr? {{count}} cu?c tr? chuy?n?",
+    "projectArchiveDescription": "C?c cu?c tr? chuy?n n?y s? ???c l?u tr?. B?n c? th? t?m l?i trong C?i ??t, m?c Cu?c tr? chuy?n ?? l?u tr?.",
+    "projectArchiveConfirm": "L?u tr? t?t c?",
+    "projectRemoveTitle": "??a {{project}} ra kh?i thanh b?n?",
+    "projectRemoveDescription": "Thao t?c n?y ??a m?c d? ?n ra kh?i thanh b?n. T?p tr?n ??a s? kh?ng b? x?a v? c?c cu?c tr? chuy?n c?a d? ?n s? kh?ng b? x?a ho?c l?u tr?.",
+    "projectRemoveConfirm": "??a ra kh?i thanh b?n",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "showArchived": "Show archived",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "Pinned",
       "all": "Chats",
+      "workspace": "Workspace",
       "projects": "Projects",
       "today": "Today",
       "yesterday": "Yesterday",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "Workspace mặc định",
+      "searchProjects": "T?m d? ?n",
+      "noProject": "Kh?ng d?ng d? ?n",
+      "noProjectDescription": "G?i nh? cu?c tr? chuy?n th??ng",
+      "noProjectResults": "Kh?ng c? d? ?n kh?p.",
+      "newProject": "D? ?n m?i",
+      "useExistingFolder": "D?ng th? m?c hi?n c?",
       "manual": "Dán đường dẫn",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "Dùng đường dẫn",
+      "useFolder": "D?ng th? m?c",
       "absolutePathRequired": "Nhập đường dẫn thư mục tuyệt đối trên máy này."
     }
   }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ArchiveRestore,
   Ellipsis,
@@ -62,6 +63,7 @@ export function ArchivedConversationsSettings({
   onUnarchiveChat,
   onDeleteArchivedChats,
 }: ArchivedConversationsSettingsProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [projectFilter, setProjectFilter] = useState(ALL_PROJECTS);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
@@ -75,12 +77,24 @@ export function ArchivedConversationsSettings({
     () => groups.flatMap((group) => group.sessions.map((session) => session.key)),
     [groups],
   );
+  const allProjectsLabel = t("settings.archived.allProjects", {
+    defaultValue: "All projects",
+  });
+  const noProjectChatsLabel = t("settings.archived.noProjectChats", {
+    defaultValue: "No project chats",
+  });
+  const searchLabel = t("settings.archived.search", {
+    defaultValue: "Search archived chats",
+  });
+  const deleteAllLabel = t("settings.archived.deleteAll", {
+    defaultValue: "Delete all archived conversations",
+  });
   const filterOptions = useMemo(
     () => [
-      { key: ALL_PROJECTS, label: "All projects", detail: null as string | null },
+      { key: ALL_PROJECTS, label: allProjectsLabel, detail: null as string | null },
       ...groups.map((group) => {
         if (!group.projectPath) {
-          return { key: NO_PROJECT, label: "No project chats", detail: null };
+          return { key: NO_PROJECT, label: noProjectChatsLabel, detail: null };
         }
         const option = optionByKey.get(group.key);
         return {
@@ -90,10 +104,10 @@ export function ArchivedConversationsSettings({
         };
       }),
     ],
-    [groups, optionByKey],
+    [allProjectsLabel, groups, noProjectChatsLabel, optionByKey],
   );
   const activeFilterLabel =
-    filterOptions.find((option) => option.key === projectFilter)?.label ?? "All projects";
+    filterOptions.find((option) => option.key === projectFilter)?.label ?? allProjectsLabel;
   const normalizedQuery = query.trim().toLocaleLowerCase("en");
   const visibleGroups = groups
     .map((group) => ({
@@ -144,8 +158,8 @@ export function ArchivedConversationsSettings({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            aria-label="Search archived chats"
-            placeholder="Search archived chats"
+            aria-label={searchLabel}
+            placeholder={searchLabel}
             className="h-8 border-0 bg-transparent px-0 text-[13px] shadow-none focus-visible:ring-0"
           />
         </div>
@@ -184,14 +198,18 @@ export function ArchivedConversationsSettings({
           className="h-10 rounded-full bg-destructive/10 px-3 text-[13px] font-semibold text-destructive shadow-none hover:bg-destructive/15"
         >
           <Trash2 className="mr-2 h-4 w-4" aria-hidden />
-          Delete all archived conversations
+          {deleteAllLabel}
         </Button>
       </div>
 
       {total === 0 ? (
-        <EmptyArchivedState text="No archived conversations." />
+        <EmptyArchivedState text={t("settings.archived.empty", {
+          defaultValue: "No archived conversations.",
+        })} />
       ) : visibleGroups.length === 0 ? (
-        <EmptyArchivedState text="No archived conversations match your filters." />
+        <EmptyArchivedState text={t("settings.archived.emptyFiltered", {
+          defaultValue: "No archived conversations match your filters.",
+        })} />
       ) : (
         <div className="overflow-hidden rounded-[22px] border border-border/45 bg-card/86 shadow-[0_18px_65px_rgba(15,23,42,0.075)]">
           {visibleGroups.map((group) => {
@@ -209,7 +227,11 @@ export function ArchivedConversationsSettings({
                       {group.label}
                     </div>
                     <div className="text-[12px] text-muted-foreground">
-                      {group.sessions.length} {group.sessions.length === 1 ? "chat" : "chats"}
+                      {t("settings.archived.chatCount", {
+                        count: group.sessions.length,
+                        defaultValue:
+                          group.sessions.length === 1 ? "{{count}} chat" : "{{count}} chats",
+                      })}
                     </div>
                   </div>
                   {group.projectPath ? (
@@ -219,7 +241,14 @@ export function ArchivedConversationsSettings({
                           type="button"
                           variant="ghost"
                           size="icon"
-                          aria-label={`More actions for ${group.label}`}
+                          aria-label={t("settings.archived.moreProjectActions", {
+                            project: group.label,
+                            defaultValue: "More actions for {{project}}",
+                          })}
+                          title={t("settings.archived.moreProjectActions", {
+                            project: group.label,
+                            defaultValue: "More actions for {{project}}",
+                          })}
                           className="h-8 w-8 rounded-full text-muted-foreground hover:bg-background/80 hover:text-foreground"
                         >
                           <Ellipsis className="h-4 w-4" aria-hidden />
@@ -231,7 +260,9 @@ export function ArchivedConversationsSettings({
                           className="cursor-default rounded-[12px] text-destructive focus:text-destructive"
                         >
                           <Trash2 className="mr-2 h-4 w-4" aria-hidden />
-                          Delete this project's archived chats
+                          {t("settings.archived.deleteProject", {
+                            defaultValue: "Delete this project's archived chats",
+                          })}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -275,6 +306,20 @@ function ArchivedConversationRow({
   onUnarchiveChat?: (key: string) => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
+  const actionsLabel = t("settings.archived.actionsFor", {
+    title,
+    defaultValue: "Actions for {{title}}",
+  });
+  const unarchiveLabel = t("settings.archived.unarchiveChat", {
+    title,
+    defaultValue: "Unarchive {{title}}",
+  });
+  const deleteLabel = t("settings.archived.deleteChat", {
+    title,
+    defaultValue: "Delete {{title}}",
+  });
+
   return (
     <div
       data-archived-row
@@ -290,10 +335,10 @@ function ArchivedConversationRow({
       </div>
       <div
         role="group"
-        aria-label={`Actions for ${title}`}
+        aria-label={actionsLabel}
         className={cn(
-          "flex shrink-0 items-center gap-1 opacity-0 transition-opacity",
-          "group-hover:opacity-100 group-focus-within:opacity-100",
+          "flex shrink-0 items-center gap-1 opacity-100 transition-opacity sm:opacity-0",
+          "sm:group-hover:opacity-100 group-focus-within:opacity-100",
         )}
       >
         <Button
@@ -301,7 +346,8 @@ function ArchivedConversationRow({
           variant="ghost"
           size="icon"
           disabled={!onUnarchiveChat}
-          aria-label={`Unarchive ${title}`}
+          aria-label={unarchiveLabel}
+          title={unarchiveLabel}
           onClick={() => onUnarchiveChat?.(session.key)}
           className="h-8 w-8 rounded-full text-muted-foreground hover:bg-background/85 hover:text-foreground"
         >
@@ -311,7 +357,8 @@ function ArchivedConversationRow({
           type="button"
           variant="ghost"
           size="icon"
-          aria-label={`Delete ${title}`}
+          aria-label={deleteLabel}
+          title={deleteLabel}
           onClick={onDelete}
           className="h-8 w-8 rounded-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
         >
@@ -341,12 +388,20 @@ function DeleteArchivedDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const { t } = useTranslation();
   const title = pending
     ? pending.kind === "all"
-      ? "Delete all archived conversations?"
+      ? t("settings.archived.deleteAllTitle", {
+          defaultValue: "Delete all archived conversations?",
+        })
       : pending.kind === "group"
-        ? "Delete this project's archived conversations?"
-        : `Delete ${pending.label}?`
+        ? t("settings.archived.deleteProjectTitle", {
+            defaultValue: "Delete this project's archived conversations?",
+          })
+        : t("settings.archived.deleteChatTitle", {
+            title: pending.label,
+            defaultValue: "Delete {{title}}?",
+          })
     : "";
   return (
     <AlertDialog open={!!pending} onOpenChange={(open) => (!open ? onCancel() : undefined)}>
@@ -354,20 +409,24 @@ function DeleteArchivedDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            This only deletes archived conversations. It will not delete project files on disk or
-            affect unarchived conversations.
+            {t("settings.archived.confirmDescription", {
+              defaultValue:
+                "This only deletes archived conversations. It will not delete project files on disk or affect unarchived conversations.",
+            })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={deleting} onClick={onCancel}>
-            Cancel
+            {t("deleteConfirm.cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
             disabled={deleting}
             onClick={onConfirm}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Delete archived conversations
+            {t("settings.archived.deleteConfirm", {
+              defaultValue: "Delete archived conversations",
+            })}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

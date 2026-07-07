@@ -76,6 +76,7 @@
       "image": "图片",
       "voice": "语音",
       "browser": "网页",
+      "archived": "已归档对话",
       "cliApps": "CLI 应用",
       "mcp": "MCP",
       "runtime": "系统",
@@ -84,6 +85,26 @@
       "automations": "自动任务",
       "skills": "技能",
       "personalization": "个性化"
+    },
+    "archived": {
+      "search": "搜索已归档对话",
+      "allProjects": "所有项目",
+      "noProjectChats": "无项目对话",
+      "deleteAll": "删除全部已归档对话",
+      "deleteProject": "删除此项目的已归档对话",
+      "deleteConfirm": "删除已归档对话",
+      "empty": "没有已归档对话。",
+      "emptyFiltered": "没有匹配筛选条件的已归档对话。",
+      "confirmDescription": "只会删除已归档对话，不会删除磁盘上的项目文件，也不会影响未归档对话。",
+      "chatCount_one": "{{count}} 个对话",
+      "chatCount_other": "{{count}} 个对话",
+      "moreProjectActions": "{{project}} 的更多操作",
+      "actionsFor": "{{title}} 的操作",
+      "unarchiveChat": "取消归档 {{title}}",
+      "deleteChat": "删除 {{title}}",
+      "deleteAllTitle": "删除全部已归档对话？",
+      "deleteProjectTitle": "删除此项目的已归档对话？",
+      "deleteChatTitle": "删除 {{title}}？"
     },
     "sections": {
       "interface": "界面",
@@ -683,6 +704,8 @@
     "collapsed": "已折叠 {{count}} 个对话",
     "showLess": "收起",
     "actions": "“{{title}}” 的会话操作",
+    "addProject": "添加项目",
+    "newPlainChat": "新建纯对话",
     "newInProject": "在 {{project}} 中开始新对话",
     "activity": {
       "running": "Agent 正在运行",
@@ -699,6 +722,14 @@
     "renameProjectDescription": "为这个项目设置一个仅用于 WebUI 侧边栏的名称。",
     "renameProjectPlaceholder": "项目名称",
     "renameSave": "保存",
+    "removeFromSidebar": "移出侧边栏",
+    "projectArchiveTitle": "归档 {{count}} 个对话？",
+    "projectArchiveTitle_other": "归档 {{count}} 个对话？",
+    "projectArchiveDescription": "这些对话将被归档。之后可以在设置的已归档对话中找到。",
+    "projectArchiveConfirm": "全部归档",
+    "projectRemoveTitle": "将 {{project}} 移出侧边栏？",
+    "projectRemoveDescription": "这会从侧边栏移除该项目入口。磁盘上的文件不会删除，项目对话也不会被删除或归档。",
+    "projectRemoveConfirm": "移出侧边栏",
     "archive": "归档",
     "unarchive": "取消归档",
     "showArchived": "显示归档",
@@ -708,6 +739,7 @@
     "groups": {
       "pinned": "置顶",
       "all": "对话",
+      "workspace": "工作空间",
       "projects": "项目",
       "today": "今天",
       "yesterday": "昨天",
@@ -1093,9 +1125,16 @@
   "workspace": {
     "dialog": {
       "defaultProject": "默认工作区",
+      "searchProjects": "搜索项目",
+      "noProject": "不使用项目",
+      "noProjectDescription": "作为纯对话发送",
+      "noProjectResults": "没有匹配的项目。",
+      "newProject": "新建项目",
+      "useExistingFolder": "使用现有文件夹",
       "manual": "粘贴路径",
       "manualPlaceholder": "/Users/name/project",
       "usePath": "使用路径",
+      "useFolder": "使用文件夹",
       "absolutePathRequired": "请输入这台机器上的绝对文件夹路径。"
     }
   }
