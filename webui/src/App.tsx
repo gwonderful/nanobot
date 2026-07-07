@@ -32,6 +32,14 @@ import {
 import { displayTitle } from "@/lib/chat-groups";
 import { deriveTitle } from "@/lib/format";
 import { NanobotClient } from "@/lib/nanobot-client";
+import { buildSidebarModel } from "@/lib/sidebar-model";
+import {
+  addExplicitProject,
+  archiveProject,
+  removeProject,
+  toggleProjectPin,
+  unarchiveChat,
+} from "@/lib/sidebar-state-actions";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import type {
   ChatSummary,
@@ -655,6 +663,15 @@ function Shell({
   }, [sessions, activeKey]);
   const runningChatIdList = useMemo(() => Array.from(runningChatIds), [runningChatIds]);
   const updatedChatIdList = useMemo(() => Array.from(updatedChatIds), [updatedChatIds]);
+  const defaultWorkspacePath = workspaces?.default_scope.project_path ?? null;
+  const sidebarModel = useMemo(
+    () => buildSidebarModel({
+      sessions,
+      sidebarState,
+      defaultWorkspacePath,
+    }),
+    [defaultWorkspacePath, sessions, sidebarState],
+  );
   const activeChatId = activeSession?.chatId ?? null;
   useEffect(() => {
     activeChatIdRef.current = activeChatId;
@@ -1136,6 +1153,79 @@ function Shell({
     }));
   }, [updateSidebarState]);
 
+  const onAddProject = useCallback(
+    (scope: WorkspaceScopePayload) => {
+      const normalized = normalizeWorkspaceScope(scope);
+      void updateSidebarState((current) => addExplicitProject(current, normalized));
+    },
+    [updateSidebarState],
+  );
+
+  const onToggleProjectPin = useCallback(
+    (projectKey: string) => {
+      void updateSidebarState((current) => toggleProjectPin(current, projectKey));
+    },
+    [updateSidebarState],
+  );
+
+  const onArchiveProject = useCallback(
+    (projectKey: string) => {
+      void updateSidebarState((current) => archiveProject(current, {
+        projectKey,
+        sessions,
+        defaultWorkspacePath,
+      }));
+    },
+    [defaultWorkspacePath, sessions, updateSidebarState],
+  );
+
+  const onRemoveProject = useCallback(
+    (projectKey: string) => {
+      void updateSidebarState((current) => removeProject(current, projectKey));
+    },
+    [updateSidebarState],
+  );
+
+  const onUnarchiveChat = useCallback(
+    (key: string) => {
+      const session = sessions.find((item) => item.key === key);
+      if (!session) return;
+      void updateSidebarState((current) => unarchiveChat(
+        current,
+        session,
+        defaultWorkspacePath,
+      ));
+    },
+    [defaultWorkspacePath, sessions, updateSidebarState],
+  );
+
+  const onDeleteArchivedChats = useCallback(
+    async (keys: string[]) => {
+      const deleted = new Set<string>();
+      for (const key of keys) {
+        const result = await deleteChat(key);
+        if (result.deleted) deleted.add(key);
+      }
+      if (!deleted.size) return;
+      void updateSidebarState((current) => {
+        const titleOverrides = { ...current.title_overrides };
+        const tagsByKey = { ...current.tags_by_key };
+        for (const key of deleted) {
+          delete titleOverrides[key];
+          delete tagsByKey[key];
+        }
+        return {
+          ...current,
+          pinned_keys: current.pinned_keys.filter((key) => !deleted.has(key)),
+          archived_keys: current.archived_keys.filter((key) => !deleted.has(key)),
+          title_overrides: titleOverrides,
+          tags_by_key: tagsByKey,
+        };
+      });
+    },
+    [deleteChat, updateSidebarState],
+  );
+
   const onOpenSessionSearch = useCallback(() => {
     setMobileSidebarOpen(false);
     setSessionSearchOpen(true);
@@ -1398,6 +1488,12 @@ function Shell({
     onToggleGroup,
     onRequestRenameProject,
     onNewChatInProject,
+    onAddProject,
+    onToggleProjectPin,
+    onArchiveProject,
+    onRemoveProject,
+    onUnarchiveChat,
+    onDeleteArchivedChats,
     onOpenSettings,
     onOpenApps,
     onOpenAutomations,
@@ -1414,8 +1510,9 @@ function Shell({
     updatedChatIds: updatedChatIdList,
     viewState: sidebarState.view,
     showArchived: sidebarState.view.show_archived,
-    archivedCount: sidebarState.archived_keys.length,
-    defaultWorkspacePath: workspaces?.default_scope.project_path ?? null,
+    archivedCount: sidebarModel.archivedCount,
+    defaultWorkspacePath,
+    sidebarModel,
   };
   const hostSidebarCollapsed = showHostChrome && !hostSidebarOpen;
   const showHostSidebarPreview =
