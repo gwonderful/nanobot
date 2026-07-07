@@ -151,6 +151,16 @@ const LOCALIZED_WORKSPACE_COPY_KEYS = [
   "workspace.dialog.useFolder",
   "workspace.dialog.absolutePathRequired",
 ];
+const SIDEBAR_PROJECT_ACTION_KEYS = [
+  "chat.removeFromSidebar",
+  "chat.projectArchiveTitle",
+  "chat.projectArchiveTitle_other",
+  "chat.projectArchiveDescription",
+  "chat.projectArchiveConfirm",
+  "chat.projectRemoveTitle",
+  "chat.projectRemoveDescription",
+  "chat.projectRemoveConfirm",
+];
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
@@ -322,6 +332,18 @@ describe("webui i18n", () => {
       );
 
       expect({ locale, leaked }).toEqual({ locale, leaked: [] });
+    }
+  });
+
+  it("does not ship mojibake in sidebar project action copy", () => {
+    for (const [locale, resource] of Object.entries(resources)) {
+      const flat = flattenResource(resource.common);
+      const mojibake = SIDEBAR_PROJECT_ACTION_KEYS
+        .map((key) => [key, flat.get(key)] as const)
+        .filter(([, value]) => typeof value === "string")
+        .filter(([, value]) => /\?{2,}|[A-Za-z]\?[A-Za-z]/.test(value as string));
+
+      expect({ locale, mojibake }).toEqual({ locale, mojibake: [] });
     }
   });
 

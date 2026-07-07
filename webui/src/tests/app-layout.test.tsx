@@ -1235,6 +1235,45 @@ describe("App layout", () => {
     );
   });
 
+  it("opens an in-app add-project flow from the workspace header without a host picker", async () => {
+    let persistedSidebarState = sidebarState();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(async (url: string | URL | Request) => {
+        const href = String(url);
+        if (href === "/api/workspaces") {
+          return { ok: true, json: async () => workspacesPayload() };
+        }
+        if (href === "/api/webui/sidebar-state") {
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        if (href.startsWith("/api/webui/sidebar-state/update?")) {
+          const encoded = new URLSearchParams(href.split("?", 2)[1]).get("state");
+          persistedSidebarState = JSON.parse(encoded ?? "{}");
+          return { ok: true, json: async () => persistedSidebarState };
+        }
+        return { ok: false, status: 404 };
+      }),
+    );
+
+    render(<App />);
+
+    await waitFor(() => expect(connectSpy).toHaveBeenCalled());
+    const sidebar = screen.getByRole("navigation", { name: "Sidebar navigation" });
+    fireEvent.click(within(sidebar).getByRole("button", { name: "Add project" }));
+
+    const dialog = await screen.findByRole("dialog", { name: "Add project" });
+    fireEvent.change(within(dialog).getByLabelText("Use existing folder"), {
+      target: { value: "/Users/test/sidebar-project" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Use folder" }));
+
+    expect(createChatSpy).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(within(sidebar).getByRole("region", { name: "sidebar-project" })).toBeInTheDocument(),
+    );
+  });
+
   it("shows running and completed session indicators in the sidebar", async () => {
     mockSessions = [
       {

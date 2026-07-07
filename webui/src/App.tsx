@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type FormEvent,
   type ReactNode,
 } from "react";
 import { Moon, PanelLeft, Sun } from "lucide-react";
@@ -14,6 +15,13 @@ import { Sidebar } from "@/components/Sidebar";
 import { SessionSearchDialog } from "@/components/SessionSearchDialog";
 import { SettingsView, type SettingsSectionKey } from "@/components/settings/SettingsView";
 import { ThreadShell } from "@/components/thread/ThreadShell";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 import { useSessions } from "@/hooks/useSessions";
@@ -57,7 +65,7 @@ import {
   getHostApi,
   toRuntimeSurface,
 } from "@/lib/runtime";
-import { projectNameFromPath } from "@/lib/workspace";
+import { isAbsoluteWorkspacePath, projectNameFromPath } from "@/lib/workspace";
 
 type BootState =
   | { status: "loading" }
@@ -303,6 +311,132 @@ function normalizeWorkspaceScope(scope: WorkspaceScopePayload): WorkspaceScopePa
     access_mode: accessMode,
     restrict_to_workspace: accessMode === "restricted",
   };
+}
+
+function AddProjectDialog({
+  open,
+  baseScope,
+  onOpenChange,
+  onAddProject,
+}: {
+  open: boolean;
+  baseScope: WorkspaceScopePayload | null;
+  onOpenChange: (open: boolean) => void;
+  onAddProject: (scope: WorkspaceScopePayload) => void;
+}) {
+  const { t } = useTranslation();
+  const [pathDraft, setPathDraft] = useState("");
+  const [pathError, setPathError] = useState<string | null>(null);
+  const [pickingFolder, setPickingFolder] = useState(false);
+  const hostApi = getHostApi();
+  const title = t("chat.addProject", { defaultValue: "Add project" });
+  const useExistingFolder = t("workspace.dialog.useExistingFolder", {
+    defaultValue: "Use existing folder",
+  });
+
+  useEffect(() => {
+    if (open) {
+      setPathDraft("");
+      setPathError(null);
+    }
+  }, [open]);
+
+  const addProjectPath = useCallback(
+    (projectPath: string) => {
+      const trimmed = projectPath.trim();
+      if (!baseScope || !trimmed || !isAbsoluteWorkspacePath(trimmed)) {
+        setPathError(t("workspace.dialog.absolutePathRequired"));
+        return;
+      }
+      onAddProject(normalizeWorkspaceScope({
+        ...baseScope,
+        project_path: trimmed,
+        project_name: projectNameFromPath(trimmed),
+      }));
+      setPathDraft("");
+      setPathError(null);
+      onOpenChange(false);
+    },
+    [baseScope, onAddProject, onOpenChange, t],
+  );
+
+  const onSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      addProjectPath(pathDraft);
+    },
+    [addProjectPath, pathDraft],
+  );
+
+  const pickNativeFolder = useCallback(async () => {
+    if (!hostApi || pickingFolder) return;
+    setPickingFolder(true);
+    try {
+      const picked = await hostApi.pickFolder();
+      if (picked) addProjectPath(picked);
+    } catch (err) {
+      setPathError((err as Error).message);
+    } finally {
+      setPickingFolder(false);
+    }
+  }, [addProjectPath, hostApi, pickingFolder]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="w-[min(calc(100vw-2rem),25rem)] rounded-[24px] border border-border/70 bg-card/95 p-5 shadow-[0_24px_80px_rgba(15,23,42,0.20)] backdrop-blur-xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{useExistingFolder}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          {hostApi ? (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={pickingFolder || !baseScope}
+              onClick={() => void pickNativeFolder()}
+              className="h-auto w-full justify-start rounded-[16px] px-3 py-2.5 text-left"
+            >
+              <span className="min-w-0">
+                <span className="block text-[13px] font-semibold">
+                  {t("workspace.dialog.newProject", { defaultValue: "New project" })}
+                </span>
+                <span className="block text-[11.5px] font-normal text-muted-foreground">
+                  {useExistingFolder}
+                </span>
+              </span>
+            </Button>
+          ) : null}
+          <form className="flex items-center gap-2" onSubmit={onSubmit}>
+            <Input
+              value={pathDraft}
+              onChange={(event) => {
+                setPathDraft(event.target.value);
+                setPathError(null);
+              }}
+              placeholder={t("workspace.dialog.manualPlaceholder")}
+              aria-label={useExistingFolder}
+              disabled={!baseScope}
+              autoFocus
+              className="h-9 rounded-full border-border/55 bg-background/80 px-3 text-[12.5px]"
+            />
+            <Button
+              type="submit"
+              disabled={!baseScope || !pathDraft.trim()}
+              className="h-9 shrink-0 rounded-full px-3 text-[12px]"
+            >
+              {t("workspace.dialog.useFolder", { defaultValue: "Use folder" })}
+            </Button>
+          </form>
+          {pathError ? (
+            <p role="alert" className="px-1 text-[11.5px] font-medium text-destructive">
+              {pathError}
+            </p>
+          ) : null}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 function HostChrome({
@@ -570,6 +704,7 @@ function Shell({
   const [hostSidebarPreviewOpen, setHostSidebarPreviewOpen] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [sessionSearchOpen, setSessionSearchOpen] = useState(false);
+  const [addProjectDialogOpen, setAddProjectDialogOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<{
     key: string;
     label: string;
@@ -1169,19 +1304,10 @@ function Shell({
     [updateSidebarState],
   );
 
-  const onRequestAddProject = useCallback(async () => {
-    const hostApi = getHostApi();
-    const base = workspaces?.default_scope ?? activeWorkspaceScope;
-    if (!hostApi || !base) return;
-    const picked = await hostApi.pickFolder();
-    if (!picked) return;
-    onAddProject({
-      ...base,
-      project_path: picked,
-      project_name: projectNameFromPath(picked),
-      restrict_to_workspace: base.access_mode === "restricted",
-    });
-  }, [activeWorkspaceScope, onAddProject, workspaces?.default_scope]);
+  const onRequestAddProject = useCallback(() => {
+    setAddProjectDialogOpen(true);
+    setMobileSidebarOpen(false);
+  }, []);
 
   const onToggleProjectPin = useCallback(
     (projectKey: string) => {
@@ -1763,6 +1889,12 @@ function Shell({
           placeholder={t("chat.renameProjectPlaceholder")}
           onCancel={() => setPendingProjectRename(null)}
           onConfirm={onConfirmProjectRename}
+        />
+        <AddProjectDialog
+          open={addProjectDialogOpen}
+          baseScope={workspaces?.default_scope ?? activeWorkspaceScope}
+          onOpenChange={setAddProjectDialogOpen}
+          onAddProject={onAddProject}
         />
         {restartToast ? (
           <div

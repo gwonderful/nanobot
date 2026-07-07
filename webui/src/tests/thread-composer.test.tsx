@@ -770,7 +770,7 @@ describe("ThreadComposer", () => {
     expect(screen.getByText(".../client-b/app")).toBeInTheDocument();
   });
 
-  it("uses the native folder picker from New project without selecting immediately", async () => {
+  it("uses the native folder picker from New project and selects the added project", async () => {
     const onWorkspaceScopeChange = vi.fn();
     const onAddProject = vi.fn();
     const pickFolder = vi.fn().mockResolvedValue("/Users/test/native-project");
