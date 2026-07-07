@@ -282,6 +282,13 @@ export interface SidebarViewState {
   sort: SidebarSortMode;
 }
 
+export interface SidebarProjectEntryPayload {
+  path: string;
+  name?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export interface SidebarStatePayload {
   schema_version: number;
   pinned_keys: string[];
@@ -291,6 +298,9 @@ export interface SidebarStatePayload {
   tags_by_key: Record<string, string[]>;
   collapsed_groups: Record<string, boolean>;
   view: SidebarViewState;
+  pinned_project_keys: string[];
+  removed_project_keys: string[];
+  explicit_projects: Record<string, SidebarProjectEntryPayload>;
   updated_at?: string | null;
 }
 

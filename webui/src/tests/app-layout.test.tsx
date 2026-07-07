@@ -960,12 +960,16 @@ describe("App layout", () => {
       },
     ];
     const initialState = {
-      schema_version: 1,
+      schema_version: 2,
       pinned_keys: ["websocket:chat-b"],
       archived_keys: ["websocket:chat-a"],
       title_overrides: { "websocket:chat-b": "Roadmap" },
+      project_name_overrides: {},
       tags_by_key: {},
       collapsed_groups: {},
+      pinned_project_keys: [],
+      removed_project_keys: [],
+      explicit_projects: {},
       view: {
         density: "comfortable",
         show_previews: false,
@@ -1048,12 +1052,16 @@ describe("App layout", () => {
       },
     ];
     const initialState = {
-      schema_version: 1,
+      schema_version: 2,
       pinned_keys: [],
       archived_keys: [],
       title_overrides: {},
+      project_name_overrides: {},
       tags_by_key: {},
       collapsed_groups: {},
+      pinned_project_keys: [],
+      removed_project_keys: [],
+      explicit_projects: {},
       view: {
         density: "comfortable",
         show_previews: false,

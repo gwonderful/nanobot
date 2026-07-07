@@ -1140,7 +1140,7 @@ async def test_webui_sidebar_state_routes_are_config_dir_scoped(
             headers=auth,
         )
         assert initial.status_code == 200
-        assert initial.json()["schema_version"] == 1
+        assert initial.json()["schema_version"] == 2
         assert initial.json()["pinned_keys"] == []
 
         payload = {

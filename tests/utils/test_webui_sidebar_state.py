@@ -30,6 +30,19 @@ def test_sidebar_state_normalizes_old_or_partial_payload(tmp_path, monkeypatch) 
                 "project_name_overrides": {"/repo": "  Core  ", "bad": ""},
                 "tags_by_key": {"websocket:a": ["work", "work", ""]},
                 "collapsed_groups": {"Earlier": 1},
+                "pinned_project_keys": ["/repo", "/repo", "", 123],
+                "removed_project_keys": ["/old", "", "/old"],
+                "explicit_projects": {
+                    "/repo": {
+                        "path": " /repo ",
+                        "name": "  Core  ",
+                        "created_at": "2026-07-07T00:00:00Z",
+                        "updated_at": 123,
+                    },
+                    "/fallback": {"name": "  Fallback  "},
+                    "": {"path": "/ignored", "name": "Ignored"},
+                    "/bad": "not-object",
+                },
                 "view": {"density": "tiny", "show_archived": True, "sort": "nope"},
             }
         ),
@@ -38,13 +51,29 @@ def test_sidebar_state_normalizes_old_or_partial_payload(tmp_path, monkeypatch) 
 
     state = read_webui_sidebar_state()
 
-    assert state["schema_version"] == 1
+    assert state["schema_version"] == 2
     assert state["pinned_keys"] == ["websocket:a"]
     assert state["archived_keys"] == ["websocket:b"]
     assert state["title_overrides"] == {"websocket:a": "Release notes"}
     assert state["project_name_overrides"] == {"/repo": "Core"}
     assert state["tags_by_key"] == {"websocket:a": ["work"]}
     assert state["collapsed_groups"] == {"Earlier": True}
+    assert state["pinned_project_keys"] == ["/repo"]
+    assert state["removed_project_keys"] == ["/old"]
+    assert state["explicit_projects"] == {
+        "/repo": {
+            "path": "/repo",
+            "name": "Core",
+            "created_at": "2026-07-07T00:00:00Z",
+            "updated_at": None,
+        },
+        "/fallback": {
+            "path": "/fallback",
+            "name": "Fallback",
+            "created_at": None,
+            "updated_at": None,
+        },
+    }
     assert state["view"] == {
         "density": "comfortable",
         "show_previews": False,
@@ -63,6 +92,11 @@ def test_sidebar_state_write_is_scoped_to_config_data_dir(tmp_path, monkeypatch)
             "archived_keys": ["websocket:b"],
             "title_overrides": {"websocket:a": "Release"},
             "project_name_overrides": {"/repo": "Core"},
+            "pinned_project_keys": ["/repo"],
+            "removed_project_keys": ["/old"],
+            "explicit_projects": {
+                "/repo": {"path": "/repo", "name": "Core"},
+            },
             "view": {"density": "compact", "show_previews": True},
         }
     )
@@ -71,6 +105,16 @@ def test_sidebar_state_write_is_scoped_to_config_data_dir(tmp_path, monkeypatch)
     assert state["archived_keys"] == ["websocket:b"]
     assert state["title_overrides"] == {"websocket:a": "Release"}
     assert state["project_name_overrides"] == {"/repo": "Core"}
+    assert state["pinned_project_keys"] == ["/repo"]
+    assert state["removed_project_keys"] == ["/old"]
+    assert state["explicit_projects"] == {
+        "/repo": {
+            "path": "/repo",
+            "name": "Core",
+            "created_at": None,
+            "updated_at": None,
+        }
+    }
     assert state["view"]["density"] == "compact"
     assert state["view"]["show_previews"] is True
     assert webui_sidebar_state_path().is_file()

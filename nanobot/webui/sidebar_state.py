@@ -17,7 +17,7 @@ from loguru import logger
 
 from nanobot.config.paths import get_webui_dir
 
-WEBUI_SIDEBAR_STATE_SCHEMA_VERSION = 1
+WEBUI_SIDEBAR_STATE_SCHEMA_VERSION = 2
 _MAX_STATE_FILE_BYTES = 256 * 1024
 _MAX_LIST_ITEMS = 2_000
 _MAX_MAP_ITEMS = 2_000
@@ -41,6 +41,9 @@ def default_webui_sidebar_state() -> dict[str, Any]:
         "project_name_overrides": {},
         "tags_by_key": {},
         "collapsed_groups": {},
+        "pinned_project_keys": [],
+        "removed_project_keys": [],
+        "explicit_projects": {},
         "view": {
             "density": "comfortable",
             "show_previews": False,
@@ -114,6 +117,27 @@ def _clean_tags_by_key(value: Any) -> dict[str, list[str]]:
     return out
 
 
+def _clean_project_entries(value: Any) -> dict[str, dict[str, Any]]:
+    if not isinstance(value, dict):
+        return {}
+    out: dict[str, dict[str, Any]] = {}
+    for key, raw_entry in list(value.items())[:_MAX_MAP_ITEMS]:
+        cleaned_key = _clean_string(key)
+        if cleaned_key is None or not isinstance(raw_entry, dict):
+            continue
+        cleaned_path = _clean_string(raw_entry.get("path")) or cleaned_key
+        cleaned_name = _clean_string(raw_entry.get("name"), max_len=_MAX_TITLE_LEN)
+        created_at = raw_entry.get("created_at")
+        updated_at = raw_entry.get("updated_at")
+        out[cleaned_key] = {
+            "path": cleaned_path,
+            "name": cleaned_name,
+            "created_at": created_at if isinstance(created_at, str) else None,
+            "updated_at": updated_at if isinstance(updated_at, str) else None,
+        }
+    return out
+
+
 def _clean_view(value: Any) -> dict[str, Any]:
     default = default_webui_sidebar_state()["view"]
     if not isinstance(value, dict):
@@ -130,7 +154,7 @@ def _clean_view(value: Any) -> dict[str, Any]:
 
 
 def normalize_webui_sidebar_state(raw: Any) -> dict[str, Any]:
-    """Return a schema-v1 sidebar state from any older/partial input."""
+    """Return a current sidebar state from any older/partial input."""
     if not isinstance(raw, dict):
         raw = {}
     state = default_webui_sidebar_state()
@@ -142,6 +166,9 @@ def normalize_webui_sidebar_state(raw: Any) -> dict[str, Any]:
     )
     state["tags_by_key"] = _clean_tags_by_key(raw.get("tags_by_key"))
     state["collapsed_groups"] = _clean_bool_map(raw.get("collapsed_groups"))
+    state["pinned_project_keys"] = _clean_string_list(raw.get("pinned_project_keys"))
+    state["removed_project_keys"] = _clean_string_list(raw.get("removed_project_keys"))
+    state["explicit_projects"] = _clean_project_entries(raw.get("explicit_projects"))
     state["view"] = _clean_view(raw.get("view"))
     updated_at = raw.get("updated_at")
     state["updated_at"] = updated_at if isinstance(updated_at, str) else None

@@ -8,7 +8,7 @@ import {
 import type { ChatSummary, SidebarStatePayload } from "@/lib/types";
 
 export const DEFAULT_SIDEBAR_STATE: SidebarStatePayload = {
-  schema_version: 1,
+  schema_version: 2,
   pinned_keys: [],
   archived_keys: [],
   title_overrides: {},
@@ -22,6 +22,9 @@ export const DEFAULT_SIDEBAR_STATE: SidebarStatePayload = {
     show_archived: false,
     sort: "updated_desc",
   },
+  pinned_project_keys: [],
+  removed_project_keys: [],
+  explicit_projects: {},
   updated_at: null,
 };
 
@@ -74,6 +77,33 @@ function boolMap(value: unknown): Record<string, boolean> {
   return out;
 }
 
+function nullableString(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const cleaned = value.trim();
+  return cleaned || null;
+}
+
+function projectEntryMap(
+  value: unknown,
+): SidebarStatePayload["explicit_projects"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out: SidebarStatePayload["explicit_projects"] = {};
+  for (const [key, raw] of Object.entries(value)) {
+    const cleanedKey = key.trim();
+    if (!cleanedKey || !raw || typeof raw !== "object" || Array.isArray(raw)) {
+      continue;
+    }
+    const entry = raw as Record<string, unknown>;
+    out[cleanedKey] = {
+      path: nullableString(entry.path) ?? cleanedKey,
+      name: nullableString(entry.name),
+      created_at: typeof entry.created_at === "string" ? entry.created_at : null,
+      updated_at: typeof entry.updated_at === "string" ? entry.updated_at : null,
+    };
+  }
+  return out;
+}
+
 export function normalizeSidebarState(raw: unknown): SidebarStatePayload {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
     return { ...DEFAULT_SIDEBAR_STATE, view: { ...DEFAULT_SIDEBAR_STATE.view } };
@@ -87,7 +117,7 @@ export function normalizeSidebarState(raw: unknown): SidebarStatePayload {
     ? view.sort
     : "updated_desc";
   return {
-    schema_version: 1,
+    schema_version: 2,
     pinned_keys: uniqueStrings(value.pinned_keys),
     archived_keys: uniqueStrings(value.archived_keys),
     title_overrides: stringMap(value.title_overrides),
@@ -101,11 +131,14 @@ export function normalizeSidebarState(raw: unknown): SidebarStatePayload {
       show_archived: Boolean(view.show_archived),
       sort,
     },
+    pinned_project_keys: uniqueStrings(value.pinned_project_keys),
+    removed_project_keys: uniqueStrings(value.removed_project_keys),
+    explicit_projects: projectEntryMap(value.explicit_projects),
     updated_at: typeof value.updated_at === "string" ? value.updated_at : null,
   };
 }
 
-function pruneMissingSessions(
+export function pruneMissingSessions(
   state: SidebarStatePayload,
   sessions: ChatSummary[],
 ): SidebarStatePayload {

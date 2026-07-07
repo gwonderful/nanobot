@@ -567,13 +567,23 @@ describe("webui API helpers", () => {
 
   it("reads and writes persisted sidebar state", async () => {
     const state = {
-      schema_version: 1,
+      schema_version: 2,
       pinned_keys: ["websocket:chat-1"],
       archived_keys: ["websocket:old"],
       title_overrides: { "websocket:chat-1": "Release" },
       project_name_overrides: { "/Users/me/nanobot": "Core" },
       tags_by_key: {},
       collapsed_groups: {},
+      pinned_project_keys: ["/Users/me/nanobot"],
+      removed_project_keys: ["/Users/me/old"],
+      explicit_projects: {
+        "/Users/me/nanobot": {
+          path: "/Users/me/nanobot",
+          name: "Core",
+          created_at: null,
+          updated_at: null,
+        },
+      },
       view: {
         density: "compact" as const,
         show_previews: false,
@@ -608,6 +618,16 @@ describe("webui API helpers", () => {
       pinned_keys: ["websocket:chat-1"],
       title_overrides: { "websocket:chat-1": "Release" },
       project_name_overrides: { "/Users/me/nanobot": "Core" },
+      pinned_project_keys: ["/Users/me/nanobot"],
+      removed_project_keys: ["/Users/me/old"],
+      explicit_projects: {
+        "/Users/me/nanobot": {
+          path: "/Users/me/nanobot",
+          name: "Core",
+          created_at: null,
+          updated_at: null,
+        },
+      },
     });
   });
 
