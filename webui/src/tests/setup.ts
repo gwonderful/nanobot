@@ -1,8 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import { beforeEach } from "vitest";
 
-import i18n from "@/i18n";
-
 function createTestStorage(): Storage {
   const store = new Map<string, string>();
   return {
@@ -27,7 +25,21 @@ function createTestStorage(): Storage {
   };
 }
 
-if (typeof window !== "undefined" && typeof globalThis.localStorage?.setItem !== "function") {
+if (typeof document !== "undefined" && !document.doctype) {
+  document.insertBefore(
+    document.implementation.createDocumentType("html", "", ""),
+    document.documentElement,
+  );
+}
+
+if (typeof document !== "undefined") {
+  Object.defineProperty(document, "compatMode", {
+    value: "CSS1Compat",
+    configurable: true,
+  });
+}
+
+if (typeof window !== "undefined") {
   const storage = createTestStorage();
   Object.defineProperty(window, "localStorage", {
     value: storage,
@@ -54,6 +66,7 @@ if (!("randomUUID" in globalThis.crypto)) {
 }
 
 beforeEach(async () => {
+  const { default: i18n } = await import("@/i18n");
   await i18n.changeLanguage("en");
   document.documentElement.lang = "en";
   document.title = "nanobot";

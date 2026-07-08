@@ -90,7 +90,7 @@ export function ThreadMessages({
         const prev = units[index - 1];
         const marginTop =
           index > 0
-            ? marginAfterPrevUnit(prev)
+            ? marginAfterPrevUnit(prev, unit)
             : "";
         const next = units[index + 1];
         const messageUnit =
@@ -232,9 +232,24 @@ function stableTurnMessageKey(message: UIMessage | undefined, fallbackPhase?: st
   return `turn-${message.turnId}-${phase}`;
 }
 
-function marginAfterPrevUnit(prev: DisplayUnit): string {
+function marginAfterPrevUnit(prev: DisplayUnit, current: DisplayUnit): string {
+  if (
+    prev.type === "message"
+    && prev.message.role === "user"
+    && current.type === "activity"
+  ) {
+    return "mt-3";
+  }
   if (prev.type === "activity") {
     return "mt-4";
+  }
+  if (
+    prev.type === "message"
+    && prev.message.role === "assistant"
+    && current.type === "message"
+    && current.message.role === "user"
+  ) {
+    return "mt-7";
   }
   const p = prev.message;
   const denseP =

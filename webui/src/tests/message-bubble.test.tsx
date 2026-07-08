@@ -4,6 +4,33 @@ import { describe, expect, it, vi } from "vitest";
 import { MessageBubble } from "@/components/MessageBubble";
 import type { CliAppInfo, McpPresetInfo, UIMessage } from "@/lib/types";
 
+vi.mock("@/components/MarkdownText", async () => {
+  const { default: MarkdownTextRenderer } = await vi.importActual<
+    typeof import("@/components/MarkdownTextRenderer")
+  >("@/components/MarkdownTextRenderer");
+
+  return {
+    MarkdownText: ({
+      children,
+      className,
+      onOpenFilePreview,
+    }: {
+      children: string;
+      className?: string;
+      onOpenFilePreview?: (path: string) => void;
+    }) => (
+      <MarkdownTextRenderer
+        className={className}
+        highlightCode={false}
+        onOpenFilePreview={onOpenFilePreview}
+      >
+        {children}
+      </MarkdownTextRenderer>
+    ),
+    preloadMarkdownText: vi.fn(),
+  };
+});
+
 const CLI_APPS: CliAppInfo[] = [
   {
     name: "zoom",
@@ -60,6 +87,28 @@ const MCP_PRESETS: McpPresetInfo[] = [
     connection_summary: "https://mcp.browserbase.com/mcp",
   },
 ];
+
+vi.mock("react-syntax-highlighter/dist/esm/prism-async-light", () => ({
+  default: ({
+    children,
+    language,
+  }: {
+    children: string;
+    language?: string;
+  }) => (
+    <pre data-testid="highlighted-code" data-language={language}>
+      <code>{children}</code>
+    </pre>
+  ),
+}));
+
+vi.mock("react-syntax-highlighter/dist/esm/styles/prism/one-dark", () => ({
+  default: {},
+}));
+
+vi.mock("react-syntax-highlighter/dist/esm/styles/prism/one-light", () => ({
+  default: {},
+}));
 
 describe("MessageBubble", () => {
   it("renders user messages as right-aligned pills", () => {
