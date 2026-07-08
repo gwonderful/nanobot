@@ -5,22 +5,22 @@ import { cn } from "@/lib/utils";
 import { useClient } from "@/providers/ClientProvider";
 import type { ConnectionStatus } from "@/lib/types";
 
-const COPY: Record<ConnectionStatus, { color: string }> = {
-  idle: { color: "text-muted-foreground" },
+const COPY: Record<ConnectionStatus, { tone: string }> = {
+  idle: { tone: "connection-badge--idle" },
   connecting: {
-    color: "text-amber-700 dark:text-amber-300",
+    tone: "connection-badge--attention",
   },
   open: {
-    color: "text-emerald-700 dark:text-emerald-400",
+    tone: "connection-badge--open",
   },
   reconnecting: {
-    color: "text-amber-700 dark:text-amber-300",
+    tone: "connection-badge--attention",
   },
   closed: {
-    color: "text-muted-foreground",
+    tone: "connection-badge--idle",
   },
   error: {
-    color: "text-destructive",
+    tone: "connection-badge--error",
   },
 };
 
@@ -40,9 +40,8 @@ export function ConnectionBadge() {
   return (
     <span
       className={cn(
-        "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
-        "text-muted-foreground/70 hover:bg-sidebar-accent/65",
-        meta.color,
+        "connection-badge inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
+        meta.tone,
       )}
       aria-live="polite"
       role="status"

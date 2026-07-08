@@ -93,8 +93,8 @@ export function Sidebar(props: SidebarProps) {
       ref={props.containActionMenus ? setMenuPortalContainer : undefined}
       aria-label={t("sidebar.navigation")}
       className={cn(
-        "flex h-full w-full min-w-0 flex-col text-sidebar-foreground",
-        props.hostChromeInset ? "bg-transparent" : "bg-sidebar",
+        "sidebar-shell flex h-full w-full min-w-0 flex-col text-sidebar-foreground",
+        props.hostChromeInset ? "sidebar-shell--transparent bg-transparent" : "bg-sidebar",
         !props.hostChromeInset && "border-r border-sidebar-border/60",
       )}
     >
@@ -152,6 +152,7 @@ export function Sidebar(props: SidebarProps) {
           icon={<SquarePen className="h-4 w-4" />}
           shortcut={newChatShortcut}
           ariaKeyShortcuts="Meta+Shift+O Control+Shift+O"
+          primary
         />
         <SidebarActionButton
           collapsed={collapsed}
@@ -252,6 +253,7 @@ function SidebarActionButton({
   icon,
   onClick,
   active = false,
+  primary = false,
   className,
   shortcut,
   ariaKeyShortcuts,
@@ -261,6 +263,7 @@ function SidebarActionButton({
   icon: ReactNode;
   onClick: () => void;
   active?: boolean;
+  primary?: boolean;
   className?: string;
   shortcut?: string;
   ariaKeyShortcuts?: string;
@@ -277,12 +280,13 @@ function SidebarActionButton({
       title={title}
       onClick={() => onClick()}
       className={cn(
-        "group h-8 min-w-0 gap-2 overflow-hidden rounded-full font-medium text-sidebar-foreground/85 hover:bg-sidebar-accent/75 hover:text-sidebar-foreground",
+        "sidebar-action-button group h-8 min-w-0 gap-2 overflow-hidden rounded-full font-medium text-sidebar-foreground/85 hover:text-sidebar-foreground",
         "transition-[width,padding,border-radius,color,background-color] duration-300 ease-out",
         collapsed
           ? "w-9 justify-center gap-0 rounded-xl px-0"
           : "w-full justify-start gap-2 px-3 text-[12.5px]",
-        active && "bg-sidebar-accent text-sidebar-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.55)]",
+        primary && !active && "sidebar-action-button--primary",
+        active && "sidebar-action-button--active text-sidebar-foreground",
         className,
       )}
     >

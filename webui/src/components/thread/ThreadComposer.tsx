@@ -678,12 +678,11 @@ function RunElapsedStrip({
           tabIndex={-1}
           className={cn(
             "absolute bottom-[calc(100%+8px)] left-3 right-3 z-[50] flex max-w-none flex-col overflow-hidden",
-            "rounded-2xl border border-black/[0.08] bg-card shadow-[0_12px_40px_rgba(15,23,42,0.14)]",
-            "backdrop-blur-sm dark:border-white/[0.1] dark:shadow-[0_16px_48px_rgba(0,0,0,0.45)]",
+            "composer-goal-panel",
           )}
           style={{ maxHeight: `${Math.round(panelMaxPx)}px` }}
         >
-          <div className="flex shrink-0 items-center justify-between gap-2 border-b border-black/[0.06] px-3 py-2 dark:border-white/[0.08]">
+          <div className="composer-goal-panel__head flex shrink-0 items-center justify-between gap-2 px-3 py-2">
             <h2
               id="nanobot-goal-panel-title"
               className="min-w-0 truncate text-[13px] font-semibold tracking-tight text-foreground"
@@ -693,9 +692,7 @@ function RunElapsedStrip({
             <button
               type="button"
               className={cn(
-                "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                "text-muted-foreground transition-colors hover:bg-muted/65 hover:text-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "composer-round-button inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
               )}
               aria-label={t("thread.composer.goalStateCloseAria")}
               onClick={() => setGoalPanelOpen(false)}
@@ -705,7 +702,7 @@ function RunElapsedStrip({
           </div>
           <div
             id="nanobot-goal-panel-scroll"
-            className="min-h-0 flex-1 overflow-y-auto scrollbar-thin px-3 pb-3 pt-2"
+            className="composer-goal-panel__body min-h-0 flex-1 overflow-y-auto scrollbar-thin px-3 pb-3 pt-2"
           >
             <MarkdownText className="max-w-none text-[13.5px] leading-relaxed text-foreground/90">
               {markdownBody}
@@ -714,19 +711,19 @@ function RunElapsedStrip({
         </div>
       ) : null}
       <div
-        className="flex min-h-[36px] items-center gap-2 border-b border-black/[0.04] px-3 py-2 dark:border-white/[0.06]"
+        className="composer-run-strip flex min-h-[36px] items-center gap-2 px-3 py-2"
         role="status"
         aria-label={ariaLabel}
       >
         {displayShowTimer ? (
           <RunPulseIcon />
         ) : (
-          <Target className="h-4 w-4 shrink-0 text-primary/75" aria-hidden />
+          <Target className="composer-run-strip__target h-4 w-4 shrink-0" aria-hidden />
         )}
-        <span className="flex min-w-0 flex-1 items-center gap-1.5 text-[12px] font-medium text-foreground/75">
+        <span className="composer-run-strip__text flex min-w-0 flex-1 items-center gap-1.5 text-[12px] font-medium">
           {timerTitle ? <span className="shrink-0">{timerTitle}</span> : null}
           {timerTitle && displayShowGoal ? (
-            <span className="shrink-0 text-muted-foreground/45" aria-hidden>
+            <span className="composer-run-strip__separator shrink-0" aria-hidden>
               ·
             </span>
           ) : null}
@@ -741,9 +738,7 @@ function RunElapsedStrip({
             ref={expandToggleRef}
             type="button"
             className={cn(
-              "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-              "text-muted-foreground transition-colors hover:bg-muted/55 hover:text-foreground",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "composer-round-button inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
             )}
             aria-expanded={goalPanelOpen}
             aria-controls={goalPanelOpen ? "nanobot-goal-panel-root" : undefined}
@@ -1677,16 +1672,13 @@ export function ThreadComposer({
       ) : null}
       <div
         className={cn(
-          "group/composer relative mx-auto flex w-full flex-col overflow-visible transition-all duration-200",
-          "after:pointer-events-none after:absolute after:inset-[-1px] after:rounded-[inherit] after:border after:border-blue-300/75 after:opacity-0 after:transition-opacity after:duration-200 focus-within:after:opacity-100 dark:after:border-blue-400/55",
+          "composer-shell group/composer relative mx-auto flex w-full flex-col overflow-visible",
           isHero
-            ? "max-w-[58rem] rounded-[28px] border border-black/[0.035] bg-card shadow-[0_20px_55px_rgba(15,23,42,0.08)] dark:border-white/[0.06] dark:shadow-[0_24px_55px_rgba(0,0,0,0.34)]"
-            : "max-w-[49.5rem] rounded-[22px] border border-black/[0.035] bg-card shadow-[0_12px_30px_rgba(15,23,42,0.07)] dark:border-white/[0.06] dark:shadow-[0_16px_34px_rgba(0,0,0,0.28)]",
-          "focus-within:border-blue-300/75 dark:focus-within:border-blue-400/55",
+            ? "composer-shell--hero max-w-[58rem]"
+            : "composer-shell--thread max-w-[49.5rem]",
           disabled && "opacity-60",
-          isDragging && "ring-2 ring-primary/40 motion-reduce:ring-0 motion-reduce:border-primary",
-          goalState?.active &&
-            "goal-shell-glow ring-1 ring-sky-400/35 motion-reduce:ring-sky-400/25 dark:ring-sky-400/45",
+          isDragging && "composer-shell--dragging",
+          goalState?.active && "composer-shell--goal goal-shell-glow",
         )}
       >
         {queuedPrompts.length > 0 ? (
@@ -1771,7 +1763,7 @@ export function ThreadComposer({
             aria-label={t("thread.composer.inputAria")}
             className={cn(
               inputTextClasses,
-              "relative z-10 caret-foreground placeholder:text-muted-foreground/70",
+              "composer-input relative z-10 caret-foreground placeholder:text-muted-foreground/70",
               "focus:outline-none focus-visible:outline-none",
               "disabled:cursor-not-allowed",
               hasMentionDecorations && "text-transparent selection:bg-primary/20",
@@ -1814,10 +1806,8 @@ export function ThreadComposer({
               aria-label={t("thread.composer.attachImage")}
               onClick={() => fileInputRef.current?.click()}
               className={cn(
-                "rounded-full text-muted-foreground hover:text-foreground",
-                isHero
-                  ? "h-8 w-8 border border-border/55 bg-card shadow-[0_2px_8px_rgba(15,23,42,0.05)] hover:bg-card"
-                  : "h-9 w-9 border border-border/55 bg-card shadow-[0_2px_8px_rgba(15,23,42,0.05)] hover:bg-card",
+                "composer-tool-button rounded-full text-muted-foreground hover:text-foreground",
+                isHero ? "h-8 w-8" : "h-9 w-9",
               )}
             >
               <Plus className={cn(isHero ? "h-[18px] w-[18px]" : "h-4 w-4")} />
@@ -1868,10 +1858,11 @@ export function ThreadComposer({
                       onPointerCancel={voiceRecorder.endPress}
                       onClick={voiceRecorder.handleClick}
                       className={cn(
-                        "rounded-full border border-transparent text-muted-foreground hover:bg-muted/65 hover:text-foreground",
+                        "rounded-full text-muted-foreground hover:text-foreground",
+                        !voiceRecorder.isRecording && "composer-tool-button",
                         isHero ? "h-8 w-8" : "h-9 w-9",
                         voiceRecorder.isRecording &&
-                          "bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.22)] hover:bg-red-500 hover:text-white",
+                          "bg-destructive text-destructive-foreground shadow-[0_8px_20px_hsl(var(--destructive)/0.20)] hover:bg-destructive hover:text-destructive-foreground",
                       )}
                     >
                       {voiceRecorder.state === "transcribing" ? (
@@ -1911,14 +1902,11 @@ export function ThreadComposer({
               }
               onClick={showStopButton ? handleStop : modelNeedsSetup ? onModelBadgeClick : undefined}
               className={cn(
-                "rounded-full transition-transform",
+                "composer-submit-button rounded-full border",
                 showStopButton
-                  ? "border border-border/70 bg-card text-foreground/85 shadow-[0_3px_10px_rgba(15,23,42,0.08)] hover:bg-muted/65 hover:text-foreground disabled:text-muted-foreground/50"
-                  : isHero
-                    ? "border border-foreground bg-foreground text-background shadow-[0_4px_12px_rgba(15,23,42,0.20)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background"
-                    : "border border-foreground bg-foreground text-background shadow-[0_3px_10px_rgba(15,23,42,0.18)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background",
+                  ? "composer-submit-button--stop disabled:text-muted-foreground/50"
+                  : "composer-submit-button--send disabled:opacity-45",
                 isHero ? "h-8 w-8" : "h-9 w-9",
-                (canSend || canOpenModelSettings || showStopButton) && "hover:scale-[1.03] active:scale-95",
               )}
             >
               {showStopButton ? (
@@ -2167,7 +2155,7 @@ function ComposerModelBadge({
         "inline-flex min-w-0 items-center rounded-full border border-border/55 bg-card font-medium text-foreground/82",
         "shadow-[0_2px_8px_rgba(15,23,42,0.045)]",
         interactive && "cursor-pointer hover:bg-accent/55 hover:text-foreground",
-        needsSetup && "border-amber-500/35 bg-amber-50/70 text-amber-900 dark:bg-amber-500/10 dark:text-amber-200",
+        needsSetup && "composer-model-badge--setup",
         isHero
           ? "h-8 max-w-[min(12.5rem,44vw)] gap-1.5 px-2 text-[11.5px]"
           : "h-9 max-w-[min(12rem,44vw)] gap-2 px-2.5 text-[12px]",
@@ -2178,7 +2166,7 @@ function ComposerModelBadge({
         className={cn(
           "grid shrink-0 place-items-center overflow-hidden",
           needsSetup
-            ? "text-amber-800 dark:text-amber-200"
+            ? "composer-model-badge__setup-icon"
             : "rounded-full border bg-background",
           isHero ? "h-[18px] w-[18px]" : "h-5 w-5",
         )}
@@ -2369,9 +2357,7 @@ function CliAppMentionPalette({
               <span
                 className={cn(
                   "ml-2 shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold tracking-normal",
-                  candidate.kind === "cli"
-                    ? "bg-orange-500/10 text-orange-600 dark:text-orange-300"
-                    : "bg-sky-500/10 text-sky-600 dark:text-sky-300",
+                  "capability-kind-chip",
                 )}
               >
                 {typeLabel}

@@ -430,7 +430,10 @@ describe("ChatList", () => {
 
     fireEvent.pointerDown(within(nanobotSection).getByLabelText("Chat actions for nanobot"));
     fireEvent.click(await screen.findByRole("menuitem", { name: "Archive" }));
-    expect(await screen.findByRole("alertdialog", { name: "Archive 1 chat?" })).toBeInTheDocument();
+    const archiveDialog = await screen.findByRole("alertdialog", { name: "Archive 1 chat?" });
+    expect(archiveDialog).toBeInTheDocument();
+    expect(archiveDialog).toHaveClass("confirm-dialog-shell");
+    expect(archiveDialog.className).not.toMatch(/border-white|rounded-\[24px\]|shadow-\[0_24px_80px/i);
     expect(screen.getByText(/Settings under Archived conversations/i)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Archive all" }));
     expect(onArchiveProject).toHaveBeenCalledWith("/Users/me/nanobot");
@@ -584,6 +587,48 @@ describe("ChatList", () => {
     const updated = screen.getAllByLabelText("New activity");
     expect(updated).toHaveLength(1);
     expect(updated[0].firstElementChild).toHaveClass("h-2", "w-2");
+  });
+
+  it("uses the shared sidebar surface classes for active rows and activity indicators", () => {
+    const sessions = [
+      session({
+        chatId: "active",
+        title: "Active task",
+      }),
+      session({
+        chatId: "running",
+        title: "Running task",
+      }),
+      session({
+        chatId: "updated",
+        title: "Updated task",
+      }),
+    ];
+
+    render(
+      <ChatList
+        sessions={sessions}
+        activeKey="websocket:active"
+        onSelect={vi.fn()}
+        onRequestDelete={vi.fn()}
+        onTogglePin={vi.fn()}
+        onRequestRename={vi.fn()}
+        onToggleArchive={vi.fn()}
+        runningChatIds={["running"]}
+        updatedChatIds={["updated"]}
+      />,
+    );
+
+    const activeRow = screen.getByRole("button", { name: "Active task" }).parentElement;
+    expect(activeRow).toHaveClass("sidebar-chat-row", "sidebar-chat-row--active");
+
+    const runningIndicator = screen.getByLabelText("Agent running").firstElementChild;
+    const updatedIndicator = screen.getByLabelText("New activity").firstElementChild;
+
+    expect(runningIndicator).toHaveClass("session-activity-indicator__spinner");
+    expect(updatedIndicator).toHaveClass("session-activity-indicator__dot");
+    expect(`${runningIndicator?.className ?? ""} ${updatedIndicator?.className ?? ""}`)
+      .not.toMatch(/blue|orange|amber|#ff/i);
   });
 
   it("folds long default workspace chats and can show all", () => {

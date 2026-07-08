@@ -448,13 +448,15 @@ export function AgentActivityCluster({
       <button
         type="button"
         onClick={toggleOuter}
+        data-active={isTurnStreaming ? "true" : undefined}
         className={cn(
-          "group flex max-w-full items-center gap-1.5 rounded-md px-1 py-1",
+          "activity-header group flex max-w-full items-center gap-1.5 rounded-lg px-2 py-1.5",
           "text-[12.5px] text-muted-foreground/72 transition-colors hover:text-muted-foreground",
         )}
         aria-expanded={outerExpanded}
         aria-label={summary}
       >
+        <span className="activity-header__dot" aria-hidden />
         <StreamingLabelSheen
           active={isTurnStreaming}
           className="min-w-0"
@@ -492,7 +494,7 @@ export function AgentActivityCluster({
       {outerExpanded && (
         <div
           className={cn(
-            "ml-1 mt-1 overflow-hidden pl-1",
+            "activity-panel ml-1 mt-1 overflow-hidden",
           )}
         >
           <div
@@ -501,7 +503,7 @@ export function AgentActivityCluster({
             onScroll={onActivityScroll}
             className={cn(
               CLUSTER_SCROLL_MAX_CLASS,
-              "overflow-y-auto py-1 pr-1 scrollbar-thin scrollbar-track-transparent",
+              "overflow-y-auto px-1 py-1.5 scrollbar-thin scrollbar-track-transparent",
             )}
           >
             <div ref={activityContentRef} className="flex flex-col gap-0.5">
@@ -581,11 +583,13 @@ function FileEditFlatActivity({
   return (
     <div className={cn("w-full", hasBodyBelow && "mb-2")} aria-label={summary}>
       <div
+        data-active={active ? "true" : undefined}
         className={cn(
-          "flex max-w-full items-center gap-1.5 px-1 py-1",
+          "activity-header flex max-w-full items-center gap-1.5 rounded-lg px-2 py-1.5",
           "text-[12.5px] text-muted-foreground/72",
         )}
       >
+        <span className="activity-header__dot" aria-hidden />
         <StreamingLabelSheen active={active} className="min-w-0">
           {singleFilePath
             ? fileActivityVerb(hasLiveEditingFiles, hasFailedFiles, hasDeletedFiles)
@@ -610,7 +614,7 @@ function FileEditFlatActivity({
         ) : null}
       </div>
       {showRows ? (
-        <div className="mt-0.5 pl-4">
+        <div className="activity-panel mt-1 overflow-hidden px-1 py-1.5">
           <FileEditGroup edits={edits} onOpenFilePreview={onOpenFilePreview} />
         </div>
       ) : null}
@@ -927,7 +931,7 @@ function TraceIconMark({
       <span
         data-testid={`activity-web-favicon-${trace.host}`}
         className={cn(
-          "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border border-border/45 bg-background shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]",
+          "activity-logo-mark grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border border-border/45 bg-background shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]",
           active && "animate-pulse",
         )}
         aria-hidden
@@ -943,17 +947,19 @@ function TraceIconMark({
   }
 
   return (
-    <FallbackIcon
+    <span
       className={cn(
-        "h-3.5 w-3.5 shrink-0",
-        trace.kind === "done"
-          ? "text-emerald-500/75"
-          : active
-            ? "text-muted-foreground/75"
-            : "text-muted-foreground/45",
+        "activity-step__mark grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border bg-background",
+        trace.kind !== "done" && (
+          active
+            ? "border-muted-foreground/28 text-muted-foreground/75"
+            : "border-muted-foreground/18 text-muted-foreground/45"
+        ),
       )}
       aria-hidden
-    />
+    >
+      <FallbackIcon className="h-2.5 w-2.5 shrink-0" />
+    </span>
   );
 }
 
@@ -1700,7 +1706,7 @@ function CliRunRow({ run, active, app }: { run: CliRunSummary; active: boolean; 
   const args = formatCliArgs(run);
   const failed = run.status === "error";
   const rowActive = active && run.status === "running";
-  const color = failed ? "#DC2626" : app?.brand_color || "#0891B2";
+  const color = failed ? "hsl(var(--destructive))" : app?.brand_color || "hsl(var(--muted-foreground))";
   const logoUrls = useMemo(() => logoFallbackUrls(app?.logo_url), [app?.logo_url]);
   const logoUrl = logoUrls[logoIndex];
   const label = t(cliRunLabelKey(run, active), {
@@ -1720,7 +1726,7 @@ function CliRunRow({ run, active, app }: { run: CliRunSummary; active: boolean; 
         <span
           data-testid={`activity-cli-logo-${run.name.toLowerCase()}`}
           className={cn(
-            "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
+            "activity-logo-mark grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
             rowActive && "animate-pulse",
           )}
           style={{
@@ -1810,7 +1816,7 @@ function McpRunRow({ run, active, preset }: { run: McpRunSummary; active: boolea
   const [logoIndex, setLogoIndex] = useState(0);
   const failed = run.status === "error";
   const rowActive = active && run.status === "running";
-  const color = failed ? "#DC2626" : preset?.brand_color || "#6D5DF6";
+  const color = failed ? "hsl(var(--destructive))" : preset?.brand_color || "hsl(var(--muted-foreground))";
   const logoUrls = useMemo(() => logoFallbackUrls(preset?.logo_url), [preset?.logo_url]);
   const logoUrl = logoUrls[logoIndex];
   const displayName = preset?.display_name || run.displayName;
@@ -1831,7 +1837,7 @@ function McpRunRow({ run, active, preset }: { run: McpRunSummary; active: boolea
         <span
           data-testid={`activity-mcp-logo-${run.presetName.toLowerCase()}`}
           className={cn(
-            "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
+            "activity-logo-mark grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
             rowActive && "animate-pulse",
           )}
           style={{

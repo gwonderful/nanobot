@@ -364,11 +364,30 @@ describe("ThreadComposer", () => {
     expect(input.className).toContain("min-h-[50px]");
     expect(input.className).toContain("text-[16px]");
     expect(input.parentElement?.parentElement?.className).toContain("max-w-[49.5rem]");
-    expect(input.parentElement?.parentElement?.className).toContain("rounded-[22px]");
-    expect(input.parentElement?.parentElement?.className).toContain("shadow-[0_12px_30px_rgba(15,23,42,0.07)]");
-    expect(screen.getByRole("button", { name: "Attach image" }).className).toContain("bg-card");
-    expect(screen.getByRole("button", { name: "Send message" }).className).toContain("bg-foreground");
+    expect(input.parentElement?.parentElement?.className).toContain("composer-shell");
+    expect(input.parentElement?.parentElement?.className).toContain("composer-shell--thread");
+    expect(screen.getByRole("button", { name: "Attach image" }).className).toContain("composer-tool-button");
+    expect(screen.getByRole("button", { name: "Send message" }).className).toContain("composer-submit-button--send");
     expect(screen.queryByText(/Enter to send/)).not.toBeInTheDocument();
+  });
+
+  it("keeps the model setup badge visually neutral", () => {
+    render(
+      <ThreadComposer
+        onSend={vi.fn()}
+        modelLabel="Model not configured"
+        modelNeedsSetup
+        onModelBadgeClick={vi.fn()}
+        placeholder="Type your message..."
+      />,
+    );
+
+    const badge = screen.getByRole("button", { name: "Model not configured" });
+    expect(badge.className).toContain("composer-model-badge--setup");
+    expect(badge.className).not.toMatch(/amber|orange|sky|blue/);
+    const icon = screen.getByTestId("composer-model-setup-icon");
+    expect(icon.className).toContain("composer-model-badge__setup-icon");
+    expect(icon.className).not.toMatch(/amber|orange|sky|blue/);
   });
 
   it("transcribes voice input into the composer without sending", async () => {
@@ -668,8 +687,15 @@ describe("ThreadComposer", () => {
       />,
     );
 
-    fireEvent.pointerDown(screen.getByRole("button", { name: "Workspace access mode" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: /Full Access/ }));
+    const accessButton = screen.getByRole("button", { name: "Workspace access mode" });
+    expect(accessButton).toHaveClass("workspace-access-button");
+    expect(accessButton.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
+
+    fireEvent.pointerDown(accessButton);
+    const fullAccessItem = await screen.findByRole("menuitem", { name: /Full Access/ });
+    expect(fullAccessItem).toHaveClass("workspace-access-menu-item--warning");
+    expect(fullAccessItem.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
+    fireEvent.click(fullAccessItem);
 
     expect(onWorkspaceScopeChange).toHaveBeenCalledWith(
       expect.objectContaining({

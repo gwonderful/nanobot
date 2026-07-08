@@ -41,8 +41,10 @@ export function ActivityStep({
 }: ActivityStepProps) {
   return (
     <Component
+      data-active={active ? "true" : undefined}
+      data-tone={tone}
       className={cn(
-        "group/activity-step relative grid min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] gap-2 py-0.5 text-[13px] leading-5",
+        "activity-step group/activity-step relative grid min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] gap-2 rounded-lg px-1.5 py-1 text-[13px] leading-5",
         className,
       )}
       title={title}
@@ -50,7 +52,7 @@ export function ActivityStep({
     >
       <span
         className={cn(
-          "relative flex h-5 w-[1.125rem] shrink-0 items-start justify-center pt-[3px]",
+          "activity-step__marker-rail relative flex h-5 w-[1.125rem] shrink-0 items-start justify-center pt-[3px]",
           "after:absolute after:left-1/2 after:top-[1.25rem] after:h-[calc(100%+0.375rem)] after:w-px after:-translate-x-1/2 after:bg-muted-foreground/14 group-last/activity-step:after:hidden",
         )}
         aria-hidden
@@ -58,9 +60,8 @@ export function ActivityStep({
         {marker ?? (
           <span
             className={cn(
-              "grid h-3.5 w-3.5 place-items-center rounded-full border bg-background transition-colors",
+              "activity-step__mark grid h-3.5 w-3.5 place-items-center rounded-full border bg-background transition-colors",
               tone === "active" && "border-muted-foreground/28 text-muted-foreground/72",
-              tone === "success" && "border-emerald-500/28 text-emerald-500/78",
               tone === "error" && "border-destructive/30 text-destructive/78",
               tone === "neutral" && "border-muted-foreground/18 text-muted-foreground/50",
               markerClassName,
@@ -70,7 +71,7 @@ export function ActivityStep({
           </span>
         )}
       </span>
-      <div className={cn("min-w-0", contentClassName)}>
+      <div className={cn("activity-step__content min-w-0", contentClassName)}>
         <div className="flex min-w-0 items-baseline gap-1.5">
           <StreamingLabelSheen
             active={active}

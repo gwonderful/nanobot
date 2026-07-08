@@ -4,12 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 import MarkdownTextRenderer from "@/components/MarkdownTextRenderer";
 
 describe("MarkdownTextRenderer", () => {
-  it("renders clickable markdown links in blue", () => {
+  it("renders clickable markdown links with the shared theme link style", () => {
     render(<MarkdownTextRenderer>[local server](http://127.0.0.1:7891/)</MarkdownTextRenderer>);
 
     const link = screen.getByRole("link", { name: "local server" });
     expect(link).toHaveAttribute("href", "http://127.0.0.1:7891/");
-    expect(link).toHaveClass("text-blue-500", "dark:text-blue-300");
+    expect(link).toHaveClass("markdown-link");
+    expect(link.className).not.toMatch(/blue|sky|#2997ff/i);
   });
 
   it("renders local file links as previewable file references", () => {
@@ -22,6 +23,9 @@ describe("MarkdownTextRenderer", () => {
 
     const reference = screen.getByTestId("inline-file-path");
     expect(reference).toHaveTextContent("hook.py");
+    expect(reference).toHaveClass("file-reference-chip");
+    expect(reference.className).not.toMatch(/blue|sky|#2997ff/i);
+    expect(reference.querySelector("svg")?.className.baseVal ?? "").not.toMatch(/blue|sky|#2997ff/i);
     expect(reference).toHaveAttribute(
       "aria-label",
       "/Users/test/project/nanobot/agent/hook.py",

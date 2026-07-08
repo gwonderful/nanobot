@@ -405,7 +405,7 @@ function DeleteArchivedDialog({
     : "";
   return (
     <AlertDialog open={!!pending} onOpenChange={(open) => (!open ? onCancel() : undefined)}>
-      <AlertDialogContent className="w-[min(calc(100vw-2rem),26rem)] rounded-[26px]">
+      <AlertDialogContent className="confirm-dialog-shell w-[min(calc(100vw-2rem),26rem)]">
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>

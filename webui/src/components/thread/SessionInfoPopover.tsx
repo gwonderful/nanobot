@@ -120,8 +120,8 @@ function AutomationRow({ job, now }: { job: SessionAutomationJob; now: number })
   const statusClass = job.enabled
     ? job.state.last_status === "error"
       ? "bg-destructive"
-      : "bg-emerald-500"
-    : "bg-muted-foreground/35";
+      : "session-info-status-dot--ok"
+    : "session-info-status-dot--muted";
 
   return (
     <div className="rounded-[16px] px-3 py-2.5 transition-colors hover:bg-muted/40">

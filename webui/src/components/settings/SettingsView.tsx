@@ -2024,14 +2024,14 @@ function SettingsSidebar({
   return (
     <aside
       className={cn(
-        "flex w-full shrink-0 flex-col border-b border-border/55 bg-card/62 px-3 pb-2 shadow-[inset_0_-1px_0_rgba(255,255,255,0.55)] backdrop-blur-xl dark:bg-card/45 dark:shadow-none md:w-[17rem] md:border-b-0 md:border-r md:px-3 md:pb-4 md:shadow-[inset_-1px_0_0_rgba(255,255,255,0.55)]",
+        "settings-sidebar-shell flex w-full shrink-0 flex-col border-b px-3 pb-2 backdrop-blur-xl md:w-[17rem] md:border-b-0 md:border-r md:px-3 md:pb-4",
         hostChromeInset ? "pt-[4.25rem] md:pt-[4.25rem]" : "pt-4 md:pt-4",
       )}
     >
       <button
         type="button"
         onClick={onBackToChat}
-        className="mb-2 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground md:mb-3"
+        className="settings-back-button mb-2 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1.5 text-[12px] font-medium md:mb-3"
       >
         <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
         {t("settings.backToChat")}
@@ -2044,7 +2044,7 @@ function SettingsSidebar({
 
       <nav
         aria-label={t("settings.sidebar.ariaLabel")}
-        className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:block md:space-y-1 md:overflow-visible md:px-0 md:pb-0"
+        className="settings-nav -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-0 md:block md:space-y-1 md:overflow-visible md:px-0 md:pb-0"
       >
         {SETTINGS_NAV_ITEMS.map(({ key, icon: Icon, fallback }) => {
           const active = key === activeSection;
@@ -2055,10 +2055,10 @@ function SettingsSidebar({
               aria-current={active ? "page" : undefined}
               onClick={() => onSelectSection(key)}
               className={cn(
-                "flex h-9 w-auto shrink-0 items-center gap-2 rounded-full px-3 text-left text-[13px] font-medium transition-colors md:w-full md:rounded-[10px] md:px-2.5",
+                "settings-nav-item flex h-9 w-auto shrink-0 items-center gap-2 rounded-full px-3 text-left text-[13px] font-medium md:w-full md:rounded-[10px] md:px-2.5",
                 active
-                  ? "bg-muted/90 text-foreground shadow-[inset_0_0_0_1px_rgba(0,0,0,0.025)]"
-                  : "text-muted-foreground/78 hover:bg-muted/45 hover:text-foreground",
+                  ? "settings-nav-item--active text-foreground"
+                  : "text-muted-foreground/78 hover:text-foreground",
               )}
             >
               <Icon className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
@@ -2074,7 +2074,7 @@ function SettingsSidebar({
             type="button"
             variant="ghost"
             onClick={onLogout}
-            className="h-9 w-full justify-start gap-2 rounded-[10px] px-2.5 text-[13px] font-medium text-muted-foreground hover:bg-destructive/8 hover:text-destructive"
+            className="settings-nav-danger-button h-9 w-full justify-start gap-2 rounded-[10px] px-2.5 text-[13px] font-medium"
           >
             <LogOut className="h-4 w-4" aria-hidden />
             {t("app.account.logout")}
@@ -2310,13 +2310,13 @@ function VersionCheckRow({ currentVersion }: { currentVersion?: string }) {
             : tx("settings.about.checkForUpdates", "Check for updates")}
         </Button>
         {result?.type === "up-to-date" ? (
-          <span className="inline-flex items-center gap-1.5 text-[12px] text-emerald-600 dark:text-emerald-300">
+          <span className="settings-inline-status settings-inline-status--success inline-flex items-center gap-1.5 text-[12px]">
             <Check className="h-3 w-3" aria-hidden />
             {tx("settings.about.upToDate", "You're up to date")}
           </span>
         ) : null}
         {result?.type === "update" ? (
-          <span className="inline-flex items-center gap-1.5 text-[12px] text-blue-600 dark:text-blue-300">
+          <span className="settings-inline-status settings-inline-status--accent inline-flex items-center gap-1.5 text-[12px]">
             <ArrowUpCircle className="h-3 w-3" aria-hidden />
             {t("settings.about.updateAvailable", {
               defaultValue: "Update available v{{version}}",
@@ -3906,7 +3906,7 @@ function AutomationsSettings({
               <h2 className="text-[13px] font-semibold tracking-[-0.01em] text-foreground/85">
                 {tx("settings.automations.queue", "Queue")}
               </h2>
-              <span className="rounded-full bg-orange-100/60 px-2 py-0.5 text-[11px] text-orange-800/70 tabular-nums dark:bg-orange-300/10 dark:text-orange-200/75">
+              <span className="settings-count-pill rounded-full px-2 py-0.5 text-[11px] tabular-nums">
                 {filtered.length}
               </span>
             </div>
@@ -4311,13 +4311,10 @@ function AutomationStatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex h-6 items-center rounded-full px-2.5 text-[11.5px] font-medium shadow-[inset_0_0_0_1px_rgba(120,72,25,0.055)]",
-        tone === "success" &&
-          "bg-orange-100/72 text-orange-800 dark:bg-orange-300/12 dark:text-orange-200",
-        tone === "warning" &&
-          "bg-amber-100/80 text-amber-800 dark:bg-amber-300/14 dark:text-amber-200",
-        tone === "neutral" &&
-          "bg-white/64 text-muted-foreground dark:bg-background/35 dark:text-muted-foreground",
+        "settings-status-pill inline-flex h-6 items-center rounded-full px-2.5 text-[11.5px] font-medium",
+        tone === "success" && "settings-status-pill--success",
+        tone === "warning" && "settings-status-pill--warning",
+        tone === "neutral" && "settings-status-pill--neutral",
       )}
     >
       {children}
@@ -5045,14 +5042,14 @@ const AUTOMATION_FILTER_TONES: Partial<
   Record<AutomationFilter, { text: string; selectedText: string; count: string }>
 > = {
   active: {
-    text: "text-emerald-600 dark:text-emerald-400",
-    selectedText: "text-emerald-700 dark:text-emerald-300",
-    count: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+    text: "settings-filter-tone settings-filter-tone--active",
+    selectedText: "settings-filter-tone settings-filter-tone--active-selected",
+    count: "settings-filter-count settings-filter-count--active",
   },
   paused: {
-    text: "text-amber-600 dark:text-amber-400",
-    selectedText: "text-amber-700 dark:text-amber-300",
-    count: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+    text: "settings-filter-tone settings-filter-tone--paused",
+    selectedText: "settings-filter-tone settings-filter-tone--paused-selected",
+    count: "settings-filter-count settings-filter-count--paused",
   },
   failed: {
     text: "text-rose-600 dark:text-rose-400",
@@ -5060,9 +5057,9 @@ const AUTOMATION_FILTER_TONES: Partial<
     count: "bg-rose-500/10 text-rose-700 dark:text-rose-300",
   },
   system: {
-    text: "text-sky-600 dark:text-sky-400",
-    selectedText: "text-sky-700 dark:text-sky-300",
-    count: "bg-sky-500/10 text-sky-700 dark:text-sky-300",
+    text: "settings-filter-tone settings-filter-tone--system",
+    selectedText: "settings-filter-tone settings-filter-tone--system-selected",
+    count: "settings-filter-count settings-filter-count--system",
   },
 };
 
@@ -5227,10 +5224,10 @@ function formatAutomationNextTitle(
 
 function automationStatusDotClass(job: SessionAutomationJob): string {
   const status = automationStatusKey(job);
-  if (status === "active" || status === "running") return "bg-orange-500 shadow-[0_0_0_3px_rgba(249,115,22,0.12)]";
-  if (status === "failed") return "bg-amber-500 shadow-[0_0_0_3px_rgba(245,158,11,0.13)]";
-  if (status === "system") return "bg-muted-foreground/45";
-  return "bg-muted-foreground/45";
+  if (status === "active" || status === "running") return "settings-status-dot--active";
+  if (status === "failed") return "settings-status-dot--failed";
+  if (status === "system") return "settings-status-dot--muted";
+  return "settings-status-dot--muted";
 }
 
 function formatAutomationUnit(
@@ -5452,7 +5449,7 @@ function AppsCatalogSettings({
       ) : null}
 
       {requiresRestartPending ? (
-        <div className="flex flex-col gap-3 rounded-[12px] border border-amber-500/20 bg-amber-500/8 px-4 py-3 text-[12.5px] text-amber-800 dark:text-amber-200 sm:flex-row sm:items-center sm:justify-between">
+        <div className="settings-warning-panel flex flex-col gap-3 rounded-[12px] px-4 py-3 text-[12.5px] sm:flex-row sm:items-center sm:justify-between">
           <span>{tx("settings.apps.restartRequired", "Restart nanobot to apply updated apps and features.")}</span>
           {onRestart ? (
             <Button
@@ -5889,7 +5886,7 @@ function McpAppsCatalogRow({
                 <span className="mb-1 block text-[11.5px] font-medium text-muted-foreground">
                   {field.label}
                   {field.configured ? (
-                    <span className="ml-1 font-normal text-emerald-600 dark:text-emerald-300">
+                    <span className="settings-field-configured ml-1 font-normal">
                       {tx("settings.mcp.configured", "configured")}
                     </span>
                   ) : null}
@@ -5970,7 +5967,7 @@ function McpAppsCatalogRow({
                   className={cn(
                     "max-w-full rounded-full border px-2.5 py-1 font-mono text-[11px] transition-colors",
                     selected
-                      ? "border-blue-500/25 bg-blue-500/10 text-blue-700 dark:text-blue-300"
+                      ? "settings-chip-selected"
                       : "border-border/55 bg-muted/30 text-muted-foreground hover:bg-muted/60",
                   )}
                 >
@@ -6422,7 +6419,7 @@ function CliAppReadyPanel({
               {app.display_name}
             </h3>
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
-              <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-300" aria-hidden />
+              <Check className="settings-ready-icon h-3 w-3" aria-hidden />
               {t("settings.cliApps.readyStatus", { defaultValue: "Ready" })}
             </span>
           </div>
@@ -7262,7 +7259,7 @@ function ProviderPickerIcon({
     return (
       <span
         data-testid="provider-picker-unconfigured-icon"
-        className="grid h-5 w-5 shrink-0 place-items-center text-amber-700 dark:text-amber-200"
+        className="provider-picker-icon--unconfigured grid h-5 w-5 shrink-0 place-items-center"
         aria-hidden
       >
         <CircleAlert className="h-4 w-4" strokeWidth={1.8} />
@@ -7886,7 +7883,7 @@ function ModelPresetOptionContent({
         <span
           className={cn(
             "block truncate font-medium",
-            providerConfigured ? "text-foreground" : "text-amber-800 dark:text-amber-200",
+            providerConfigured ? "text-foreground" : "provider-picker-label--unconfigured",
           )}
         >
           {title}
@@ -8044,7 +8041,7 @@ function SettingsStatusMessage({
     <span
       className={cn(
         "inline-flex items-center gap-2",
-        tone === "accent" && "font-medium text-blue-600 dark:text-blue-300",
+        tone === "accent" && "settings-meta--accent font-medium",
         tone === "danger" && "font-medium text-destructive",
       )}
     >
@@ -8052,8 +8049,7 @@ function SettingsStatusMessage({
         <span
           className={cn(
             "h-1.5 w-1.5 shrink-0 rounded-full",
-            tone === "accent" &&
-              "bg-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.14)] dark:bg-blue-400 dark:shadow-[0_0_0_3px_rgba(96,165,250,0.18)]",
+            tone === "accent" && "settings-meta-dot--accent",
             tone === "danger" && "bg-destructive/70",
           )}
           aria-hidden
@@ -8074,10 +8070,10 @@ function StatusPill({
   return (
     <span
       className={cn(
-        "inline-flex max-w-[260px] items-center rounded-full px-2.5 py-1 text-[12px] font-medium",
-        tone === "success" && "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-        tone === "warning" && "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-        tone === "neutral" && "bg-muted text-muted-foreground",
+        "settings-status-pill inline-flex max-w-[260px] items-center rounded-full px-2.5 py-1 text-[12px] font-medium",
+        tone === "success" && "settings-status-pill--success",
+        tone === "warning" && "settings-status-pill--warning",
+        tone === "neutral" && "settings-status-pill--neutral",
       )}
     >
       <span className="truncate">{children}</span>
@@ -8132,11 +8128,9 @@ function ToggleButton({
       aria-label={ariaLabel ?? label}
       onClick={() => onChange(!checked)}
       className={cn(
-        "relative inline-flex h-[22px] w-[38px] shrink-0 items-center rounded-full p-[2px]",
+        "settings-toggle relative inline-flex h-[22px] w-[38px] shrink-0 items-center rounded-full p-[2px]",
         "transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        checked
-          ? "bg-[#2997FF] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.035)]"
-          : "bg-muted shadow-[inset_0_0_0_1px_rgba(0,0,0,0.035)] hover:bg-muted/80",
+        checked ? "settings-toggle--checked" : "settings-toggle--unchecked",
       )}
     >
       <span

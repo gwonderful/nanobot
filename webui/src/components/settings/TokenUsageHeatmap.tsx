@@ -147,12 +147,12 @@ function tokenUsageLevel(tokens: number, max: number): number {
 }
 
 function tokenUsageCellClass(level: number, future: boolean): string {
-  if (future) return "bg-transparent ring-1 ring-neutral-200/70 dark:ring-white/[0.045]";
-  if (level === 4) return "bg-sky-300 dark:bg-sky-300";
-  if (level === 3) return "bg-sky-400/85 dark:bg-sky-500/80";
-  if (level === 2) return "bg-sky-500/60 dark:bg-sky-700/85";
-  if (level === 1) return "bg-sky-500/30 dark:bg-sky-900/80";
-  return "bg-neutral-200/70 ring-1 ring-black/[0.025] dark:bg-white/[0.08] dark:ring-white/[0.035]";
+  if (future) return "token-usage-cell--future";
+  if (level === 4) return "token-usage-cell--level-4";
+  if (level === 3) return "token-usage-cell--level-3";
+  if (level === 2) return "token-usage-cell--level-2";
+  if (level === 1) return "token-usage-cell--level-1";
+  return "token-usage-cell--empty";
 }
 
 export function TokenUsageHeatmap({

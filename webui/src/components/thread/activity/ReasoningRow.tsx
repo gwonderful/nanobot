@@ -39,7 +39,7 @@ export function ReasoningRow({
             "prose-headings:mt-2 prose-headings:mb-1 prose-headings:font-medium",
             "prose-headings:text-muted-foreground/88 prose-strong:text-muted-foreground",
             "prose-h1:text-[15px] prose-h2:text-[13.5px] prose-h3:text-[12.5px] prose-h4:text-[12px]",
-            "prose-a:text-blue-500 prose-a:underline hover:prose-a:text-blue-600 dark:prose-a:text-blue-300 dark:hover:prose-a:text-blue-200",
+            "prose-a:text-foreground/70 prose-a:underline hover:prose-a:text-foreground dark:prose-a:text-foreground/72 dark:hover:prose-a:text-foreground",
             "prose-code:text-[0.92em]",
           )}
         >
@@ -67,13 +67,17 @@ function ReasoningMarker({ streaming }: { streaming: boolean }) {
 
   if (streaming) {
     return (
-      <CircleDashed
+      <span
         data-testid="activity-reasoning-marker"
         data-state="thinking"
-        className="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground/55"
-        strokeWidth={1.8}
+        className="activity-step__mark grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-muted-foreground/24 bg-background text-muted-foreground/60"
         aria-hidden
-      />
+      >
+        <CircleDashed
+          className="h-2.5 w-2.5 animate-spin"
+          strokeWidth={1.9}
+        />
+      </span>
     );
   }
   return (
@@ -81,10 +85,10 @@ function ReasoningMarker({ streaming }: { streaming: boolean }) {
       data-testid="activity-reasoning-marker"
       data-state="done"
       className={cn(
-        "grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-emerald-500/28 text-emerald-500/78",
-        "bg-emerald-500/[0.035] transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out",
+        "activity-step__mark grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border bg-background",
+        "transition-[border-color,background-color,box-shadow,transform] duration-300 ease-out",
         justCompleted
-          && "animate-in fade-in-0 zoom-in-75 shadow-[0_0_0_3px_rgba(16,185,129,0.10)] motion-reduce:animate-none",
+          && "animate-in fade-in-0 zoom-in-75 motion-reduce:animate-none",
       )}
       aria-hidden
     >

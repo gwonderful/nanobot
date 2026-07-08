@@ -72,10 +72,9 @@ function FileEditRow({
       marker={(
         <span
           className={cn(
-            "grid h-3.5 w-3.5 place-items-center rounded-full border bg-background transition-colors",
+            "activity-step__mark grid h-3.5 w-3.5 place-items-center rounded-full border bg-background transition-colors",
             failed && "border-destructive/30 text-destructive/78",
             editing && "border-muted-foreground/24 text-muted-foreground/65",
-            !failed && !editing && "border-emerald-500/28 text-emerald-500/78",
           )}
         >
           {statusIcon}

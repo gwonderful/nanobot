@@ -283,10 +283,8 @@ function AutomationSourceBadge({ label, triggerLabel }: { label: string; trigger
   return (
     <div
       className={cn(
-        "mb-2 inline-flex max-w-full items-center gap-1.5 rounded-full px-2 py-1",
-        "border border-sky-500/15 bg-sky-500/[0.06]",
-        "text-[11px] font-medium leading-none text-sky-700",
-        "dark:border-sky-300/15 dark:bg-sky-300/[0.08] dark:text-sky-200/80",
+        "automation-source-badge mb-2 inline-flex max-w-full items-center gap-1.5 rounded-full px-2 py-1",
+        "text-[11px] font-medium leading-none",
       )}
       title={triggerLabel}
     >
@@ -647,17 +645,19 @@ export function ReasoningBubble({
       <button
         type="button"
         onClick={onToggle}
+        data-active={streaming ? "true" : undefined}
         className={cn(
-          "group flex w-full items-center gap-2 rounded-md px-2 py-1.5",
+          "activity-header group flex w-full items-center gap-2 rounded-lg px-2 py-1.5",
           "text-xs text-muted-foreground transition-colors hover:bg-muted/45",
         )}
         aria-expanded={open}
         aria-live={streaming ? "polite" : undefined}
       >
-        <Sparkles
-          className={cn("h-3.5 w-3.5", streaming && "animate-pulse")}
-          aria-hidden
-        />
+        <span className="activity-step__mark grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border bg-background" aria-hidden>
+          <Sparkles
+            className={cn("h-2.5 w-2.5", streaming && "animate-pulse")}
+          />
+        </span>
         <StreamingLabelSheen active={streaming} className="min-w-0 flex-1 text-left">
           {streaming
             ? t("message.reasoningStreaming", { defaultValue: "Thinking…" })
@@ -674,7 +674,7 @@ export function ReasoningBubble({
       {open && text.length > 0 && (
         <div
           className={cn(
-            "mt-1 min-w-0 border-l border-muted-foreground/20 pl-3",
+            "activity-panel mt-1 min-w-0 px-3 py-2",
             !embeddedInCluster && "animate-in fade-in-0 slide-in-from-top-1 duration-200",
           )}
         >
@@ -687,7 +687,7 @@ export function ReasoningBubble({
               "prose-headings:mt-2 prose-headings:mb-1 prose-headings:font-medium",
               "prose-headings:text-muted-foreground/92 prose-strong:text-muted-foreground",
               "prose-h1:text-[15px] prose-h2:text-[13.5px] prose-h3:text-[12.5px] prose-h4:text-[12px]",
-              "prose-a:text-blue-500 prose-a:underline hover:prose-a:text-blue-600 dark:prose-a:text-blue-300 dark:hover:prose-a:text-blue-200",
+              "prose-a:text-foreground/70 prose-a:underline hover:prose-a:text-foreground dark:prose-a:text-foreground/72 dark:hover:prose-a:text-foreground",
               "prose-code:text-[0.92em]",
             )}
           >
@@ -720,12 +720,14 @@ export function TraceGroup({ message, animClass }: TraceGroupProps) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "group flex w-full items-center gap-2 rounded-md px-2 py-1.5",
+          "activity-header group flex w-full items-center gap-2 rounded-lg px-2 py-1.5",
           "text-xs text-muted-foreground transition-colors hover:bg-muted/45",
         )}
         aria-expanded={open}
       >
-        <Wrench className="h-3.5 w-3.5" aria-hidden />
+        <span className="activity-step__mark grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border bg-background" aria-hidden>
+          <Wrench className="h-2.5 w-2.5" />
+        </span>
         <span className="font-medium">
           {count === 1
             ? t("message.toolSingle")
@@ -742,7 +744,7 @@ export function TraceGroup({ message, animClass }: TraceGroupProps) {
       {open && (
         <ul
           className={cn(
-            "mt-1 space-y-0.5 border-l border-muted-foreground/20 pl-3",
+            "activity-panel mt-1 space-y-0.5 px-3 py-2",
             "animate-in fade-in-0 slide-in-from-top-1 duration-200",
           )}
         >

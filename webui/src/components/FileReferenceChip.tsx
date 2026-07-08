@@ -74,12 +74,10 @@ export function FileReferenceChip({
               onClick={interactive ? openPreview : undefined}
               onKeyDown={interactive ? onKeyDown : undefined}
               className={cn(
-                "inline-flex max-w-full items-baseline gap-[0.28em] font-medium leading-[inherit]",
-                "text-sky-600 transition-colors hover:text-sky-700",
-                "dark:text-sky-300 dark:hover:text-sky-200",
+                "file-reference-chip inline-flex max-w-full items-baseline gap-[0.28em] font-medium leading-[inherit]",
                 interactive && [
                   "cursor-pointer rounded-[5px]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/45",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25",
                 ],
               )}
             >
@@ -95,7 +93,7 @@ export function FileReferenceChip({
                 {display === "path" && directory ? (
                   <>
                     <span className="text-muted-foreground/65">{directory}</span>
-                    <span className="font-semibold text-sky-700 dark:text-sky-200">{name}</span>
+                    <span className="file-reference-chip__name font-semibold">{name}</span>
                   </>
                 ) : (
                   displayText
@@ -219,7 +217,7 @@ export function FileReferenceIcon({ kind }: { kind: FileReferenceKind }) {
     return (
       <svg
         aria-hidden
-        className="h-[0.92em] w-[0.92em] shrink-0 translate-y-[0.11em] text-sky-500 dark:text-sky-300"
+        className="file-reference-icon h-[0.92em] w-[0.92em] shrink-0 translate-y-[0.11em]"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -238,7 +236,7 @@ export function FileReferenceIcon({ kind }: { kind: FileReferenceKind }) {
     return (
       <svg
         aria-hidden
-        className="h-[0.92em] w-[0.92em] shrink-0 translate-y-[0.11em] text-sky-500 dark:text-sky-300"
+        className="file-reference-icon h-[0.92em] w-[0.92em] shrink-0 translate-y-[0.11em]"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -255,7 +253,7 @@ export function FileReferenceIcon({ kind }: { kind: FileReferenceKind }) {
   return (
     <svg
       aria-hidden
-      className="h-[0.96em] w-[0.96em] shrink-0 translate-y-[0.12em] text-sky-500 dark:text-sky-300"
+      className="file-reference-icon h-[0.96em] w-[0.96em] shrink-0 translate-y-[0.12em]"
       viewBox="0 0 24 24"
       fill="none"
     >

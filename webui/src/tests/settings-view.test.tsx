@@ -289,6 +289,24 @@ describe("SettingsView Apps catalog", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses the shared elevated styling hooks for the settings sidebar navigation", () => {
+    mockSettingsFetch();
+    renderSettingsView({
+      initialSection: "overview",
+      initialSettings: settingsPayload(),
+    });
+
+    const nav = screen.getByRole("navigation", { name: "Settings sections" });
+    expect(nav).toHaveClass("settings-nav");
+    expect(nav.closest("aside")).toHaveClass("settings-sidebar-shell");
+
+    const overview = within(nav).getByRole("button", { name: "Overview" });
+    const models = within(nav).getByRole("button", { name: "Models" });
+    expect(overview).toHaveClass("settings-nav-item", "settings-nav-item--active");
+    expect(models).toHaveClass("settings-nav-item");
+    expect(models).not.toHaveClass("settings-nav-item--active");
+  });
+
   it("groups archived conversations and filters only archived rows", async () => {
     mockSettingsFetch();
     renderSettingsView({
@@ -947,6 +965,10 @@ describe("SettingsView Apps catalog", () => {
       name: "Current configuration",
     });
     expect(configurationButton).toHaveTextContent("Not configured");
+    expect(configurationButton.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
+    const unconfiguredIcon = within(configurationButton).getByTestId("provider-picker-unconfigured-icon");
+    expect(unconfiguredIcon).toHaveClass("provider-picker-icon--unconfigured");
+    expect(unconfiguredIcon.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
     expect(configurationButton).toHaveTextContent("Company Proxy · companyProxy/gpt-4o");
   });
 
@@ -1005,6 +1027,12 @@ describe("SettingsView Apps catalog", () => {
     });
     expect(configurationButton).toHaveTextContent("Not configured");
     expect(configurationButton).toHaveTextContent("OpenAI Codex · openai-codex/gpt-5.1-codex");
+    expect(configurationButton.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
+    const oauthUnconfiguredIcon = within(configurationButton).getByTestId(
+      "provider-picker-unconfigured-icon",
+    );
+    expect(oauthUnconfiguredIcon).toHaveClass("provider-picker-icon--unconfigured");
+    expect(oauthUnconfiguredIcon.className).not.toMatch(/blue|sky|orange|amber|emerald|#2997ff/i);
     expect(await screen.findByRole("button", { name: "Sign in" })).toBeInTheDocument();
   });
 

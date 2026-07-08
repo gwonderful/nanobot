@@ -33,6 +33,28 @@
     --sidebar-border: 0 0% 89.8%;
     --scrollbar-thumb: hsl(var(--muted-foreground) / 0.26);
     --scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.42);
+    --ui-accent: 240 4% 34%;
+    --ui-accent-foreground: 0 0% 100%;
+    --ui-accent-soft: hsl(var(--ui-accent) / 0.1);
+    --ui-success: 142 42% 34%;
+    --ui-warning: 35 55% 42%;
+    --surface-base: hsl(var(--background));
+    --surface-soft: hsl(0 0% 97.4%);
+    --surface-elevated: hsl(var(--card));
+    --surface-floating: hsl(var(--popover) / 0.98);
+    --surface-inset: hsl(0 0% 94.8%);
+    --border-soft: hsl(var(--border) / 0.58);
+    --border-strong: hsl(0 0% 78% / 0.86);
+    --focus-soft: 0 0 0 3px hsl(var(--ui-accent) / 0.16);
+    --shadow-soft: 0 1px 2px rgb(15 23 42 / 0.05), 0 8px 22px -18px rgb(15 23 42 / 0.3);
+    --shadow-elevated: 0 1px 2px rgb(15 23 42 / 0.06), 0 14px 34px -26px rgb(15 23 42 / 0.38);
+    --shadow-floating: 0 2px 8px rgb(15 23 42 / 0.08), 0 24px 52px -34px rgb(15 23 42 / 0.34);
+    --shadow-inset-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.72);
+    --duration-fast: 150ms;
+    --duration-base: 220ms;
+    --duration-slow: 280ms;
+    --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+    --motion-rise: 6px;
   }
 
   .dark {
@@ -63,6 +85,23 @@
     --sidebar-border: 0 0% 18%;
     --scrollbar-thumb: hsl(var(--muted-foreground) / 0.28);
     --scrollbar-thumb-hover: hsl(var(--muted-foreground) / 0.44);
+    --ui-accent: 0 0% 76%;
+    --ui-accent-foreground: 0 0% 9%;
+    --ui-accent-soft: hsl(var(--ui-accent) / 0.13);
+    --ui-success: 150 42% 56%;
+    --ui-warning: 39 54% 62%;
+    --surface-base: hsl(var(--background));
+    --surface-soft: hsl(0 0% 13.2%);
+    --surface-elevated: hsl(var(--card));
+    --surface-floating: hsl(var(--popover) / 0.98);
+    --surface-inset: hsl(0 0% 9%);
+    --border-soft: hsl(var(--border) / 0.66);
+    --border-strong: hsl(0 0% 28% / 0.9);
+    --focus-soft: 0 0 0 3px hsl(var(--ui-accent) / 0.18);
+    --shadow-soft: 0 1px 2px rgb(0 0 0 / 0.24), 0 10px 24px -18px rgb(0 0 0 / 0.72);
+    --shadow-elevated: 0 1px 2px rgb(0 0 0 / 0.28), 0 18px 38px -26px rgb(0 0 0 / 0.78);
+    --shadow-floating: 0 2px 10px rgb(0 0 0 / 0.36), 0 28px 58px -34px rgb(0 0 0 / 0.86);
+    --shadow-inset-highlight: inset 0 1px 0 hsl(0 0% 100% / 0.06);
   }
 }
 
@@ -197,6 +236,1041 @@
 
   .shadow-inner-right {
     box-shadow: inset -9px 0 6px -1px rgb(0 0 0 / 0.02);
+  }
+
+  .surface-soft {
+    background: var(--surface-soft);
+    border-color: var(--border-soft);
+  }
+
+  .surface-elevated {
+    background: var(--surface-elevated);
+    border-color: var(--border-soft);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .surface-floating {
+    background: var(--surface-floating);
+    border-color: var(--border-soft);
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  .focus-soft-ring {
+    outline: none;
+    box-shadow: var(--focus-soft);
+  }
+
+  .transition-soft {
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-out-soft);
+  }
+
+  .motion-rise-in {
+    animation: motion-rise-in var(--duration-base) var(--ease-out-soft) both;
+  }
+
+  .sidebar-shell:not(.sidebar-shell--transparent) {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, hsl(var(--sidebar)) 94%, hsl(var(--foreground) / 0.018)),
+        hsl(var(--sidebar))
+      );
+    box-shadow:
+      inset -1px 0 0 hsl(var(--sidebar-border) / 0.72),
+      inset 1px 0 0 hsl(var(--background) / 0.72);
+  }
+
+  .dark .sidebar-shell:not(.sidebar-shell--transparent) {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, hsl(var(--sidebar)) 88%, hsl(var(--foreground) / 0.035)),
+        hsl(var(--sidebar))
+      );
+    box-shadow:
+      inset -1px 0 0 hsl(var(--sidebar-border) / 0.78),
+      inset 1px 0 0 hsl(var(--foreground) / 0.04);
+  }
+
+  .sidebar-action-button {
+    border: 1px solid transparent;
+    background: transparent;
+    box-shadow: inset 0 1px 0 transparent;
+    transition:
+      width var(--duration-slow) var(--ease-out-soft),
+      padding var(--duration-slow) var(--ease-out-soft),
+      border-radius var(--duration-slow) var(--ease-out-soft),
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-base) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-base) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .sidebar-action-button:hover,
+  .sidebar-action-button:focus-visible {
+    background: color-mix(in srgb, hsl(var(--sidebar-accent)) 70%, transparent);
+    border-color: hsl(var(--sidebar-border) / 0.48);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+    transform: translateY(-1px);
+  }
+
+  .sidebar-action-button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-inset-highlight);
+  }
+
+  .sidebar-action-button--primary {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 92%, hsl(var(--foreground) / 0.026)),
+        color-mix(in srgb, var(--surface-elevated) 96%, transparent)
+      );
+    border-color: hsl(var(--sidebar-border) / 0.72);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .sidebar-action-button--primary:hover,
+  .sidebar-action-button--primary:focus-visible {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
+  }
+
+  .sidebar-action-button--active {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 90%, hsl(var(--foreground) / 0.03)),
+        color-mix(in srgb, hsl(var(--sidebar-accent)) 72%, transparent)
+      );
+    border-color: hsl(var(--sidebar-border) / 0.72);
+    box-shadow:
+      inset 0 1px 0 hsl(var(--background) / 0.72),
+      inset 0 -10px 18px hsl(var(--foreground) / 0.028);
+  }
+
+  .sidebar-section-label {
+    color: hsl(var(--muted-foreground) / 0.7);
+  }
+
+  .sidebar-project-header {
+    border-radius: 12px;
+  }
+
+  .sidebar-project-toggle {
+    border: 1px solid transparent;
+    box-shadow: inset 0 1px 0 transparent;
+  }
+
+  .sidebar-project-toggle:hover,
+  .sidebar-project-toggle:focus-visible {
+    background: color-mix(in srgb, hsl(var(--sidebar-accent)) 46%, transparent);
+    border-color: hsl(var(--sidebar-border) / 0.42);
+    box-shadow: var(--shadow-inset-highlight);
+  }
+
+  .sidebar-chat-row {
+    border: 1px solid transparent;
+    background: transparent;
+    box-shadow: inset 0 1px 0 transparent;
+    transition-duration: var(--duration-base);
+    transition-timing-function: var(--ease-out-soft);
+  }
+
+  .sidebar-chat-row:hover,
+  .sidebar-chat-row:focus-within {
+    background: color-mix(in srgb, hsl(var(--sidebar-accent)) 44%, transparent);
+    border-color: hsl(var(--sidebar-border) / 0.45);
+    box-shadow: var(--shadow-inset-highlight);
+  }
+
+  .sidebar-chat-row--active {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--foreground) / 0.026)),
+        color-mix(in srgb, hsl(var(--sidebar-accent)) 66%, transparent)
+      );
+    border-color: hsl(var(--sidebar-border) / 0.72);
+    box-shadow:
+      inset 0 1px 0 hsl(var(--background) / 0.72),
+      inset 0 -10px 18px hsl(var(--foreground) / 0.026);
+  }
+
+  .dark .sidebar-action-button--active,
+  .dark .sidebar-chat-row--active {
+    box-shadow:
+      inset 0 1px 0 hsl(var(--foreground) / 0.055),
+      inset 0 -10px 18px hsl(0 0% 0% / 0.18);
+  }
+
+  .sidebar-icon-button {
+    border: 1px solid transparent;
+    background: transparent;
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      opacity var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .sidebar-icon-button:hover,
+  .sidebar-icon-button:focus-visible {
+    background: color-mix(in srgb, var(--surface-elevated) 84%, transparent);
+    border-color: hsl(var(--sidebar-border) / 0.52);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .settings-sidebar-shell {
+    border-color: var(--border-soft);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 86%, hsl(var(--foreground) / 0.018)),
+        color-mix(in srgb, var(--surface-soft) 72%, transparent)
+      );
+    box-shadow:
+      inset 0 -1px 0 hsl(0 0% 100% / 0.58),
+      var(--shadow-inset-highlight);
+  }
+
+  .dark .settings-sidebar-shell {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--foreground) / 0.024)),
+        color-mix(in srgb, var(--surface-soft) 76%, transparent)
+      );
+    box-shadow:
+      inset -1px 0 0 hsl(var(--border) / 0.64),
+      inset 1px 0 0 hsl(var(--foreground) / 0.035);
+  }
+
+  .settings-back-button {
+    border: 1px solid transparent;
+    color: hsl(var(--muted-foreground) / 0.84);
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .settings-back-button:hover,
+  .settings-back-button:focus-visible {
+    border-color: var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 80%, transparent);
+    color: hsl(var(--foreground) / 0.9);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+    transform: translateY(-1px);
+  }
+
+  .settings-nav-item {
+    border: 1px solid transparent;
+    background: transparent;
+    box-shadow: inset 0 1px 0 transparent;
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .settings-nav-item:hover,
+  .settings-nav-item:focus-visible {
+    border-color: var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 74%, transparent);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+    transform: translateY(-1px);
+  }
+
+  .settings-nav-item--active {
+    border-color: var(--border-soft);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--foreground) / 0.026)),
+        color-mix(in srgb, var(--surface-soft) 72%, transparent)
+      );
+    box-shadow:
+      var(--shadow-soft),
+      inset 0 1px 0 hsl(0 0% 100% / 0.58),
+      inset 0 -10px 18px hsl(var(--foreground) / 0.022);
+  }
+
+  .dark .settings-nav-item--active {
+    box-shadow:
+      var(--shadow-soft),
+      inset 0 1px 0 hsl(var(--foreground) / 0.055),
+      inset 0 -10px 18px hsl(0 0% 0% / 0.16);
+  }
+
+  .settings-nav-danger-button {
+    border: 1px solid transparent;
+    color: hsl(var(--muted-foreground) / 0.84);
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .settings-nav-danger-button:hover,
+  .settings-nav-danger-button:focus-visible {
+    border-color: hsl(var(--destructive) / 0.18);
+    background: hsl(var(--destructive) / 0.075);
+    color: hsl(var(--destructive));
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .confirm-dialog-shell {
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 92%, hsl(var(--foreground) / 0.018)),
+        color-mix(in srgb, var(--surface-elevated) 84%, var(--surface-soft))
+      );
+    box-shadow:
+      var(--shadow-inset-highlight),
+      0 1px 2px rgb(15 23 42 / 0.06),
+      0 14px 28px -24px rgb(15 23 42 / 0.35);
+  }
+
+  .dark .confirm-dialog-shell {
+    box-shadow:
+      var(--shadow-inset-highlight),
+      0 1px 2px rgb(0 0 0 / 0.28),
+      0 16px 30px -24px rgb(0 0 0 / 0.72);
+  }
+
+  .markdown-link {
+    color: hsl(var(--foreground) / 0.78);
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      text-decoration-color var(--duration-fast) var(--ease-out-soft);
+    text-decoration-color: hsl(var(--foreground) / 0.28);
+  }
+
+  .markdown-link:hover,
+  .markdown-link:focus-visible {
+    color: hsl(var(--foreground) / 0.94);
+    text-decoration-color: hsl(var(--foreground) / 0.5);
+  }
+
+  .markdown-content :where(a:not(.file-reference-chip):not(.not-prose *)) {
+    color: hsl(var(--foreground) / 0.78);
+    text-decoration-color: hsl(var(--foreground) / 0.28);
+  }
+
+  .markdown-content :where(a:not(.file-reference-chip):not(.not-prose *)):hover {
+    color: hsl(var(--foreground) / 0.94);
+    text-decoration-color: hsl(var(--foreground) / 0.5);
+  }
+
+  .file-reference-chip {
+    color: hsl(var(--ui-accent) / 0.88);
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .file-reference-chip:hover,
+  .file-reference-chip:focus-visible {
+    color: hsl(var(--foreground) / 0.9);
+    background: hsl(var(--foreground) / 0.035);
+  }
+
+  .file-reference-chip__name,
+  .file-reference-icon {
+    color: currentColor;
+  }
+
+  .workspace-access-button {
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .workspace-access-button--full {
+    border-color: color-mix(in srgb, var(--border-strong) 70%, hsl(var(--ui-warning) / 0.18));
+    background: color-mix(in srgb, var(--surface-elevated) 80%, hsl(var(--ui-warning) / 0.08));
+    color: hsl(var(--foreground) / 0.82);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .workspace-access-button--full:hover,
+  .workspace-access-button--full:focus-visible {
+    border-color: color-mix(in srgb, var(--border-strong) 84%, hsl(var(--ui-warning) / 0.18));
+    background: color-mix(in srgb, var(--surface-elevated) 72%, hsl(var(--ui-warning) / 0.11));
+    color: hsl(var(--foreground) / 0.94);
+  }
+
+  .workspace-access-menu-item--warning {
+    color: hsl(var(--foreground) / 0.84);
+  }
+
+  .workspace-access-menu-item--warning:focus {
+    color: hsl(var(--foreground) / 0.92);
+    background: color-mix(in srgb, hsl(var(--accent)) 76%, hsl(var(--ui-warning) / 0.08));
+  }
+
+  .settings-inline-status--success,
+  .settings-field-configured,
+  .settings-ready-icon {
+    color: hsl(var(--ui-success) / 0.9);
+  }
+
+  .settings-inline-status--accent,
+  .settings-meta--accent {
+    color: hsl(var(--foreground) / 0.82);
+  }
+
+  .settings-meta-dot--accent,
+  .settings-status-dot--active {
+    background: hsl(var(--ui-warning) / 0.72);
+    box-shadow: 0 0 0 3px hsl(var(--ui-warning) / 0.1);
+  }
+
+  .settings-status-dot--failed {
+    background: hsl(var(--destructive) / 0.7);
+    box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.08);
+  }
+
+  .settings-status-dot--muted {
+    background: hsl(var(--muted-foreground) / 0.45);
+  }
+
+  .settings-count-pill,
+  .settings-status-pill,
+  .settings-filter-count,
+  .settings-availability-pill--success {
+    box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.055);
+  }
+
+  .settings-count-pill {
+    background: color-mix(in srgb, var(--surface-elevated) 76%, hsl(var(--ui-warning) / 0.08));
+    color: hsl(var(--foreground) / 0.68);
+  }
+
+  .settings-status-pill--success,
+  .settings-availability-pill--success {
+    background: hsl(var(--ui-success) / 0.1);
+    color: hsl(var(--ui-success) / 0.9);
+  }
+
+  .settings-status-pill--warning {
+    background: hsl(var(--ui-warning) / 0.12);
+    color: hsl(var(--foreground) / 0.78);
+  }
+
+  .settings-status-pill--neutral {
+    background: color-mix(in srgb, var(--surface-elevated) 70%, hsl(var(--foreground) / 0.035));
+    color: hsl(var(--muted-foreground));
+  }
+
+  .settings-filter-tone--active,
+  .settings-filter-tone--active-selected,
+  .settings-filter-count--active {
+    color: hsl(var(--ui-success) / 0.9);
+  }
+
+  .settings-filter-tone--paused,
+  .settings-filter-tone--paused-selected,
+  .settings-filter-count--paused {
+    color: hsl(var(--ui-warning) / 0.9);
+  }
+
+  .settings-filter-tone--system,
+  .settings-filter-tone--system-selected,
+  .settings-filter-count--system {
+    color: hsl(var(--ui-accent) / 0.86);
+  }
+
+  .settings-filter-count--active {
+    background: hsl(var(--ui-success) / 0.1);
+  }
+
+  .settings-filter-count--paused {
+    background: hsl(var(--ui-warning) / 0.12);
+  }
+
+  .settings-filter-count--system {
+    background: hsl(var(--ui-accent) / 0.1);
+  }
+
+  .settings-warning-panel {
+    border: 1px solid color-mix(in srgb, var(--border-soft) 78%, hsl(var(--ui-warning) / 0.2));
+    background: color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--ui-warning) / 0.08));
+    color: hsl(var(--foreground) / 0.78);
+  }
+
+  .settings-chip-selected {
+    border-color: color-mix(in srgb, var(--border-strong) 78%, hsl(var(--ui-accent) / 0.14));
+    background: hsl(var(--ui-accent) / 0.1);
+    color: hsl(var(--foreground) / 0.86);
+  }
+
+  .provider-picker-icon--unconfigured,
+  .provider-picker-label--unconfigured {
+    color: hsl(var(--foreground) / 0.76);
+  }
+
+  .settings-toggle--checked {
+    background: hsl(var(--foreground) / 0.86);
+    box-shadow: inset 0 0 0 1px hsl(var(--background) / 0.08);
+  }
+
+  .settings-toggle--unchecked {
+    background: hsl(var(--muted));
+    box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.035);
+  }
+
+  .settings-toggle--unchecked:hover {
+    background: color-mix(in srgb, hsl(var(--muted)) 82%, hsl(var(--foreground) / 0.08));
+  }
+
+  .file-preview-warning {
+    border: 1px solid color-mix(in srgb, var(--border-soft) 76%, hsl(var(--ui-warning) / 0.22));
+    background: color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--ui-warning) / 0.08));
+    color: hsl(var(--foreground) / 0.76);
+  }
+
+  .token-usage-cell--future {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px hsl(var(--border) / 0.7);
+  }
+
+  .token-usage-cell--level-4 {
+    background: hsl(var(--ui-accent) / 0.72);
+  }
+
+  .token-usage-cell--level-3 {
+    background: hsl(var(--ui-accent) / 0.56);
+  }
+
+  .token-usage-cell--level-2 {
+    background: hsl(var(--ui-accent) / 0.38);
+  }
+
+  .token-usage-cell--level-1 {
+    background: hsl(var(--ui-accent) / 0.2);
+  }
+
+  .token-usage-cell--empty {
+    background: hsl(var(--muted) / 0.72);
+    box-shadow: inset 0 0 0 1px hsl(var(--foreground) / 0.025);
+  }
+
+  .session-info-status-dot--ok,
+  .diff-value--added {
+    color: hsl(var(--ui-success) / 0.88);
+  }
+
+  .session-info-status-dot--ok {
+    background: hsl(var(--ui-success) / 0.78);
+  }
+
+  .session-info-status-dot--muted {
+    background: hsl(var(--muted-foreground) / 0.35);
+  }
+
+  .session-activity-indicator__spinner {
+    border-color: hsl(var(--ui-warning) / 0.28);
+    border-top-color: hsl(var(--ui-warning) / 0.78);
+    box-shadow: 0 0 0 2px hsl(var(--ui-warning) / 0.08);
+  }
+
+  .session-activity-indicator__dot {
+    background: hsl(var(--ui-warning) / 0.72);
+    box-shadow:
+      0 0 0 2px hsl(var(--ui-warning) / 0.12),
+      inset 0 1px 0 hsl(var(--background) / 0.65);
+  }
+
+  .connection-badge {
+    color: hsl(var(--muted-foreground) / 0.72);
+    border: 1px solid transparent;
+    background: transparent;
+  }
+
+  .connection-badge:hover {
+    background: color-mix(in srgb, hsl(var(--sidebar-accent)) 58%, transparent);
+    border-color: hsl(var(--sidebar-border) / 0.48);
+  }
+
+  .connection-badge--idle {
+    color: hsl(var(--muted-foreground) / 0.72);
+  }
+
+  .connection-badge--attention {
+    color: hsl(var(--ui-warning) / 0.84);
+  }
+
+  .connection-badge--open {
+    color: hsl(var(--ui-success) / 0.84);
+  }
+
+  .connection-badge--error {
+    color: hsl(var(--destructive));
+  }
+
+  .composer-shell {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 94%, hsl(var(--foreground) / 0.025)),
+        var(--surface-elevated)
+      );
+    border: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
+    transition:
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-base) var(--ease-out-soft),
+      background-color var(--duration-base) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .composer-shell::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 1px solid hsl(var(--foreground) / 0.08);
+    border-radius: inherit;
+    box-shadow: 0 0 0 3px hsl(var(--foreground) / 0.045);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration-base) var(--ease-out-soft);
+  }
+
+  .composer-shell:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+  }
+
+  .composer-shell:focus-within {
+    border-color: color-mix(in srgb, var(--border-strong) 82%, hsl(var(--foreground) / 0.12));
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.06),
+      0 18px 42px -30px rgb(15 23 42 / 0.34),
+      0 0 0 3px hsl(var(--foreground) / 0.045),
+      var(--shadow-inset-highlight);
+  }
+
+  .composer-shell:focus-within::after {
+    opacity: 1;
+  }
+
+  .composer-shell--hero {
+    border-radius: 24px;
+  }
+
+  .composer-shell--thread {
+    border-radius: 20px;
+  }
+
+  .composer-shell--goal {
+    border-color: color-mix(in srgb, var(--border-strong) 84%, hsl(var(--ui-warning) / 0.12));
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.05),
+      0 18px 42px -34px rgb(15 23 42 / 0.38),
+      var(--shadow-inset-highlight);
+  }
+
+  .dark .composer-shell--goal {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.32),
+      0 18px 44px -32px rgb(0 0 0 / 0.62),
+      var(--shadow-inset-highlight);
+  }
+
+  .composer-shell--dragging {
+    border-color: var(--border-strong);
+    box-shadow:
+      var(--shadow-floating),
+      0 0 0 3px hsl(var(--foreground) / 0.05),
+      var(--shadow-inset-highlight);
+  }
+
+  .composer-input {
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      opacity var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .composer-run-strip {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-soft) 88%, hsl(var(--foreground) / 0.025)),
+        color-mix(in srgb, var(--surface-elevated) 94%, transparent)
+      );
+    border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 84%, hsl(var(--foreground) / 0.06));
+  }
+
+  .composer-run-strip__target {
+    color: hsl(var(--ui-warning) / 0.82);
+  }
+
+  .composer-run-strip__text {
+    color: hsl(var(--foreground) / 0.76);
+  }
+
+  .composer-run-strip__separator {
+    color: hsl(var(--muted-foreground) / 0.42);
+  }
+
+  .composer-goal-panel {
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    background: var(--surface-floating);
+    box-shadow: var(--shadow-floating), var(--shadow-inset-highlight);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
+    backdrop-filter: saturate(140%) blur(12px);
+  }
+
+  .composer-goal-panel__head {
+    border-bottom: 1px solid var(--border-soft);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-soft) 78%, transparent),
+        transparent
+      );
+  }
+
+  .composer-goal-panel__body {
+    background:
+      linear-gradient(
+        180deg,
+        transparent,
+        color-mix(in srgb, var(--surface-soft) 42%, transparent)
+      );
+  }
+
+  .composer-round-button,
+  .composer-tool-button,
+  .composer-submit-button {
+    transition:
+      color var(--duration-fast) var(--ease-out-soft),
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .composer-round-button {
+    border: 1px solid transparent;
+    color: hsl(var(--muted-foreground) / 0.86);
+  }
+
+  .composer-round-button:hover,
+  .composer-round-button:focus-visible {
+    border-color: var(--border-soft);
+    background: color-mix(in srgb, var(--surface-soft) 78%, transparent);
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  .composer-round-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px hsl(var(--foreground) / 0.05);
+  }
+
+  .composer-tool-button {
+    border: 1px solid var(--border-soft);
+    background: var(--surface-elevated);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .composer-tool-button:hover:not(:disabled),
+  .composer-tool-button:focus-visible:not(:disabled) {
+    border-color: var(--border-strong);
+    background: color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--foreground) / 0.035));
+    transform: translateY(-1px);
+  }
+
+  .composer-tool-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .composer-model-badge--setup {
+    border-color: color-mix(in srgb, var(--border-strong) 82%, hsl(var(--foreground) / 0.08));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 92%, hsl(var(--foreground) / 0.025)),
+        color-mix(in srgb, var(--surface-soft) 64%, transparent)
+      );
+    color: hsl(var(--foreground) / 0.76);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .composer-model-badge--setup:hover {
+    border-color: var(--border-strong);
+    background: color-mix(in srgb, var(--surface-elevated) 86%, hsl(var(--foreground) / 0.04));
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  .composer-model-badge__setup-icon {
+    border-radius: 9999px;
+    border: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 80%, hsl(var(--foreground) / 0.035));
+    color: hsl(var(--muted-foreground) / 0.92);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.5);
+  }
+
+  .capability-kind-chip {
+    border: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 74%, hsl(var(--foreground) / 0.04));
+    color: hsl(var(--muted-foreground) / 0.88);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.42);
+  }
+
+  .automation-source-badge {
+    border: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 82%, hsl(var(--foreground) / 0.035));
+    color: hsl(var(--muted-foreground) / 0.92);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.48);
+  }
+
+  .dark .composer-model-badge__setup-icon,
+  .dark .capability-kind-chip,
+  .dark .automation-source-badge {
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.06);
+  }
+
+  .composer-submit-button {
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .composer-submit-button--send {
+    border-color: hsl(var(--foreground) / 0.88);
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+
+  .composer-submit-button--send:hover:not(:disabled),
+  .composer-submit-button--send:focus-visible:not(:disabled) {
+    box-shadow: var(--shadow-elevated), var(--shadow-inset-highlight);
+    transform: translateY(-1px);
+  }
+
+  .composer-submit-button--stop {
+    border-color: color-mix(in srgb, var(--border-strong) 78%, hsl(var(--ui-warning) / 0.24));
+    background: color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--ui-warning) / 0.09));
+    color: hsl(var(--foreground) / 0.86);
+  }
+
+  .composer-submit-button--stop:hover:not(:disabled),
+  .composer-submit-button--stop:focus-visible:not(:disabled) {
+    background: color-mix(in srgb, var(--surface-elevated) 76%, hsl(var(--ui-warning) / 0.14));
+    color: hsl(var(--foreground));
+    transform: translateY(-1px);
+  }
+
+  .composer-submit-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+
+  .activity-header {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 92%, hsl(var(--foreground) / 0.025)),
+        color-mix(in srgb, var(--surface-elevated) 98%, transparent)
+      );
+    border: 1px solid transparent;
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.46);
+    transition:
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .activity-header:hover {
+    border-color: var(--border-soft);
+    background: color-mix(in srgb, var(--surface-elevated) 90%, hsl(var(--foreground) / 0.035));
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .activity-header[data-active="true"] {
+    border-color: color-mix(in srgb, var(--border-strong) 72%, hsl(var(--ui-warning) / 0.18));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--ui-warning) / 0.055)),
+        var(--surface-elevated)
+      );
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .activity-header__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    flex: 0 0 auto;
+    border-radius: 9999px;
+    background: hsl(var(--muted-foreground) / 0.38);
+    box-shadow: 0 0 0 3px hsl(var(--muted-foreground) / 0.08);
+  }
+
+  .activity-header[data-active="true"] .activity-header__dot {
+    background: hsl(var(--ui-warning) / 0.86);
+    box-shadow: 0 0 0 3px hsl(var(--ui-warning) / 0.12);
+    animation: activity-dot-breathe 1.8s ease-in-out infinite;
+  }
+
+  .activity-panel {
+    border: 1px solid var(--border-soft);
+    border-radius: 14px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 96%, hsl(var(--foreground) / 0.02)),
+        color-mix(in srgb, var(--surface-soft) 52%, transparent)
+      );
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .activity-group {
+    border-radius: 10px;
+  }
+
+  .activity-group + .activity-group {
+    border-top: 1px solid hsl(var(--border) / 0.42);
+  }
+
+  .activity-group__head {
+    color: hsl(var(--muted-foreground) / 0.78);
+  }
+
+  .activity-step {
+    transition:
+      background-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .activity-step:hover {
+    background: color-mix(in srgb, var(--surface-elevated) 74%, hsl(var(--foreground) / 0.026));
+  }
+
+  .activity-step[data-active="true"] {
+    background: color-mix(in srgb, var(--surface-elevated) 86%, hsl(var(--ui-warning) / 0.05));
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.42);
+  }
+
+  .activity-step__marker-rail::after {
+    background: color-mix(in srgb, hsl(var(--muted-foreground) / 0.14), transparent);
+  }
+
+  .activity-step__mark,
+  .activity-logo-mark {
+    box-shadow: var(--shadow-inset-highlight), 0 1px 2px rgb(15 23 42 / 0.05);
+    transition:
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft),
+      transform var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .activity-step[data-active="true"] .activity-step__mark,
+  .activity-step__mark:has(.animate-spin) {
+    border-color: hsl(var(--ui-warning) / 0.3);
+    background: color-mix(in srgb, var(--surface-elevated) 82%, hsl(var(--ui-warning) / 0.1));
+    color: hsl(var(--foreground) / 0.7);
+    box-shadow:
+      var(--shadow-inset-highlight),
+      0 0 0 3px hsl(var(--ui-warning) / 0.09);
+  }
+
+  .activity-step[data-tone="success"] .activity-step__mark {
+    border-color: hsl(var(--ui-success) / 0.28);
+    background: color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--ui-success) / 0.055));
+    color: hsl(var(--ui-success) / 0.84);
+    box-shadow:
+      var(--shadow-inset-highlight),
+      0 0 0 3px hsl(var(--ui-success) / 0.055);
+  }
+
+  .activity-step[data-tone="error"] .activity-step__mark {
+    box-shadow:
+      var(--shadow-inset-highlight),
+      0 0 0 3px hsl(var(--destructive) / 0.08);
+  }
+
+  .activity-logo-mark {
+    background: var(--surface-elevated);
+  }
+
+  .activity-logo-mark.animate-pulse {
+    animation-duration: 1.8s;
+  }
+
+  @keyframes activity-dot-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.82;
+    }
+    50% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+  }
+
+  @keyframes motion-rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--motion-rise));
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-rise-in {
+      animation: none;
+    }
+
+    .transition-soft {
+      transition-duration: 1ms;
+    }
+
+    .composer-shell,
+    .composer-round-button,
+    .composer-tool-button,
+    .composer-submit-button,
+    .sidebar-action-button,
+    .sidebar-chat-row,
+    .sidebar-icon-button,
+    .sidebar-project-toggle,
+    .settings-back-button,
+    .settings-nav-item,
+    .activity-header,
+    .activity-step,
+    .activity-step__mark,
+    .activity-logo-mark {
+      transition-duration: 1ms;
+      transform: none !important;
+    }
+
+    .activity-header__dot {
+      animation: none !important;
+    }
+
+    .session-activity-indicator__spinner {
+      animation: none !important;
+    }
   }
 
   /* Markdown body styles, ported from agent-chat-ui's markdown-styles.css. */
@@ -360,7 +1434,7 @@
     }
   }
   .run-pulse-icon {
-    color: hsl(204 82% 46%);
+    color: hsl(var(--ui-warning));
   }
   .run-pulse-icon__ring,
   .run-pulse-icon__dot {
@@ -372,14 +1446,14 @@
     position: absolute;
     height: 12px;
     width: 12px;
-    background: hsl(204 82% 46% / 0.22);
+    background: hsl(var(--ui-warning) / 0.22);
     animation: run-pulse-ring 1.55s ease-out infinite;
   }
   .run-pulse-icon__dot {
     height: 6px;
     width: 6px;
     background: currentColor;
-    box-shadow: 0 0 0 1px hsl(204 82% 46% / 0.14);
+    box-shadow: 0 0 0 1px hsl(var(--ui-warning) / 0.14);
     animation: run-pulse-dot 1.55s ease-in-out infinite;
   }
   @keyframes queued-prompt-row-enter {
@@ -419,42 +1493,25 @@
     }
   }
 
-  /** Goal halo: pale sky blue (not ``--primary``, which often reads as neutral gray). */
+  /** Goal halo: pale accent, not --primary, which often reads as neutral gray. */
   @keyframes goal-shell-glow-breathe {
     0%,
     100% {
-      filter: drop-shadow(0 0 10px hsl(204 72% 52% / 0.22))
-        drop-shadow(0 0 24px hsl(199 80% 58% / 0.14));
+      filter: drop-shadow(0 0 10px hsl(var(--ui-warning) / 0.12))
+        drop-shadow(0 0 22px hsl(var(--ui-warning) / 0.08));
     }
     50% {
-      filter: drop-shadow(0 0 17px hsl(204 78% 48% / 0.32))
-        drop-shadow(0 0 38px hsl(199 85% 55% / 0.2));
+      filter: drop-shadow(0 0 14px hsl(var(--ui-warning) / 0.18))
+        drop-shadow(0 0 30px hsl(var(--foreground) / 0.08));
     }
   }
   .goal-shell-glow {
     animation: goal-shell-glow-breathe 4.8s ease-in-out infinite;
   }
-  @keyframes goal-shell-glow-breathe-dark {
-    0%,
-    100% {
-      filter: drop-shadow(0 0 12px hsl(198 90% 72% / 0.28))
-        drop-shadow(0 0 28px hsl(195 95% 65% / 0.16));
-    }
-    50% {
-      filter: drop-shadow(0 0 20px hsl(198 95% 78% / 0.42))
-        drop-shadow(0 0 42px hsl(195 100% 70% / 0.24));
-    }
-  }
-  .dark .goal-shell-glow {
-    animation-name: goal-shell-glow-breathe-dark;
-  }
   @media (prefers-reduced-motion: reduce) {
     .goal-shell-glow {
       animation: none;
-      filter: drop-shadow(0 0 14px hsl(204 70% 50% / 0.24));
-    }
-    .dark .goal-shell-glow {
-      filter: drop-shadow(0 0 14px hsl(198 88% 70% / 0.32));
+      filter: drop-shadow(0 0 12px hsl(var(--ui-warning) / 0.14));
     }
   }
 
