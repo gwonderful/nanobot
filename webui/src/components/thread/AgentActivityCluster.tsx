@@ -447,6 +447,8 @@ export function AgentActivityCluster({
     <div className={cn("w-full", hasBodyBelow && "mb-2")}>
       <button
         type="button"
+        data-testid="agent-activity-header"
+        data-activity-state={isTurnStreaming ? "live" : "completed"}
         onClick={toggleOuter}
         className={cn(
           "group flex max-w-full items-center gap-1.5 rounded-lg bg-muted/35 px-2 py-1.5",

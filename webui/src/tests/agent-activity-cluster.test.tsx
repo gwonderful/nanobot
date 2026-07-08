@@ -375,6 +375,36 @@ describe("AgentActivityCluster", () => {
     expect(screen.queryByText("Thought for 12s")).not.toBeInTheDocument();
   });
 
+  it("keeps activity status readable across live and completed states", () => {
+    const { rerender } = render(
+      <AgentActivityCluster
+        messages={activityMessages()}
+        isTurnStreaming
+        hasBodyBelow
+      />,
+    );
+
+    const liveHeader = screen.getByTestId("agent-activity-header");
+    expect(liveHeader).toHaveAttribute("data-activity-state", "live");
+    expect(liveHeader).toHaveAttribute("aria-expanded", "true");
+    expect(liveHeader).toHaveClass("rounded-lg");
+    expect(screen.getByTestId("agent-activity-scroll")).toBeInTheDocument();
+
+    rerender(
+      <AgentActivityCluster
+        messages={activityMessages()}
+        isTurnStreaming={false}
+        hasBodyBelow
+        turnLatencyMs={12_400}
+      />,
+    );
+
+    const completedHeader = screen.getByTestId("agent-activity-header");
+    expect(completedHeader).toHaveAttribute("data-activity-state", "completed");
+    expect(completedHeader).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("Worked for 12s")).toBeInTheDocument();
+  });
+
   it("omits the duration when completed history has no reliable timing", () => {
     render(
       <AgentActivityCluster

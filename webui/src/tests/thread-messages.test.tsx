@@ -56,6 +56,43 @@ describe("ThreadMessages", () => {
     expect(rows[1]).toHaveClass("mt-4");
   });
 
+  it("keeps stable vertical rhythm markers across user activity and assistant units", () => {
+    const messages: UIMessage[] = [
+      { id: "u1", role: "user", content: "Can you check this?", createdAt: 1 },
+      {
+        id: "r1",
+        role: "assistant",
+        content: "",
+        reasoning: "I should inspect the workspace.",
+        createdAt: 2,
+      },
+      {
+        id: "t1",
+        role: "tool",
+        kind: "trace",
+        content: "list_files()",
+        traces: ["list_files()"],
+        createdAt: 3,
+      },
+      { id: "a1", role: "assistant", content: "I checked it.", createdAt: 4 },
+      { id: "u2", role: "user", content: "Summarize it.", createdAt: 5 },
+    ];
+
+    const { container } = render(<ThreadMessages messages={messages} />);
+    const rows = Array.from(container.querySelectorAll("[data-message-unit]"));
+
+    expect(rows.map((row) => row.getAttribute("data-message-unit"))).toEqual([
+      "user",
+      "activity",
+      "assistant",
+      "user",
+    ]);
+    expect(rows[0]).not.toHaveClass("mt-2", "mt-4", "mt-5");
+    expect(rows[1].className).toMatch(/\bmt-/);
+    expect(rows[2].className).toMatch(/\bmt-/);
+    expect(rows[3].className).toMatch(/\bmt-/);
+  });
+
   it("renders a fork boundary divider after the copied history", () => {
     const messages: UIMessage[] = [
       { id: "u1", role: "user", content: "original", createdAt: 1 },

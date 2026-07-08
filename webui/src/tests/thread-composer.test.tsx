@@ -1419,6 +1419,36 @@ describe("ThreadComposer", () => {
     expect(screen.queryByRole("button", { name: "Send message" })).not.toBeInTheDocument();
   });
 
+  it("keeps composer controls available without inventing disabled fake actions", () => {
+    const onSend = vi.fn();
+    const onStop = vi.fn();
+    render(
+      <ThreadComposer
+        onSend={onSend}
+        onStop={onStop}
+        isStreaming
+        modelLabel="gpt-5.5"
+        modelProvider="openai"
+        modelProviderLabel="OpenAI"
+        placeholder="Type your message..."
+      />,
+    );
+
+    const input = screen.getByLabelText("Message input");
+    const form = input.closest("form");
+
+    expect(form).toHaveAttribute("data-composer-state", "streaming");
+    expect(form).toHaveAttribute("data-composer-can-queue", "false");
+    expect(screen.getByRole("button", { name: "Stop response" })).toBeEnabled();
+    expect(screen.getByText("gpt-5.5").closest("[data-composer-control='model']")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /profile/i })).not.toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: "keep the UI concise" } });
+
+    expect(form).toHaveAttribute("data-composer-can-queue", "true");
+    expect(onSend).not.toHaveBeenCalled();
+  });
+
   it("queues plain guidance while a task is running", () => {
     const onSend = vi.fn();
     render(

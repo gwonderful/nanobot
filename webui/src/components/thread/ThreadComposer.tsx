@@ -1645,6 +1645,8 @@ export function ThreadComposer({
   return (
     <form
       ref={formRef}
+      data-composer-state={disabled ? "disabled" : isStreaming ? "streaming" : "idle"}
+      data-composer-can-queue={canQueueGuidance ? "true" : "false"}
       onSubmit={(e) => {
         e.preventDefault();
         submit();
@@ -2160,6 +2162,7 @@ function ComposerModelBadge({
 
   return (
     <Container
+      data-composer-control="model"
       title={title}
       type={interactive ? "button" : undefined}
       onClick={onClick}

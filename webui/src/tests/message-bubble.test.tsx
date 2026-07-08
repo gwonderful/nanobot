@@ -125,6 +125,44 @@ describe("MessageBubble", () => {
     expect(onForkFromHere).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps assistant markdown as document-style prose inside chat", async () => {
+    await import("@/components/MarkdownTextRenderer");
+    const message: UIMessage = {
+      id: "a-prose-baseline",
+      role: "assistant",
+      content: [
+        "## 能力说明",
+        "",
+        "普通段落说明当前能力边界。",
+        "",
+        "- **联网查询**：查资料。",
+        "- **代码处理**：改文件。",
+        "",
+        "```ts",
+        "const ready = true;",
+        "```",
+      ].join("\n"),
+      createdAt: Date.now(),
+    };
+
+    const { container } = render(<MessageBubble message={message} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole("heading", { level: 2, name: "能力说明" })).toBeInTheDocument();
+    });
+    const root = container.firstElementChild;
+    const markdown = container.querySelector(".markdown-content");
+    const codeBlock = container.querySelector("pre");
+
+    expect(root).toHaveAttribute("data-message-role", "assistant");
+    expect(root).toHaveAttribute("data-message-surface", "prose");
+    expect(markdown).toBeInTheDocument();
+    expect(markdown).toHaveClass("max-w-none");
+    expect(root).not.toHaveClass("rounded-[16px]", "bg-secondary/70");
+    expect(codeBlock).toBeInTheDocument();
+    expect(codeBlock).not.toHaveClass("max-w-none");
+  });
+
   it("renders installed CLI app mentions inside sent user messages", () => {
     const message: UIMessage = {
       id: "u-cli",

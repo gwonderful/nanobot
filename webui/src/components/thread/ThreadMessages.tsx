@@ -93,6 +93,8 @@ export function ThreadMessages({
             ? marginAfterPrevUnit(prev)
             : "";
         const next = units[index + 1];
+        const messageUnit =
+          unit.type === "activity" ? "activity" : unit.message.role;
         const hasBodyBelow =
           unit.type === "activity"
           && next?.type === "message"
@@ -110,7 +112,11 @@ export function ThreadMessages({
 
         return (
           <Fragment key={unitKeys[index]}>
-            <div className={marginTop} data-user-prompt-id={userPromptId}>
+            <div
+              className={marginTop}
+              data-message-unit={messageUnit}
+              data-user-prompt-id={userPromptId}
+            >
               {unit.type === "activity" ? (
                 <AgentActivityCluster
                   messages={unit.messages}

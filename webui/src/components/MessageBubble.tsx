@@ -202,6 +202,8 @@ export function MessageBubble({
     const hasText = message.content.trim().length > 0;
     return (
       <div
+        data-message-role="user"
+        data-message-surface="bubble"
         className={cn(
           "group ml-auto flex max-w-[min(90%,39rem)] items-start justify-end gap-2",
           baseAnim,
@@ -268,7 +270,12 @@ export function MessageBubble({
     && (!empty || hasReasoning || media.length > 0);
   const showAssistantFooterRow = showCopyButton || showForkButton || showLatencyFooter;
   return (
-    <div className={cn("w-full text-[15.5px] text-foreground/92", baseAnim)} style={{ lineHeight: "var(--cjk-line-height)" }}>
+    <div
+      data-message-role={message.role}
+      data-message-surface="prose"
+      className={cn("w-full text-[15.5px] text-foreground/92", baseAnim)}
+      style={{ lineHeight: "var(--cjk-line-height)" }}
+    >
       {hasReasoning ? (
         <ReasoningBubble
           text={reasoning}
