@@ -321,15 +321,6 @@ function ascii(bytes: Uint8Array, offset: number, length: number): string {
   return String.fromCharCode(...bytes.slice(offset, offset + length));
 }
 
-function composerShellFrom(input: HTMLElement): HTMLElement {
-  const form = input.closest("form");
-  const shell = Array.from(form?.children ?? []).find((child): child is HTMLElement =>
-    child instanceof HTMLElement && child.className.includes("group/composer")
-  );
-  if (!shell) throw new Error("Composer shell not found");
-  return shell;
-}
-
 describe("ThreadComposer", () => {
   it("renders a readonly hero model composer when provided", () => {
     render(
@@ -372,60 +363,12 @@ describe("ThreadComposer", () => {
     const input = screen.getByPlaceholderText("Type your message...");
     expect(input.className).toContain("min-h-[50px]");
     expect(input.className).toContain("text-[16px]");
-    const shell = composerShellFrom(input);
-    expect(shell.className).toContain("max-w-[49.5rem]");
-    expect(shell.className).toContain("rounded-[18px]");
-    expect(shell.className).toContain("shadow-[0_6px_18px_rgba(15,23,42,0.045)]");
-    expect(shell.className).toContain("focus-within:ring-1");
-    expect(shell.className).not.toContain("after:inset-[-1px]");
-    expect(screen.getByRole("button", { name: "Attach image" })).toHaveClass("bg-transparent", "border-transparent");
+    expect(input.parentElement?.parentElement?.className).toContain("max-w-[49.5rem]");
+    expect(input.parentElement?.parentElement?.className).toContain("rounded-[22px]");
+    expect(input.parentElement?.parentElement?.className).toContain("shadow-[0_12px_30px_rgba(15,23,42,0.07)]");
+    expect(screen.getByRole("button", { name: "Attach image" }).className).toContain("bg-card");
     expect(screen.getByRole("button", { name: "Send message" }).className).toContain("bg-foreground");
     expect(screen.queryByText(/Enter to send/)).not.toBeInTheDocument();
-  });
-
-  it("keeps primary action stable while secondary composer controls stay quiet", () => {
-    const onStop = vi.fn();
-    const { rerender } = render(
-      <ThreadComposer
-        onSend={vi.fn()}
-        onStop={onStop}
-        modelLabel="gpt-5.5"
-        modelProvider="openai"
-        modelProviderLabel="OpenAI"
-        placeholder="Type your message..."
-        onTranscribeAudio={vi.fn()}
-      />,
-    );
-
-    const input = screen.getByLabelText("Message input");
-    fireEvent.change(input, { target: { value: "send this" } });
-
-    const sendButton = screen.getByRole("button", { name: "Send message" });
-    expect(sendButton).toHaveAttribute("data-composer-control", "primary-action");
-    expect(sendButton).toHaveClass("h-9", "w-9");
-    expect(screen.getByRole("button", { name: "Attach image" })).toHaveClass("bg-transparent", "border-transparent");
-    expect(screen.getByRole("button", { name: "Voice input" })).toHaveClass("bg-transparent", "border-transparent");
-    expect(screen.getByText("gpt-5.5").closest("[data-composer-control='model']")).toHaveClass(
-      "bg-transparent",
-      "text-muted-foreground",
-    );
-
-    rerender(
-      <ThreadComposer
-        onSend={vi.fn()}
-        onStop={onStop}
-        isStreaming
-        modelLabel="gpt-5.5"
-        modelProvider="openai"
-        modelProviderLabel="OpenAI"
-        placeholder="Type your message..."
-        onTranscribeAudio={vi.fn()}
-      />,
-    );
-
-    const stopButton = screen.getByRole("button", { name: "Stop response" });
-    expect(stopButton).toHaveAttribute("data-composer-control", "primary-action");
-    expect(stopButton).toHaveClass("h-9", "w-9");
   });
 
   it("transcribes voice input into the composer without sending", async () => {
@@ -985,8 +928,6 @@ describe("ThreadComposer", () => {
     const palette = screen.getByRole("listbox", { name: "Slash commands" });
     expect(palette).toBeInTheDocument();
     expect(palette).toHaveStyle({ maxHeight: "288px" });
-    expect(palette).toHaveClass("rounded-[16px]");
-    expect(palette.className).toContain("shadow-[0_12px_36px_rgba(15,23,42,0.11)]");
     expect(screen.queryByRole("option", { name: /\/stop/i })).not.toBeInTheDocument();
     expect(screen.getByRole("option", { name: /\/history/i })).toHaveAttribute(
       "aria-selected",
@@ -1476,36 +1417,6 @@ describe("ThreadComposer", () => {
 
     expect(onStop).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole("button", { name: "Send message" })).not.toBeInTheDocument();
-  });
-
-  it("keeps composer controls available without inventing disabled fake actions", () => {
-    const onSend = vi.fn();
-    const onStop = vi.fn();
-    render(
-      <ThreadComposer
-        onSend={onSend}
-        onStop={onStop}
-        isStreaming
-        modelLabel="gpt-5.5"
-        modelProvider="openai"
-        modelProviderLabel="OpenAI"
-        placeholder="Type your message..."
-      />,
-    );
-
-    const input = screen.getByLabelText("Message input");
-    const form = input.closest("form");
-
-    expect(form).toHaveAttribute("data-composer-state", "streaming");
-    expect(form).toHaveAttribute("data-composer-can-queue", "false");
-    expect(screen.getByRole("button", { name: "Stop response" })).toBeEnabled();
-    expect(screen.getByText("gpt-5.5").closest("[data-composer-control='model']")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /profile/i })).not.toBeInTheDocument();
-
-    fireEvent.change(input, { target: { value: "keep the UI concise" } });
-
-    expect(form).toHaveAttribute("data-composer-can-queue", "true");
-    expect(onSend).not.toHaveBeenCalled();
   });
 
   it("queues plain guidance while a task is running", () => {

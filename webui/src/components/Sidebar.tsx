@@ -21,11 +21,6 @@ import type {
 import type { SidebarModel } from "@/lib/sidebar-model";
 import { cn } from "@/lib/utils";
 
-const SIDEBAR_CHROME_BUTTON_CLASS =
-  "rounded-full text-muted-foreground/82 transition-[color,background-color,box-shadow] hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-ring/45";
-const SIDEBAR_ACTION_ACTIVE_CLASS =
-  "bg-[hsl(var(--brand)/0.10)] text-sidebar-foreground ring-1 ring-[hsl(var(--brand)/0.18)] dark:bg-[hsl(var(--brand)/0.14)]";
-
 interface SidebarProps {
   sessions: ChatSummary[];
   activeKey: string | null;
@@ -100,7 +95,7 @@ export function Sidebar(props: SidebarProps) {
       className={cn(
         "flex h-full w-full min-w-0 flex-col text-sidebar-foreground",
         props.hostChromeInset ? "bg-transparent" : "bg-sidebar",
-        !props.hostChromeInset && "border-r border-sidebar-border/75",
+        !props.hostChromeInset && "border-r border-sidebar-border/60",
       )}
     >
       <div
@@ -118,10 +113,9 @@ export function Sidebar(props: SidebarProps) {
           onClick={collapsed ? props.onExpand : undefined}
           tabIndex={collapsed ? 0 : -1}
           className={cn(
-            "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden",
-            SIDEBAR_CHROME_BUTTON_CLASS,
+            "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl transition-colors",
             collapsed
-              ? "-ml-0.5"
+              ? "-ml-0.5 hover:bg-sidebar-accent/75"
               : "pointer-events-none -ml-0.5",
           )}
         >
@@ -138,7 +132,7 @@ export function Sidebar(props: SidebarProps) {
             size="icon"
             aria-label={t("sidebar.collapse")}
             onClick={props.onCollapse}
-            className={cn("h-7 w-7", SIDEBAR_CHROME_BUTTON_CLASS)}
+            className="h-7 w-7 rounded-lg text-muted-foreground/85 hover:bg-sidebar-accent/75 hover:text-sidebar-foreground"
           >
             <Menu className="h-3.5 w-3.5" />
           </Button>
@@ -283,12 +277,12 @@ function SidebarActionButton({
       title={title}
       onClick={() => onClick()}
       className={cn(
-        "group h-8 min-w-0 gap-2 overflow-hidden rounded-full font-medium text-sidebar-foreground/78 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-ring/45",
-        "transition-[width,padding,color,background-color,box-shadow] duration-200 ease-out",
+        "group h-8 min-w-0 gap-2 overflow-hidden rounded-full font-medium text-sidebar-foreground/85 hover:bg-sidebar-accent/75 hover:text-sidebar-foreground",
+        "transition-[width,padding,border-radius,color,background-color] duration-300 ease-out",
         collapsed
-          ? "w-9 justify-center gap-0 px-0"
+          ? "w-9 justify-center gap-0 rounded-xl px-0"
           : "w-full justify-start gap-2 px-3 text-[12.5px]",
-        active && SIDEBAR_ACTION_ACTIVE_CLASS,
+        active && "bg-sidebar-accent text-sidebar-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.55)]",
         className,
       )}
     >

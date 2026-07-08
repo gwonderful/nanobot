@@ -15,20 +15,15 @@ export default defineConfig(({ mode }) => {
       },
     },
     optimizeDeps: {
-      // Pre-bundle the syntax highlighter path because refractor/core is
-      // CommonJS and otherwise exposes `require` directly to the dev browser.
-      include: [
-        "refractor/core",
-        "react-syntax-highlighter/dist/esm/prism-async-light",
-        "react-syntax-highlighter/dist/esm/styles/prism/one-dark",
-        "react-syntax-highlighter/dist/esm/styles/prism/one-light",
-      ],
       // Keep dev reloads stable for dependencies that can rewrite generated
       // optimizer chunk filenames while a browser tab is still running. Do not
       // exclude the markdown/remark/rehype chain: Vite's pre-bundling is needed
       // there for CommonJS interop such as style-to-js.
       exclude: [
         "@radix-ui/react-dialog",
+        "react-syntax-highlighter/dist/esm/prism-async-light",
+        "react-syntax-highlighter/dist/esm/styles/prism/one-dark",
+        "react-syntax-highlighter/dist/esm/styles/prism/one-light",
       ],
     },
     build: {

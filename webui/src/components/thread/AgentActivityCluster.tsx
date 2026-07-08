@@ -246,10 +246,6 @@ export function AgentActivityCluster({
   const hasVisibleActivity = reasoningSteps > 0 || toolCalls > 0 || cliCount > 0 || mcpCount > 0 || fileCount > 0;
   const hasOnlyFileActivity = fileCount > 0 && messages.every(messageHasOnlyFileActivity);
   const hasNonReasoningActivity = toolCalls > 0 || cliCount > 0 || mcpCount > 0 || fileCount > 0;
-  const hasFailedCliRun = cliRuns.some((run) => run.status === "error");
-  const hasFailedMcpRun = mcpRuns.some((run) => run.status === "error");
-  const hasActivityFailure = hasFailedFiles || hasFailedCliRun || hasFailedMcpRun;
-  const activityTone = hasActivityFailure ? "warning" : isTurnStreaming ? "live" : "completed";
   const durationMs = activityDurationMs(messages, isTurnStreaming, now, turnLatencyMs);
   const activityDuration = formatActivityDuration(durationMs);
   const thoughtLabel = hasNonReasoningActivity
@@ -451,24 +447,10 @@ export function AgentActivityCluster({
     <div className={cn("w-full", hasBodyBelow && "mb-2")}>
       <button
         type="button"
-        data-testid="agent-activity-header"
-        data-activity-state={isTurnStreaming ? "live" : "completed"}
-        data-activity-tone={activityTone}
         onClick={toggleOuter}
         className={cn(
-          "group flex max-w-full items-center gap-1.5 rounded-lg border bg-muted/35 px-2 py-1.5",
-          "text-[12.5px] text-muted-foreground/76 transition-colors",
-          "hover:bg-muted/55 hover:text-muted-foreground",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          activityTone === "live" && [
-            "border-sky-500/15 bg-sky-500/[0.06] text-sky-700/85",
-            "motion-safe:animate-pulse dark:border-sky-300/15 dark:bg-sky-300/[0.08] dark:text-sky-200/80",
-          ],
-          activityTone === "completed" && "border-border/45",
-          activityTone === "warning" && [
-            "border-destructive/25 bg-destructive/[0.06] text-destructive/80",
-            "hover:bg-destructive/[0.08] hover:text-destructive dark:bg-destructive/[0.10]",
-          ],
+          "group flex max-w-full items-center gap-1.5 rounded-md px-1 py-1",
+          "text-[12.5px] text-muted-foreground/72 transition-colors hover:text-muted-foreground",
         )}
         aria-expanded={outerExpanded}
         aria-label={summary}
@@ -946,7 +928,7 @@ function TraceIconMark({
         data-testid={`activity-web-favicon-${trace.host}`}
         className={cn(
           "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border border-border/45 bg-background shadow-[inset_0_0_0_1px_rgba(0,0,0,0.02)]",
-          active && "motion-safe:animate-pulse",
+          active && "animate-pulse",
         )}
         aria-hidden
       >
@@ -1739,7 +1721,7 @@ function CliRunRow({ run, active, app }: { run: CliRunSummary; active: boolean; 
           data-testid={`activity-cli-logo-${run.name.toLowerCase()}`}
           className={cn(
             "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
-            rowActive && "motion-safe:animate-pulse",
+            rowActive && "animate-pulse",
           )}
           style={{
             borderColor: alphaColor(color, 22),
@@ -1850,7 +1832,7 @@ function McpRunRow({ run, active, preset }: { run: McpRunSummary; active: boolea
           data-testid={`activity-mcp-logo-${run.presetName.toLowerCase()}`}
           className={cn(
             "grid h-4 w-4 shrink-0 place-items-center overflow-hidden rounded-[4px] border text-[6.5px] font-semibold text-white",
-            rowActive && "motion-safe:animate-pulse",
+            rowActive && "animate-pulse",
           )}
           style={{
             borderColor: alphaColor(color, 22),

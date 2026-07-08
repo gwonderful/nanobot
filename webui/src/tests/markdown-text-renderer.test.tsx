@@ -4,68 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import MarkdownTextRenderer from "@/components/MarkdownTextRenderer";
 
 describe("MarkdownTextRenderer", () => {
-  it("uses the chat prose rhythm for readable assistant messages", () => {
-    const { container } = render(
-      <MarkdownTextRenderer>
-        {"First paragraph.\n\n- One\n- Two"}
-      </MarkdownTextRenderer>,
-    );
-
-    const root = container.querySelector(".markdown-content");
-    expect(root).toHaveClass("text-[15.5px]", "text-foreground/92");
-    expect(root).toHaveClass("prose-p:my-2.5", "prose-li:my-1");
-  });
-
-  it("keeps assistant document hierarchy compact inside chat", () => {
-    const { container } = render(
-      <MarkdownTextRenderer highlightCode={false}>
-        {[
-          "## What I can do",
-          "",
-          "Plain answer text.",
-          "",
-          "### Limits",
-          "",
-          "- First point",
-          "  - Nested point",
-          "- Second point",
-          "",
-          "```ts",
-          "const value = 'a very long line that should stay inside the chat viewport';",
-          "```",
-        ].join("\n")}
-      </MarkdownTextRenderer>,
-    );
-
-    const root = container.querySelector(".markdown-content");
-    const codeShell = container.querySelector(".chat-code-block");
-
-    expect(root).toHaveClass(
-      "prose-h2:mt-5",
-      "prose-h2:text-[1.05rem]",
-      "prose-h3:mt-4",
-      "prose-h3:text-[0.95rem]",
-      "prose-li:leading-relaxed",
-    );
-    expect(codeShell).toHaveClass("rounded-[10px]", "border-border/70", "bg-muted/20");
-    expect(codeShell?.querySelector("pre")).toHaveClass("overflow-x-auto");
-  });
-
-  it("tones file references as inline document links", () => {
-    render(
-      <MarkdownTextRenderer onOpenFilePreview={vi.fn()}>
-        {"See [MarkdownTextRenderer.tsx](/tmp/project/webui/src/components/MarkdownTextRenderer.tsx:12)."}
-      </MarkdownTextRenderer>,
-    );
-
-    const reference = screen.getByTestId("inline-file-path");
-    expect(reference.closest(".markdown-file-reference")).toBeInTheDocument();
-    expect(reference).toHaveAttribute(
-      "aria-label",
-      "/tmp/project/webui/src/components/MarkdownTextRenderer.tsx",
-    );
-  });
-
   it("renders clickable markdown links in blue", () => {
     render(<MarkdownTextRenderer>[local server](http://127.0.0.1:7891/)</MarkdownTextRenderer>);
 

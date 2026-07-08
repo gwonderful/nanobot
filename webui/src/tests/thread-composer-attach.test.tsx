@@ -70,9 +70,6 @@ describe("ThreadComposer — image attachments", () => {
     await waitFor(() =>
       expect(screen.getByTestId("composer-chip")).toBeInTheDocument(),
     );
-    const chip = screen.getByTestId("composer-chip");
-    expect(chip).toHaveClass("rounded-[10px]", "py-1");
-    expect(chip.querySelector("img")?.parentElement).toHaveClass("h-8", "w-8");
 
     const textarea = screen.getByLabelText(/message input/i);
     fireEvent.change(textarea, { target: { value: "hi" } });

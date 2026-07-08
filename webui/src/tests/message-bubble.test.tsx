@@ -4,33 +4,6 @@ import { describe, expect, it, vi } from "vitest";
 import { MessageBubble } from "@/components/MessageBubble";
 import type { CliAppInfo, McpPresetInfo, UIMessage } from "@/lib/types";
 
-vi.mock("@/components/MarkdownText", async () => {
-  const { default: MarkdownTextRenderer } = await vi.importActual<
-    typeof import("@/components/MarkdownTextRenderer")
-  >("@/components/MarkdownTextRenderer");
-
-  return {
-    MarkdownText: ({
-      children,
-      className,
-      onOpenFilePreview,
-    }: {
-      children: string;
-      className?: string;
-      onOpenFilePreview?: (path: string) => void;
-    }) => (
-      <MarkdownTextRenderer
-        className={className}
-        highlightCode={false}
-        onOpenFilePreview={onOpenFilePreview}
-      >
-        {children}
-      </MarkdownTextRenderer>
-    ),
-    preloadMarkdownText: vi.fn(),
-  };
-});
-
 const CLI_APPS: CliAppInfo[] = [
   {
     name: "zoom",
@@ -88,28 +61,6 @@ const MCP_PRESETS: McpPresetInfo[] = [
   },
 ];
 
-vi.mock("react-syntax-highlighter/dist/esm/prism-async-light", () => ({
-  default: ({
-    children,
-    language,
-  }: {
-    children: string;
-    language?: string;
-  }) => (
-    <pre data-testid="highlighted-code" data-language={language}>
-      <code>{children}</code>
-    </pre>
-  ),
-}));
-
-vi.mock("react-syntax-highlighter/dist/esm/styles/prism/one-dark", () => ({
-  default: {},
-}));
-
-vi.mock("react-syntax-highlighter/dist/esm/styles/prism/one-light", () => ({
-  default: {},
-}));
-
 describe("MessageBubble", () => {
   it("renders user messages as right-aligned pills", () => {
     const message: UIMessage = {
@@ -122,36 +73,10 @@ describe("MessageBubble", () => {
     const { container } = render(<MessageBubble message={message} />);
     const row = container.firstElementChild;
     const pill = screen.getByText("hello");
-    const avatar = screen.getByTestId("user-avatar-mark");
 
-    expect(row).toHaveClass("ml-auto", "flex", "items-start");
-    expect(pill).toHaveClass("ml-auto", "w-fit", "rounded-[16px]");
-    expect(avatar).toHaveAttribute("aria-hidden", "true");
-    expect(avatar.querySelector("svg")).toBeInTheDocument();
+    expect(row).toHaveClass("ml-auto", "flex");
+    expect(pill).toHaveClass("ml-auto", "w-fit", "rounded-[18px]");
     expect(screen.queryByRole("button", { name: "Fork" })).not.toBeInTheDocument();
-  });
-
-  it("uses the selected six-blade aperture mark for user avatars", () => {
-    const message: UIMessage = {
-      id: "u-avatar",
-      role: "user",
-      content: "avatar check",
-      createdAt: Date.now(),
-    };
-
-    render(<MessageBubble message={message} />);
-
-    const avatar = screen.getByTestId("user-avatar-mark");
-    const blades = avatar.querySelectorAll("[data-avatar-blade]");
-    const peachBlades = avatar.querySelectorAll('[data-avatar-tone="peach"]');
-    const charcoalBlades = avatar.querySelectorAll('[data-avatar-tone="charcoal"]');
-    const aperture = screen.getByTestId("user-avatar-aperture-center");
-
-    expect(avatar).toHaveAttribute("data-avatar-variant", "six-blade-aperture");
-    expect(blades).toHaveLength(6);
-    expect(peachBlades).toHaveLength(2);
-    expect(charcoalBlades).toHaveLength(4);
-    expect(aperture).toHaveAttribute("fill", "#FFF8EF");
   });
 
   it("renders fork control in completed assistant action rows", () => {
@@ -166,55 +91,8 @@ describe("MessageBubble", () => {
 
     render(<MessageBubble message={message} onForkFromHere={onForkFromHere} />);
 
-    const forkButton = screen.getByRole("button", { name: "Fork" });
-    expect(forkButton).toHaveClass("rounded-lg", "text-muted-foreground/80");
-    expect(forkButton).toHaveClass(
-      "opacity-70",
-      "hover:opacity-100",
-      "focus-visible:ring-offset-1",
-    );
-    expect(forkButton).not.toHaveClass("rounded-full");
-
-    fireEvent.click(forkButton);
+    fireEvent.click(screen.getByRole("button", { name: "Fork" }));
     expect(onForkFromHere).toHaveBeenCalledTimes(1);
-  });
-
-  it("keeps assistant markdown as document-style prose inside chat", async () => {
-    await import("@/components/MarkdownTextRenderer");
-    const message: UIMessage = {
-      id: "a-prose-baseline",
-      role: "assistant",
-      content: [
-        "## 能力说明",
-        "",
-        "普通段落说明当前能力边界。",
-        "",
-        "- **联网查询**：查资料。",
-        "- **代码处理**：改文件。",
-        "",
-        "```ts",
-        "const ready = true;",
-        "```",
-      ].join("\n"),
-      createdAt: Date.now(),
-    };
-
-    const { container } = render(<MessageBubble message={message} />);
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { level: 2, name: "能力说明" })).toBeInTheDocument();
-    });
-    const root = container.firstElementChild;
-    const markdown = container.querySelector(".markdown-content");
-    const codeBlock = container.querySelector("pre");
-
-    expect(root).toHaveAttribute("data-message-role", "assistant");
-    expect(root).toHaveAttribute("data-message-surface", "prose");
-    expect(markdown).toBeInTheDocument();
-    expect(markdown).toHaveClass("max-w-none");
-    expect(root).not.toHaveClass("rounded-[16px]", "bg-secondary/70");
-    expect(codeBlock).toBeInTheDocument();
-    expect(codeBlock).not.toHaveClass("max-w-none");
   });
 
   it("renders installed CLI app mentions inside sent user messages", () => {

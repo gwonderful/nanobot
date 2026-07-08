@@ -55,10 +55,6 @@ const INITIAL_VISIBLE_SESSIONS = 160;
 const VISIBLE_SESSIONS_INCREMENT = 160;
 const ACTION_MENU_CONTENT_CLASS = "w-[8.5rem] min-w-[8.5rem]";
 const ACTION_MENU_ITEM_CLASS = "grid w-[7.75rem] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2";
-const SIDEBAR_ROW_ACTIVE_CLASS =
-  "bg-[hsl(var(--brand)/0.10)] text-sidebar-foreground ring-1 ring-[hsl(var(--brand)/0.18)] dark:bg-[hsl(var(--brand)/0.14)]";
-const SIDEBAR_ICON_ACTION_CLASS =
-  "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-muted-foreground/70 transition-[opacity,color,background-color,box-shadow] hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45";
 const PINNED_SECTION_GROUP_ID = "section:pinned";
 const WORKSPACE_SECTION_GROUP_ID = "section:workspace";
 const CHATS_SECTION_GROUP_ID = "section:chats";
@@ -262,7 +258,7 @@ export const ChatList = memo(function ChatList({
           return (
             <section key={group.id} aria-label={group.label}>
               {index === firstProjectGroupIndex ? (
-                <div className="px-2 pb-1 text-[12px] font-medium text-muted-foreground/72">
+                <div className="px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
                   {labels.projects}
                 </div>
               ) : null}
@@ -319,11 +315,11 @@ export const ChatList = memo(function ChatList({
                       <li key={s.key} className="min-w-0">
                         <div
                           className={cn(
-                            "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
+                            "group flex min-w-0 max-w-full items-center gap-2 rounded-xl px-2 text-[13px] transition-colors",
                             compact ? "min-h-7" : "min-h-8",
                             active
-                              ? SIDEBAR_ROW_ACTIVE_CLASS
-                              : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
+                              ? "bg-sidebar-accent/70 text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.28)]"
+                              : "text-sidebar-foreground/82 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
                           )}
                         >
                           <button
@@ -367,8 +363,8 @@ export const ChatList = memo(function ChatList({
                           <DropdownMenu modal={false}>
                             <DropdownMenuTrigger
                               className={cn(
-                                SIDEBAR_ICON_ACTION_CLASS,
-                                "opacity-40 group-hover:opacity-100",
+                                "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-40 transition-opacity",
+                                "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
                                 "focus-visible:opacity-100",
                                 active && "opacity-100",
                               )}
@@ -738,7 +734,7 @@ function ModelSectionHeader({
   const canToggle = Boolean(onToggle);
 
   return (
-    <div className="group/section flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/72">
+    <div className="group/section flex min-w-0 items-center gap-2 px-2 pb-1 text-[12px] font-medium text-muted-foreground/65">
       {canToggle ? (
         <button
           type="button"
@@ -762,7 +758,7 @@ function ModelSectionHeader({
           aria-label={actionLabel}
           title={actionLabel}
           onClick={onAction}
-          className={SIDEBAR_ICON_ACTION_CLASS}
+          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
         >
           <Plus className="h-3.5 w-3.5" />
         </button>
@@ -851,11 +847,11 @@ function ModelSessionRow({
     <li className="min-w-0">
       <div
         className={cn(
-          "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
+          "group flex min-w-0 max-w-full items-center gap-2 rounded-xl px-2 text-[13px] transition-colors",
           compact ? "min-h-7" : "min-h-8",
           active
-            ? SIDEBAR_ROW_ACTIVE_CLASS
-            : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
+            ? "bg-sidebar-accent/70 text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--sidebar-border)/0.28)]"
+            : "text-sidebar-foreground/82 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
         )}
       >
         <button
@@ -902,8 +898,8 @@ function ModelSessionRow({
           title={pinLabel}
           onClick={() => onTogglePin(session.key)}
           className={cn(
-            SIDEBAR_ICON_ACTION_CLASS,
-            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100",
+            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-100 transition-opacity sm:opacity-0",
+            "hover:bg-sidebar-accent hover:text-sidebar-foreground sm:group-hover:opacity-100 focus-visible:opacity-100",
             (active || isPinned) && "opacity-100 sm:opacity-100",
           )}
         >
@@ -916,8 +912,8 @@ function ModelSessionRow({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
-              SIDEBAR_ICON_ACTION_CLASS,
-              "opacity-40 group-hover:opacity-100",
+              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/75 opacity-40 transition-opacity",
+              "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
               "focus-visible:opacity-100",
               active && "opacity-100",
             )}
@@ -1085,7 +1081,7 @@ function ProjectGroupHeader({
         onClick={onToggle}
         className={cn(
           "flex min-w-0 flex-1 items-center gap-2 rounded-lg px-1.5 py-1 text-left transition-colors",
-          "hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:bg-sidebar-accent/70 focus-visible:text-sidebar-foreground",
+          "hover:bg-sidebar-accent/45 hover:text-sidebar-foreground focus-visible:bg-sidebar-accent/45 focus-visible:text-sidebar-foreground",
           collapsed && "text-sidebar-foreground/88",
         )}
       >
@@ -1105,8 +1101,8 @@ function ProjectGroupHeader({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
-              SIDEBAR_ICON_ACTION_CLASS,
-              "opacity-40 group-hover:opacity-100 focus-visible:opacity-100",
+              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
+              "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
             )}
             aria-label={actionsLabel}
             title={actionsLabel}
@@ -1171,8 +1167,8 @@ function ProjectGroupHeader({
             onNewChat();
           }}
           className={cn(
-            SIDEBAR_ICON_ACTION_CLASS,
-            "opacity-40 group-hover:opacity-100 focus-visible:opacity-100",
+            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
+            "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
           )}
         >
           <Plus className="h-3.5 w-3.5" />
@@ -1209,7 +1205,7 @@ function ChatsFoldFooter({
       <button
         type="button"
         onClick={onToggle}
-        className="h-7 w-full rounded-lg text-left text-[12px] font-medium text-muted-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-sidebar-foreground"
+        className="h-7 w-full rounded-xl text-left text-[12px] font-medium text-muted-foreground/65 transition-colors hover:bg-sidebar-accent/50 hover:text-muted-foreground"
       >
         <span className="px-2">
           {folded
@@ -1252,7 +1248,7 @@ function SessionActivityIndicator({
         title={label}
         className="grid h-4 w-4 shrink-0 place-items-center"
       >
-        <span className="h-2 w-2 rounded-full bg-[hsl(var(--brand))] shadow-[0_0_0_2px_hsl(var(--brand)/0.16)]" />
+        <span className="h-2 w-2 rounded-full bg-[#ff8a3d] shadow-[0_0_0_2px_rgba(255,138,61,0.16)]" />
       </span>
     );
   }
