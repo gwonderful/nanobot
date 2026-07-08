@@ -62,7 +62,7 @@ function FileEditRow({
   const statusIcon = failed ? (
     <AlertCircle className="h-3 w-3" aria-hidden />
   ) : editing ? (
-    <CircleDashed className="h-3 w-3 animate-spin" aria-hidden />
+    <CircleDashed className="h-3 w-3 motion-safe:animate-spin" aria-hidden />
   ) : (
     <CheckCircle2 className="h-3 w-3" aria-hidden />
   );

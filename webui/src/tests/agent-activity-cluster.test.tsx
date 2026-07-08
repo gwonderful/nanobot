@@ -386,8 +386,9 @@ describe("AgentActivityCluster", () => {
 
     const liveHeader = screen.getByTestId("agent-activity-header");
     expect(liveHeader).toHaveAttribute("data-activity-state", "live");
+    expect(liveHeader).toHaveAttribute("data-activity-tone", "live");
     expect(liveHeader).toHaveAttribute("aria-expanded", "true");
-    expect(liveHeader).toHaveClass("rounded-lg");
+    expect(liveHeader).toHaveClass("rounded-lg", "motion-safe:animate-pulse");
     expect(screen.getByTestId("agent-activity-scroll")).toBeInTheDocument();
 
     rerender(
@@ -401,8 +402,78 @@ describe("AgentActivityCluster", () => {
 
     const completedHeader = screen.getByTestId("agent-activity-header");
     expect(completedHeader).toHaveAttribute("data-activity-state", "completed");
+    expect(completedHeader).toHaveAttribute("data-activity-tone", "completed");
     expect(completedHeader).toHaveAttribute("aria-expanded", "true");
+    expect(completedHeader).not.toHaveClass("motion-safe:animate-pulse");
     expect(screen.getByText("Worked for 12s")).toBeInTheDocument();
+  });
+
+  it("uses warning tone only when activity has real failure data", () => {
+    const { rerender } = render(
+      <AgentActivityCluster
+        messages={activityMessages("", {
+          id: "t-file-warning",
+          role: "tool",
+          kind: "trace",
+          content: "apply_patch()",
+          traces: ["apply_patch()"],
+          fileEdits: [{
+            call_id: "call-patch",
+            tool: "apply_patch",
+            path: "src/app.tsx",
+            phase: "error",
+            added: 0,
+            deleted: 0,
+            approximate: false,
+            status: "error",
+            error: "patch failed",
+          }],
+          createdAt: 3,
+        })}
+        isTurnStreaming={false}
+        hasBodyBelow={false}
+      />,
+    );
+
+    const failedHeader = screen.getByTestId("agent-activity-header");
+    expect(failedHeader).toHaveAttribute("data-activity-tone", "warning");
+    expect(failedHeader).toHaveClass("border-destructive/25", "text-destructive/80");
+
+    rerender(
+      <AgentActivityCluster
+        messages={activityMessages()}
+        isTurnStreaming={false}
+        hasBodyBelow={false}
+        turnLatencyMs={12_400}
+      />,
+    );
+
+    const completedHeader = screen.getByTestId("agent-activity-header");
+    expect(completedHeader).toHaveAttribute("data-activity-tone", "completed");
+    expect(completedHeader).not.toHaveClass("border-destructive/25", "text-destructive/80");
+  });
+
+  it("keeps expanded activity rows at one compact density", () => {
+    render(
+      <AgentActivityCluster
+        messages={activityMessages("", {
+          id: "t-shell-density",
+          role: "tool",
+          kind: "trace",
+          content: 'exec({"command":"npm test"})',
+          traces: ['exec({"command":"npm test"})'],
+          createdAt: 3,
+        })}
+        isTurnStreaming
+        hasBodyBelow={false}
+      />,
+    );
+
+    const steps = Array.from(document.querySelectorAll("[data-activity-step]"));
+    expect(steps.length).toBeGreaterThan(1);
+    for (const step of steps) {
+      expect(step).toHaveClass("min-h-6", "text-[13px]");
+    }
   });
 
   it("omits the duration when completed history has no reliable timing", () => {

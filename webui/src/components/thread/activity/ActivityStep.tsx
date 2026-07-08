@@ -41,8 +41,9 @@ export function ActivityStep({
 }: ActivityStepProps) {
   return (
     <Component
+      data-activity-step
       className={cn(
-        "group/activity-step relative grid min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] gap-2 py-0.5 text-[13px] leading-5",
+        "group/activity-step relative grid min-h-6 min-w-0 grid-cols-[1.125rem_minmax(0,1fr)] gap-2 py-0.5 text-[13px] leading-5",
         className,
       )}
       title={title}
