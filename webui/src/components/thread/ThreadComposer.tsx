@@ -1680,11 +1680,11 @@ export function ThreadComposer({
       <div
         className={cn(
           "group/composer relative mx-auto flex w-full flex-col overflow-visible transition-all duration-200",
-          "after:pointer-events-none after:absolute after:inset-[-1px] after:rounded-[inherit] after:border after:border-[hsl(var(--brand)/0.38)] after:opacity-0 after:transition-opacity after:duration-200 focus-within:after:opacity-100 dark:after:border-[hsl(var(--brand)/0.45)]",
+          "focus-within:ring-1 focus-within:ring-[hsl(var(--brand)/0.22)] motion-reduce:transition-none",
           isHero
-            ? "max-w-[58rem] rounded-[20px] border border-border/70 bg-card shadow-[0_14px_36px_rgba(15,23,42,0.06)] dark:border-white/[0.08] dark:shadow-[0_18px_42px_rgba(0,0,0,0.30)]"
-            : "max-w-[49.5rem] rounded-[18px] border border-border/70 bg-card shadow-[0_8px_22px_rgba(15,23,42,0.055)] dark:border-white/[0.08] dark:shadow-[0_12px_30px_rgba(0,0,0,0.26)]",
-          "focus-within:border-[hsl(var(--brand)/0.35)] dark:focus-within:border-[hsl(var(--brand)/0.45)]",
+            ? "max-w-[58rem] rounded-[20px] border border-border/65 bg-card shadow-[0_10px_28px_rgba(15,23,42,0.055)] dark:border-white/[0.08] dark:shadow-[0_14px_34px_rgba(0,0,0,0.28)]"
+            : "max-w-[49.5rem] rounded-[18px] border border-border/65 bg-card shadow-[0_6px_18px_rgba(15,23,42,0.045)] dark:border-white/[0.08] dark:shadow-[0_10px_24px_rgba(0,0,0,0.24)]",
+          "focus-within:border-[hsl(var(--brand)/0.28)] dark:focus-within:border-[hsl(var(--brand)/0.38)]",
           disabled && "opacity-60",
           isDragging && "ring-2 ring-primary/40 motion-reduce:ring-0 motion-reduce:border-primary",
           goalState?.active &&
@@ -1784,7 +1784,7 @@ export function ThreadComposer({
           <div
             role="alert"
             className={cn(
-              "mx-3 mb-1 rounded-md border border-destructive/40 bg-destructive/8 px-2.5 py-1",
+              "mx-3 mb-1.5 rounded-[10px] border border-destructive/30 bg-destructive/[0.06] px-2 py-1",
               "text-[11.5px] font-medium text-destructive",
             )}
           >
@@ -1816,10 +1816,10 @@ export function ThreadComposer({
               aria-label={t("thread.composer.attachImage")}
               onClick={() => fileInputRef.current?.click()}
               className={cn(
-                "rounded-full text-muted-foreground hover:text-foreground",
+                "rounded-full border border-transparent bg-transparent text-muted-foreground shadow-none hover:bg-muted/65 hover:text-foreground",
                 isHero
-                  ? "h-8 w-8 border border-border/70 bg-background shadow-none hover:bg-muted/70"
-                  : "h-9 w-9 border border-border/70 bg-background shadow-none hover:bg-muted/70",
+                  ? "h-8 w-8"
+                  : "h-9 w-9",
               )}
             >
               <Plus className={cn(isHero ? "h-[18px] w-[18px]" : "h-4 w-4")} />
@@ -1870,14 +1870,14 @@ export function ThreadComposer({
                       onPointerCancel={voiceRecorder.endPress}
                       onClick={voiceRecorder.handleClick}
                       className={cn(
-                        "rounded-full border border-transparent text-muted-foreground hover:bg-muted/65 hover:text-foreground",
+                        "rounded-full border border-transparent bg-transparent text-muted-foreground hover:bg-muted/65 hover:text-foreground",
                         isHero ? "h-8 w-8" : "h-9 w-9",
                         voiceRecorder.isRecording &&
                           "bg-red-500 text-white shadow-[0_8px_20px_rgba(239,68,68,0.22)] hover:bg-red-500 hover:text-white",
                       )}
                     >
                       {voiceRecorder.state === "transcribing" ? (
-                        <Loader2 className={cn(isHero ? "h-4 w-4" : "h-4 w-4", "animate-spin")} />
+                        <Loader2 className={cn(isHero ? "h-4 w-4" : "h-4 w-4", "motion-safe:animate-spin")} />
                       ) : voiceRecorder.isRecording ? (
                         <Square className={cn(isHero ? "h-3.5 w-3.5" : "h-3.5 w-3.5")} fill="currentColor" />
                       ) : (
@@ -1902,6 +1902,7 @@ export function ThreadComposer({
             ) : null}
             <Button
               type={showStopButton || modelNeedsSetup ? "button" : "submit"}
+              data-composer-control="primary-action"
               size="icon"
               disabled={showStopButton ? disabled : !canSend && !canOpenModelSettings}
               aria-label={
@@ -1915,10 +1916,10 @@ export function ThreadComposer({
               className={cn(
                 "rounded-full transition-transform",
                 showStopButton
-                  ? "border border-border/70 bg-card text-foreground/85 shadow-[0_3px_10px_rgba(15,23,42,0.08)] hover:bg-muted/65 hover:text-foreground disabled:text-muted-foreground/50"
+                  ? "border border-border/70 bg-background text-foreground/85 shadow-[0_3px_10px_rgba(15,23,42,0.07)] hover:bg-muted/65 hover:text-foreground disabled:text-muted-foreground/50"
                   : isHero
-                    ? "border border-foreground bg-foreground text-background shadow-[0_4px_12px_rgba(15,23,42,0.20)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background"
-                    : "border border-foreground bg-foreground text-background shadow-[0_3px_10px_rgba(15,23,42,0.18)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background",
+                    ? "border border-foreground bg-foreground text-background shadow-[0_4px_12px_rgba(15,23,42,0.18)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background"
+                    : "border border-foreground bg-foreground text-background shadow-[0_4px_12px_rgba(15,23,42,0.16)] hover:bg-foreground/90 disabled:border-foreground disabled:bg-foreground disabled:text-background",
                 isHero ? "h-8 w-8" : "h-9 w-9",
                 (canSend || canOpenModelSettings || showStopButton) && "hover:scale-[1.03] active:scale-95",
               )}
@@ -1926,7 +1927,7 @@ export function ThreadComposer({
               {showStopButton ? (
                 <Square className={cn("fill-current stroke-current", isHero ? "h-3 w-3" : "h-3.5 w-3.5")} />
               ) : isStreaming ? (
-                <Loader2 className={cn(isHero ? "h-4 w-4" : "h-4 w-4", "animate-spin")} />
+                <Loader2 className={cn(isHero ? "h-4 w-4" : "h-4 w-4", "motion-safe:animate-spin")} />
               ) : (
                 <ArrowUp className={cn(isHero ? "h-4 w-4" : "h-4 w-4")} />
               )}
@@ -1985,10 +1986,10 @@ function QueuedPromptStack({
       role="group"
       data-state="enter"
       className={cn(
-        "composer-status-strip relative z-20 mx-3 mt-3 overflow-hidden rounded-[14px]",
-        "border border-border/70 bg-popover/95 p-1.5",
-        "shadow-[0_8px_20px_rgba(15,23,42,0.055)] backdrop-blur-md",
-        "dark:border-white/[0.08] dark:bg-popover/90 dark:shadow-[0_12px_28px_rgba(0,0,0,0.28)]",
+        "composer-status-strip relative z-20 mx-3 mt-3 overflow-hidden rounded-[12px]",
+        "border border-border/55 bg-muted/35 p-1.5",
+        "shadow-none backdrop-blur-md",
+        "dark:border-white/[0.08] dark:bg-white/[0.045]",
         isHero ? "max-w-none" : "max-w-none",
       )}
       style={{ "--composer-strip-max-height": `${stripMaxHeight}px` } as CSSProperties}
@@ -2167,9 +2168,9 @@ function ComposerModelBadge({
       type={interactive ? "button" : undefined}
       onClick={onClick}
       className={cn(
-        "inline-flex min-w-0 items-center rounded-full border border-border/70 bg-background/90 font-medium text-foreground/82",
+        "inline-flex min-w-0 items-center rounded-full border border-transparent bg-transparent font-medium text-muted-foreground",
         "shadow-none",
-        interactive && "cursor-pointer hover:bg-accent/55 hover:text-foreground",
+        interactive && "cursor-pointer hover:bg-muted/60 hover:text-foreground",
         needsSetup && "border-amber-500/35 bg-amber-50/70 text-amber-900 dark:bg-amber-500/10 dark:text-amber-200",
         isHero
           ? "h-8 max-w-[min(12.5rem,44vw)] gap-1.5 px-2 text-[11.5px]"
@@ -2317,10 +2318,10 @@ function CliAppMentionPalette({
       aria-label={t("thread.composer.mentions.ariaLabel")}
       style={{ maxHeight: layout.maxHeight }}
       className={cn(
-        "absolute left-1/2 z-30 w-[calc(100%-0.5rem)] -translate-x-1/2 overflow-hidden rounded-[22px] border",
+        "absolute left-1/2 z-30 w-[calc(100%-0.5rem)] -translate-x-1/2 overflow-hidden rounded-[16px] border",
         layout.placement === "above" ? "bottom-full mb-2" : "top-full mt-2",
-        "border-border/70 bg-popover p-2 text-popover-foreground shadow-[0_20px_60px_rgba(15,23,42,0.12)]",
-        "dark:border-white/10 dark:shadow-[0_24px_60px_rgba(0,0,0,0.42)]",
+        "border-border/60 bg-popover p-1.5 text-popover-foreground shadow-[0_12px_36px_rgba(15,23,42,0.10)]",
+        "dark:border-white/10 dark:shadow-[0_18px_44px_rgba(0,0,0,0.36)]",
         isHero ? "max-w-[58rem]" : "max-w-[49.5rem]",
       )}
     >
@@ -2453,10 +2454,10 @@ function SlashCommandPalette({
       aria-label={t("thread.composer.slash.ariaLabel")}
       style={{ maxHeight: layout.maxHeight }}
       className={cn(
-        "absolute left-1/2 z-30 w-[calc(100%-0.5rem)] -translate-x-1/2 overflow-hidden rounded-[18px] border",
+        "absolute left-1/2 z-30 w-[calc(100%-0.5rem)] -translate-x-1/2 overflow-hidden rounded-[16px] border",
         layout.placement === "above" ? "bottom-full mb-2" : "top-full mt-2",
-        "border-border/65 bg-popover p-1.5 text-popover-foreground shadow-[0_18px_55px_rgba(15,23,42,0.16)]",
-        "dark:border-white/10 dark:shadow-[0_22px_55px_rgba(0,0,0,0.45)]",
+        "border-border/60 bg-popover p-1.5 text-popover-foreground shadow-[0_12px_36px_rgba(15,23,42,0.11)]",
+        "dark:border-white/10 dark:shadow-[0_18px_44px_rgba(0,0,0,0.36)]",
         isHero ? "max-w-[58rem]" : "max-w-[49.5rem]",
       )}
     >
@@ -2552,18 +2553,18 @@ function AttachmentChip({
   const tone =
     image.status === "error"
       ? "border-destructive/40 bg-destructive/5 text-destructive"
-      : "border-border/70 bg-muted/60";
+      : "border-border/60 bg-muted/35";
 
   return (
     <div
       className={cn(
-        "group relative flex items-center gap-2 rounded-[12px] border px-2 py-1.5",
+        "group relative flex items-center gap-2 rounded-[10px] border px-2 py-1",
         "transition-colors motion-reduce:transition-none",
         tone,
       )}
       data-testid="composer-chip"
     >
-      <div className="relative h-10 w-10 overflow-hidden rounded-md bg-background">
+      <div className="relative h-8 w-8 overflow-hidden rounded-[6px] bg-background">
         {image.previewUrl ? (
           <img
             src={image.previewUrl}
