@@ -55,6 +55,10 @@ const INITIAL_VISIBLE_SESSIONS = 160;
 const VISIBLE_SESSIONS_INCREMENT = 160;
 const ACTION_MENU_CONTENT_CLASS = "w-[8.5rem] min-w-[8.5rem]";
 const ACTION_MENU_ITEM_CLASS = "grid w-[7.75rem] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2";
+const SIDEBAR_ROW_ACTIVE_CLASS =
+  "bg-[hsl(var(--brand)/0.10)] text-sidebar-foreground ring-1 ring-[hsl(var(--brand)/0.18)] dark:bg-[hsl(var(--brand)/0.14)]";
+const SIDEBAR_ICON_ACTION_CLASS =
+  "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-muted-foreground/70 transition-[opacity,color,background-color,box-shadow] hover:bg-sidebar-accent/70 hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45";
 const PINNED_SECTION_GROUP_ID = "section:pinned";
 const WORKSPACE_SECTION_GROUP_ID = "section:workspace";
 const CHATS_SECTION_GROUP_ID = "section:chats";
@@ -318,7 +322,7 @@ export const ChatList = memo(function ChatList({
                             "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
                             compact ? "min-h-7" : "min-h-8",
                             active
-                              ? "bg-[hsl(var(--brand)/0.10)] text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--brand)/0.20)]"
+                              ? SIDEBAR_ROW_ACTIVE_CLASS
                               : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
                           )}
                         >
@@ -363,8 +367,8 @@ export const ChatList = memo(function ChatList({
                           <DropdownMenu modal={false}>
                             <DropdownMenuTrigger
                               className={cn(
-                                "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
-                                "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
+                                SIDEBAR_ICON_ACTION_CLASS,
+                                "opacity-40 group-hover:opacity-100",
                                 "focus-visible:opacity-100",
                                 active && "opacity-100",
                               )}
@@ -758,7 +762,7 @@ function ModelSectionHeader({
           aria-label={actionLabel}
           title={actionLabel}
           onClick={onAction}
-          className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          className={SIDEBAR_ICON_ACTION_CLASS}
         >
           <Plus className="h-3.5 w-3.5" />
         </button>
@@ -850,7 +854,7 @@ function ModelSessionRow({
           "group flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 text-[13px] transition-colors",
           compact ? "min-h-7" : "min-h-8",
           active
-            ? "bg-[hsl(var(--brand)/0.10)] text-sidebar-accent-foreground shadow-[inset_0_0_0_1px_hsl(var(--brand)/0.20)]"
+            ? SIDEBAR_ROW_ACTIVE_CLASS
             : "text-sidebar-foreground/76 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
         )}
       >
@@ -898,8 +902,8 @@ function ModelSessionRow({
           title={pinLabel}
           onClick={() => onTogglePin(session.key)}
           className={cn(
-            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-100 transition-opacity sm:opacity-0",
-            "hover:bg-sidebar-accent hover:text-sidebar-foreground sm:group-hover:opacity-100 focus-visible:opacity-100",
+            SIDEBAR_ICON_ACTION_CLASS,
+            "opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-visible:opacity-100",
             (active || isPinned) && "opacity-100 sm:opacity-100",
           )}
         >
@@ -912,8 +916,8 @@ function ModelSessionRow({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
-              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
-              "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100",
+              SIDEBAR_ICON_ACTION_CLASS,
+              "opacity-40 group-hover:opacity-100",
               "focus-visible:opacity-100",
               active && "opacity-100",
             )}
@@ -1101,8 +1105,8 @@ function ProjectGroupHeader({
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger
             className={cn(
-              "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
-              "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
+              SIDEBAR_ICON_ACTION_CLASS,
+              "opacity-40 group-hover:opacity-100 focus-visible:opacity-100",
             )}
             aria-label={actionsLabel}
             title={actionsLabel}
@@ -1167,8 +1171,8 @@ function ProjectGroupHeader({
             onNewChat();
           }}
           className={cn(
-            "inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-muted-foreground/70 opacity-40 transition-opacity",
-            "hover:bg-sidebar-accent hover:text-sidebar-foreground group-hover:opacity-100 focus-visible:opacity-100",
+            SIDEBAR_ICON_ACTION_CLASS,
+            "opacity-40 group-hover:opacity-100 focus-visible:opacity-100",
           )}
         >
           <Plus className="h-3.5 w-3.5" />

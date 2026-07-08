@@ -5,6 +5,9 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const HEADER_ICON_BUTTON_CLASS =
+  "h-8 w-8 rounded-full text-muted-foreground/82 transition-[color,background-color,box-shadow] hover:bg-accent/70 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring/45";
+
 interface ThreadHeaderProps {
   title: string;
   onToggleSidebar: () => void;
@@ -35,32 +38,32 @@ export function ThreadHeader({
   return (
     <div
       className={cn(
-        "relative z-10 flex min-h-11 items-center justify-between gap-3 border-b border-border/45 bg-background/95 px-3 py-2 supports-[backdrop-filter]:bg-background/85",
+        "relative z-10 flex min-h-11 items-center justify-between gap-3 border-b border-border/45 bg-background/92 px-3 py-2 supports-[backdrop-filter]:bg-background/86 supports-[backdrop-filter]:backdrop-blur-md",
         minimal && "h-11",
         !minimal && hostChromeTitleInset && "lg:pl-[128px]",
       )}
     >
-      <div className="relative flex min-w-0 items-center gap-2">
+      <div className="relative flex min-w-0 flex-1 items-center gap-2">
         <Button
           variant="ghost"
           size="icon"
           aria-label={t("thread.header.toggleSidebar")}
           onClick={onToggleSidebar}
           className={cn(
-            "h-8 w-8 rounded-lg text-muted-foreground hover:bg-accent/65 hover:text-foreground",
+            HEADER_ICON_BUTTON_CLASS,
             hideSidebarToggleForHostChrome && "lg:hidden",
           )}
         >
           <Menu className="h-3.5 w-3.5" />
         </Button>
         {!minimal ? (
-          <div className="flex min-w-0 items-center rounded-lg px-2 py-1 text-[12.5px] font-medium text-foreground/66">
-            <span className="max-w-[min(60vw,32rem)] truncate">{title}</span>
+          <div className="flex min-w-0 max-w-full items-center rounded-lg px-2 py-1 text-[12.5px] font-medium text-foreground/66">
+            <span className="max-w-[min(49.5rem,calc(100vw-11rem))] truncate">{title}</span>
           </div>
         ) : null}
       </div>
 
-      <div className="ml-auto flex shrink-0 items-center gap-1">
+      <div className="ml-2 flex shrink-0 items-center gap-1">
         {sessionInfoAction}
         {promptNavigatorAction}
         {!hideThemeButton ? (
@@ -97,7 +100,8 @@ function ThemeButton({
       aria-label={label}
       onClick={onToggleTheme}
       className={cn(
-        "host-no-drag h-8 w-8 rounded-lg text-muted-foreground/85 hover:bg-accent/65 hover:text-foreground",
+        "host-no-drag",
+        HEADER_ICON_BUTTON_CLASS,
         className,
       )}
     >

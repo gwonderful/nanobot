@@ -483,6 +483,7 @@ describe("ChatList", () => {
     const pinButton = screen.getByRole("button", { name: "Pin Plain chat" });
     expect(pinButton.className).toContain("opacity-100");
     expect(pinButton.className).toContain("sm:opacity-0");
+    expect(pinButton).toHaveClass("rounded-full", "focus-visible:ring-2");
     expect(screen.getByRole("button", { name: "Chat actions for Plain chat" })).toHaveAttribute(
       "title",
       "Chat actions for Plain chat",
@@ -584,6 +585,13 @@ describe("ChatList", () => {
     const updated = screen.getAllByLabelText("New activity");
     expect(updated).toHaveLength(1);
     expect(updated[0].firstElementChild).toHaveClass("h-2", "w-2");
+
+    const activeRow = screen.getByRole("button", { name: /^Active task$/ }).parentElement;
+    expect(activeRow).toHaveClass("ring-1", "ring-[hsl(var(--brand)/0.18)]");
+    expect(screen.getByLabelText("Chat actions for Active task")).toHaveClass(
+      "rounded-full",
+      "focus-visible:ring-2",
+    );
   });
 
   it("folds long default workspace chats and can show all", () => {
