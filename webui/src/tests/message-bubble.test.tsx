@@ -168,6 +168,11 @@ describe("MessageBubble", () => {
 
     const forkButton = screen.getByRole("button", { name: "Fork" });
     expect(forkButton).toHaveClass("rounded-lg", "text-muted-foreground/80");
+    expect(forkButton).toHaveClass(
+      "opacity-70",
+      "hover:opacity-100",
+      "focus-visible:ring-offset-1",
+    );
     expect(forkButton).not.toHaveClass("rounded-full");
 
     fireEvent.click(forkButton);

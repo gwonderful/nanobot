@@ -258,9 +258,10 @@ export function MessageBubble({
   const forkLabel = t("message.forkFromHere");
   const assistantActionButtonClass = cn(
     "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg",
-    "text-muted-foreground/80 transition-colors",
+    "text-muted-foreground/80 opacity-70 transition-colors",
     "hover:bg-muted/70 hover:text-foreground active:bg-muted",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+    "hover:opacity-100",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
   );
   const latencyMs = message.latencyMs;
   const showLatencyFooter =

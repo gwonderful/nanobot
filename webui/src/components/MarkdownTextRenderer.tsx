@@ -195,6 +195,8 @@ const remarkPlugins: NonNullable<ReactMarkdownOptions["remarkPlugins"]> = [
   remarkSafeHtmlSubset,
 ];
 const rehypePlugins: NonNullable<ReactMarkdownOptions["rehypePlugins"]> = [rehypeKatex];
+const CHAT_CODE_BLOCK_CLASS = "chat-code-block my-3 rounded-[10px] border-border/70 bg-muted/20";
+const MARKDOWN_FILE_REFERENCE_CLASS = "markdown-file-reference";
 
 function nodeText(value: ReactNode): string {
   return Children.toArray(value)
@@ -402,14 +404,20 @@ export default function MarkdownTextRenderer({
             <CodeBlock
               language={match[1]}
               code={code}
-              className="my-3"
+              className={CHAT_CODE_BLOCK_CLASS}
               highlight={highlightCode}
             />
           );
         }
         const raw = String(kids).replace(/\n$/, "");
         if (isLikelyFilePath(raw)) {
-          return <FileReferenceChip path={raw} onOpen={onOpenFilePreview} />;
+          return (
+            <FileReferenceChip
+              path={raw}
+              className={MARKDOWN_FILE_REFERENCE_CLASS}
+              onOpen={onOpenFilePreview}
+            />
+          );
         }
         /** Plain fenced ``` blocks (no language) & wide one-liners: block monospace, not inline pill. */
         const widePlainBlock = raw.includes("\n") || raw.length > 120;
@@ -452,7 +460,7 @@ export default function MarkdownTextRenderer({
             <CodeBlock
               language={fence.language || "text"}
               code={fence.code}
-              className="my-3"
+              className={CHAT_CODE_BLOCK_CLASS}
               highlight={highlightCode}
             />
           );
@@ -460,7 +468,8 @@ export default function MarkdownTextRenderer({
         return (
           <pre
             className={cn(
-              "my-3 overflow-x-auto rounded-lg border border-border/60 bg-muted/35",
+              CHAT_CODE_BLOCK_CLASS,
+              "overflow-x-auto",
               "p-3 font-mono text-[0.8125rem] leading-snug text-foreground/90",
               "whitespace-pre [overflow-wrap:normal]",
             )}
@@ -478,6 +487,7 @@ export default function MarkdownTextRenderer({
               path={label || filePath}
               tooltipPath={filePath}
               previewPath={filePath}
+              className={MARKDOWN_FILE_REFERENCE_CLASS}
               onOpen={onOpenFilePreview}
             />
           );
@@ -583,10 +593,13 @@ export default function MarkdownTextRenderer({
       className={cn(
         "markdown-content prose max-w-none dark:prose-invert",
         "text-[15.5px] text-foreground/92",
-        "prose-headings:mt-4 prose-headings:mb-2 prose-headings:font-semibold prose-headings:tracking-tight",
-        "prose-h1:text-lg prose-h2:text-base prose-h3:text-sm prose-h4:text-[13px]",
+        "prose-headings:mb-2 prose-headings:font-semibold prose-headings:tracking-normal",
+        "prose-h1:mt-5 prose-h1:text-lg",
+        "prose-h2:mt-5 prose-h2:text-[1.05rem] prose-h2:leading-snug",
+        "prose-h3:mt-4 prose-h3:mb-1.5 prose-h3:text-[0.95rem] prose-h3:leading-snug",
+        "prose-h4:mt-3 prose-h4:text-[13px]",
         "prose-p:my-2.5",
-        "prose-ul:my-2.5 prose-ol:my-2.5 prose-li:my-1",
+        "prose-ul:my-2.5 prose-ol:my-2.5 prose-li:my-1 prose-li:leading-relaxed",
         "prose-blockquote:my-3 prose-blockquote:border-l-2 prose-blockquote:font-normal",
         "prose-blockquote:not-italic prose-blockquote:text-foreground/80",
         "prose-a:text-blue-500 prose-a:underline-offset-2 hover:prose-a:text-blue-600 dark:prose-a:text-blue-300 dark:hover:prose-a:text-blue-200",
