@@ -152,7 +152,7 @@ export function MessageBubble({
     return (
       <div
         className={cn(
-          "group ml-auto flex max-w-[min(85%,36rem)] flex-col items-end gap-1.5",
+          "message-turn message-turn--user group ml-auto flex max-w-[min(85%,36rem)] flex-col items-end gap-1.5",
           baseAnim,
         )}
       >
@@ -161,7 +161,7 @@ export function MessageBubble({
           <MessageMedia media={media} align="right" />
         ) : null}
         {hasText ? (
-          <div className="flex max-w-full items-start justify-end gap-2">
+          <div className="message-user-row flex max-w-full items-start justify-end gap-2">
             <p
               className={cn(
                 "user-message-bubble ml-auto min-w-0 w-fit rounded-[18px] px-4 py-2",
@@ -209,9 +209,13 @@ export function MessageBubble({
     && !message.isStreaming
     && (!empty || hasReasoning || media.length > 0);
   const showAssistantFooterRow = showCopyButton || showForkButton || showLatencyFooter;
+  const isAssistantError =
+    message.role === "assistant"
+    && !message.isStreaming
+    && /^Error calling Codex\b/i.test(message.content.trim());
   return (
     <div
-      className={cn("group flex w-full items-start gap-3 text-[15px]", baseAnim)}
+      className={cn("message-turn message-turn--assistant group flex w-full items-start gap-3 text-[15px]", baseAnim)}
       style={{ lineHeight: "var(--cjk-line-height)" }}
     >
       <MessageTurnAvatar tone="assistant" />
@@ -225,9 +229,16 @@ export function MessageBubble({
           />
         ) : null}
         {empty && message.isStreaming && !hasReasoning ? (
-          <TypingDots />
+          <div className="assistant-message-card assistant-message-card--typing">
+            <TypingDots />
+          </div>
         ) : empty && message.isStreaming ? null : (
-          <>
+          <div
+            className={cn(
+              "assistant-message-card",
+              isAssistantError && "assistant-message-card--error",
+            )}
+          >
             {automationSourceLabel ? (
               <AutomationSourceBadge
                 label={automationSourceLabel}
@@ -243,7 +254,7 @@ export function MessageBubble({
             {media.length > 0 ? <MessageMedia media={media} align="left" /> : null}
             {showAssistantFooterRow ? (
               <TooltipProvider delayDuration={220} skipDelayDuration={80}>
-                <div className="mt-2 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
+                <div className="assistant-message-actions mt-2 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
                   {showCopyButton ? (
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -252,7 +263,7 @@ export function MessageBubble({
                           onClick={onCopyAssistantReply}
                           aria-label={copyReplyLabel}
                           className={cn(
-                            "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                            "message-action-button inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
                             "transition-colors hover:bg-muted/55 hover:text-foreground",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                           )}
@@ -275,7 +286,7 @@ export function MessageBubble({
                           onClick={onForkFromHere}
                           aria-label={forkLabel}
                           className={cn(
-                            "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                            "message-action-button inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
                             "transition-colors hover:bg-muted/55 hover:text-foreground",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                           )}
@@ -288,7 +299,7 @@ export function MessageBubble({
                   ) : null}
                   {showLatencyFooter ? (
                     <span
-                      className="text-[11px] leading-none text-muted-foreground/70 tabular-nums"
+                      className="message-latency text-[11px] leading-none text-muted-foreground/70 tabular-nums"
                       title={t("message.turnLatencyTitle")}
                     >
                       {formatTurnLatency(latencyMs)}
@@ -297,7 +308,7 @@ export function MessageBubble({
                 </div>
               </TooltipProvider>
             ) : null}
-          </>
+          </div>
         )}
       </div>
     </div>

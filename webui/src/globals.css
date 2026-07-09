@@ -963,53 +963,229 @@
     color: hsl(var(--foreground) / 0.76);
   }
 
+  .stream-error-notice {
+    border-color: hsl(var(--cinnabar) / 0.28);
+    background:
+      radial-gradient(
+        18rem 4rem at 18% 0%,
+        hsl(var(--cinnabar) / 0.12),
+        transparent 72%
+      ),
+      color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--cinnabar) / 0.07));
+    color: hsl(var(--cinnabar) / 0.94);
+    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+  }
+
+  .message-turn {
+    position: relative;
+  }
+
+  .message-turn--assistant {
+    max-width: min(100%, 50rem);
+  }
+
   .message-turn-avatar {
+    position: relative;
     display: grid;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     flex: 0 0 auto;
     place-items: center;
-    overflow: hidden;
+    overflow: visible;
+    padding: 2px;
     border: 1px solid var(--border-soft);
     border-radius: 9999px;
+    background:
+      radial-gradient(circle at 32% 20%, hsl(var(--paper-raised) / 0.96), transparent 54%),
+      linear-gradient(145deg, hsl(var(--paper-raised)), hsl(var(--surface-soft)));
     box-shadow:
       var(--shadow-soft),
-      inset 0 1px 0 hsl(var(--paper-raised) / 0.56);
+      inset 0 1px 0 hsl(var(--paper-raised) / 0.66);
+  }
+
+  .message-turn-avatar::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    z-index: -1;
+    border-radius: inherit;
+    opacity: 0.78;
+    filter: blur(1px);
   }
 
   .message-turn-avatar img {
     display: block;
     width: 100%;
     height: 100%;
+    border-radius: inherit;
     object-fit: cover;
   }
 
   .message-turn-avatar--user {
-    border-color: hsl(var(--cinnabar) / 0.28);
-    background: hsl(var(--cinnabar) / 0.08);
+    border-color: hsl(var(--cinnabar) / 0.36);
+    background:
+      radial-gradient(circle at 28% 18%, hsl(var(--paper-raised) / 0.96), transparent 54%),
+      color-mix(in srgb, var(--surface-elevated) 82%, hsl(var(--cinnabar) / 0.12));
+  }
+
+  .message-turn-avatar--user::after {
+    background: hsl(var(--cinnabar) / 0.16);
   }
 
   .message-turn-avatar--assistant {
-    border-color: hsl(var(--qingmo) / 0.28);
-    background: hsl(var(--qingmo) / 0.08);
+    border-color: color-mix(in srgb, hsl(var(--qingmo) / 0.22), hsl(var(--cinnabar) / 0.18));
+    background:
+      radial-gradient(circle at 28% 18%, hsl(var(--paper-raised) / 0.96), transparent 54%),
+      color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--cinnabar) / 0.075));
+  }
+
+  .message-turn-avatar--assistant::after {
+    background: hsl(var(--cinnabar) / 0.09);
+  }
+
+  .message-user-row {
+    position: relative;
   }
 
   .user-message-bubble {
+    position: relative;
+    overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--border-soft) 68%, hsl(var(--cinnabar) / 0.28));
+    border-radius: 18px 18px 7px 18px;
     background:
+      radial-gradient(
+        14rem 3.5rem at 10% 0%,
+        hsl(var(--cinnabar) / 0.12),
+        transparent 72%
+      ),
       linear-gradient(
         180deg,
-        color-mix(in srgb, hsl(var(--secondary)) 78%, hsl(var(--cinnabar) / 0.095)),
+        color-mix(in srgb, hsl(var(--secondary)) 76%, hsl(var(--cinnabar) / 0.11)),
         color-mix(in srgb, hsl(var(--secondary)) 92%, hsl(var(--muted-gold) / 0.045))
       );
-    box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
+    box-shadow:
+      var(--shadow-soft),
+      var(--shadow-inset-highlight),
+      inset 0 -10px 20px hsl(var(--cinnabar) / 0.025);
     color: hsl(var(--foreground) / 0.94);
+  }
+
+  .user-message-bubble::before {
+    content: "";
+    position: absolute;
+    inset: 0.28rem 0.45rem auto 0.45rem;
+    height: 1rem;
+    pointer-events: none;
+    border-radius: 999px 48px 999px 42px;
+    background:
+      linear-gradient(
+        96deg,
+        transparent,
+        hsl(var(--cinnabar) / 0.075) 20%,
+        hsl(var(--cinnabar) / 0.032) 62%,
+        transparent 94%
+      );
+    opacity: 0.72;
+    transform: rotate(-0.8deg);
+  }
+
+  .user-message-bubble > * {
+    position: relative;
+    z-index: 1;
   }
 
   .assistant-message-content {
     min-width: 0;
     flex: 1 1 auto;
     padding-top: 0.125rem;
+  }
+
+  .assistant-message-card {
+    position: relative;
+    min-width: 0;
+    max-width: min(100%, 48rem);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--border-soft) 78%, hsl(var(--cinnabar) / 0.12));
+    border-radius: 18px 18px 18px 7px;
+    background:
+      radial-gradient(
+        22rem 5rem at 10% 0%,
+        hsl(var(--cinnabar) / 0.065),
+        transparent 72%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 91%, hsl(var(--paper-raised) / 0.42)),
+        color-mix(in srgb, var(--surface-elevated) 96%, hsl(var(--muted-gold) / 0.025))
+      );
+    padding: 0.78rem 0.95rem 0.7rem;
+    box-shadow:
+      0 1px 2px rgb(77 51 39 / 0.045),
+      0 16px 30px -28px rgb(77 51 39 / 0.24),
+      var(--shadow-inset-highlight);
+    color: hsl(var(--foreground) / 0.94);
+  }
+
+  .assistant-message-card::before {
+    content: "";
+    position: absolute;
+    inset: 0.35rem 0.55rem auto 0.55rem;
+    height: 1.05rem;
+    pointer-events: none;
+    border-radius: 999px 44px 999px 38px;
+    background:
+      linear-gradient(
+        96deg,
+        transparent,
+        hsl(var(--cinnabar) / 0.052) 18%,
+        hsl(var(--cinnabar) / 0.022) 58%,
+        transparent 92%
+      );
+    opacity: 0.62;
+    transform: rotate(-0.55deg);
+  }
+
+  .assistant-message-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .assistant-message-card--typing {
+    display: inline-flex;
+    width: auto;
+    padding: 0.58rem 0.8rem;
+  }
+
+  .assistant-message-card--error {
+    border-color: hsl(var(--cinnabar) / 0.34);
+    background:
+      radial-gradient(
+        24rem 5rem at 12% 0%,
+        hsl(var(--cinnabar) / 0.14),
+        transparent 72%
+      ),
+      color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--cinnabar) / 0.065));
+  }
+
+  .assistant-message-actions {
+    border-top: 1px solid hsl(var(--border) / 0.42);
+    padding-top: 0.4rem;
+  }
+
+  .message-action-button {
+    border: 1px solid transparent;
+    color: hsl(var(--foreground) / 0.56);
+  }
+
+  .message-action-button:hover {
+    border-color: color-mix(in srgb, var(--border-soft) 74%, hsl(var(--cinnabar) / 0.18));
+    background: color-mix(in srgb, hsl(var(--muted)) 78%, hsl(var(--cinnabar) / 0.055));
+    color: hsl(var(--foreground) / 0.82);
+  }
+
+  .message-latency {
+    border-left: 1px solid hsl(var(--border) / 0.48);
+    padding-left: 0.55rem;
   }
 
   .settings-group-shell {
