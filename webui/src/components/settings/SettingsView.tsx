@@ -1879,7 +1879,7 @@ export function SettingsView({
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row",
         showSidebar
-          ? "bg-[radial-gradient(circle_at_50%_0%,hsl(var(--muted))_0%,hsl(var(--background))_42%)]"
+          ? "settings-shell-ink"
           : "bg-background",
       )}
     >
@@ -1931,14 +1931,14 @@ export function SettingsView({
         onSave={handleAutomationEdit}
       />
 
-      <main className="min-w-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
+      <main className="settings-content-scroll min-w-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
         <div
           className={cn(
-            "mx-auto w-full max-w-[920px] px-4 py-6 sm:px-8 sm:py-8 lg:py-12",
+            "settings-content-inner mx-auto w-full max-w-[920px] px-4 py-6 sm:px-8 sm:py-8 lg:py-12",
             hostChromeInset && "pt-[4.25rem] sm:pt-[4.25rem] lg:pt-[4.75rem]",
           )}
         >
-          <div className="mb-7">
+          <div className="settings-title-block mb-7">
             {!showSidebar ? (
               <button
                 type="button"
@@ -1950,17 +1950,17 @@ export function SettingsView({
               </button>
             ) : null}
             {showSidebar ? (
-              <p className="mb-2 text-[12px] font-normal text-muted-foreground">
+              <p className="settings-section-kicker mb-2 text-[12px] font-normal text-muted-foreground">
                 {t("settings.sidebar.title")}
               </p>
             ) : null}
-            <h1 className="text-[24px] font-normal leading-tight tracking-normal text-foreground sm:text-[28px]">
+            <h1 className="settings-page-title text-[24px] font-normal leading-tight tracking-normal text-foreground sm:text-[28px]">
               {text(`settings.nav.${activeSection}`, titleForSection(activeSection))}
             </h1>
           </div>
 
           {loading ? (
-            <div className="flex h-48 items-center justify-center rounded-[24px] border border-border/50 bg-card/75 text-sm text-muted-foreground shadow-[0_20px_70px_rgba(15,23,42,0.07)]">
+            <div className="settings-loading-shell flex h-48 items-center justify-center rounded-[18px] border border-border/50 bg-card/75 text-sm text-muted-foreground shadow-[0_20px_70px_rgba(15,23,42,0.07)]">
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {t("settings.status.loading")}
             </div>
@@ -1973,7 +1973,7 @@ export function SettingsView({
           ) : settings ? (
             <div className="space-y-5">
               {error ? (
-                <div className="rounded-[18px] border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive">
+                <div className="settings-error-banner rounded-[18px] border border-destructive/20 bg-destructive/5 px-4 py-3 text-[13px] text-destructive">
                   {error}
                 </div>
               ) : null}

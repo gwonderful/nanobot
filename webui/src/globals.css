@@ -62,6 +62,15 @@
     --duration-slow: 280ms;
     --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
     --motion-rise: 6px;
+    /* MIT source prototype assets from shuimo-ui, retained in public/brand/ink-bg with license notice. */
+    --ink-bg-paper: url("/brand/ink-bg/rice-paper-warm.webp");
+    --ink-bg-paper-cold: url("/brand/ink-bg/rice-paper-cold.webp");
+    --ink-mountain-left-base: url("/brand/ink-bg/mountain-left-base.webp");
+    --ink-mountain-left-mid: url("/brand/ink-bg/mountain-left-mid.webp");
+    --ink-mountain-left-front: url("/brand/ink-bg/mountain-left-front.webp");
+    --ink-mountain-right-base: url("/brand/ink-bg/mountain-right-base.webp");
+    --ink-mountain-right-mid: url("/brand/ink-bg/mountain-right-mid.webp");
+    --ink-mountain-right-front: url("/brand/ink-bg/mountain-right-front.webp");
   }
 
   .dark {
@@ -294,18 +303,24 @@
     isolation: isolate;
     background:
       radial-gradient(
-        42rem 20rem at 76% 18%,
-        hsl(var(--cinnabar) / 0.055),
+        48rem 22rem at 68% 18%,
+        hsl(var(--paper-raised) / 0.72),
         transparent 72%
       ),
       radial-gradient(
         34rem 18rem at 24% 82%,
-        hsl(var(--muted-gold) / 0.09),
+        hsl(var(--muted-gold) / 0.075),
         transparent 70%
+      ),
+      radial-gradient(
+        52rem 24rem at 88% 78%,
+        hsl(var(--qingmo) / 0.035),
+        transparent 76%
       ),
       linear-gradient(
         180deg,
-        color-mix(in srgb, hsl(var(--background)) 94%, hsl(var(--paper-raised) / 0.55)),
+        color-mix(in srgb, hsl(var(--background)) 92%, hsl(var(--paper-raised) / 0.68)),
+        color-mix(in srgb, hsl(var(--background)) 96%, hsl(var(--muted-gold) / 0.035)) 58%,
         hsl(var(--background))
       );
   }
@@ -316,13 +331,19 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image:
-      linear-gradient(hsl(var(--cinnabar) / 0.022) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--cinnabar) / 0.014) 1px, transparent 1px);
-    background-size: 38px 38px, 38px 38px;
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(circle at 12% 18%, hsl(var(--qingmo) / 0.025) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 76% 28%, hsl(var(--muted-gold) / 0.032) 0 1px, transparent 1.8px);
+    background-repeat: repeat, repeat, repeat;
+    background-size:
+      320px 320px,
+      19rem 17rem,
+      23rem 18rem;
+    mix-blend-mode: multiply;
     mask-image:
-      radial-gradient(ellipse at 52% 48%, black 0 42%, transparent 78%);
-    opacity: 0.42;
+      radial-gradient(ellipse at 52% 48%, black 0 60%, transparent 88%);
+    opacity: 0.28;
   }
 
   .thread-shell-ink::after {
@@ -333,11 +354,47 @@
     pointer-events: none;
     background:
       linear-gradient(
-        90deg,
-        hsl(var(--background) / 0.56),
-        transparent 18%,
-        transparent 82%,
-        hsl(var(--background) / 0.58)
+        180deg,
+        transparent 0 44%,
+        hsl(var(--background) / 0.04) 58%,
+        hsl(var(--background) / 0.46) 100%
+      ),
+      var(--ink-mountain-right-front),
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-right-mid),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-right-base),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      center bottom,
+      right -8rem bottom 2.2rem,
+      left 1rem bottom 1.7rem,
+      right -14rem bottom -0.2rem,
+      left -2.5rem bottom 0.3rem,
+      right -18rem bottom -2.1rem,
+      left -7rem bottom -1.5rem;
+    background-size:
+      100% 100%,
+      min(50vw, 36rem) auto,
+      min(34vw, 22rem) auto,
+      min(68vw, 56rem) auto,
+      min(46vw, 34rem) auto,
+      min(84vw, 70rem) auto,
+      min(58vw, 44rem) auto;
+    filter:
+      saturate(0.64)
+      sepia(0.16)
+      hue-rotate(334deg)
+      contrast(0.92);
+    mix-blend-mode: multiply;
+    opacity: 0.22;
+    mask-image:
+      linear-gradient(
+        180deg,
+        transparent 0 36%,
+        black 56%,
+        black 100%
       );
   }
 
@@ -353,6 +410,11 @@
         40rem 18rem at 50% 38%,
         hsl(var(--paper-raised) / 0.42),
         transparent 72%
+      ),
+      radial-gradient(
+        44rem 18rem at 78% 72%,
+        hsl(var(--qingmo) / 0.03),
+        transparent 76%
       );
   }
 
@@ -367,33 +429,44 @@
     left: 50%;
     top: 18%;
     z-index: 0;
-    width: min(66rem, 86vw);
-    height: min(21rem, 34vh);
+    width: min(72rem, 90vw);
+    height: min(25rem, 40vh);
     pointer-events: none;
     background:
       radial-gradient(
-        ellipse at 22% 58%,
-        hsl(var(--cinnabar) / 0.13),
-        hsl(var(--cinnabar) / 0.045) 34%,
+        ellipse at 48% 54%,
+        hsl(var(--paper-raised) / 0.5),
         transparent 68%
       ),
       radial-gradient(
-        ellipse at 78% 42%,
-        hsl(var(--muted-gold) / 0.13),
+        ellipse at 78% 64%,
+        hsl(var(--qingmo) / 0.05),
         transparent 64%
       ),
-      linear-gradient(
-        100deg,
-        transparent,
-        hsl(var(--cinnabar) / 0.052) 18%,
-        hsl(var(--cinnabar) / 0.03) 52%,
-        transparent 88%
-      );
-    filter: blur(0.3px);
-    opacity: 0.74;
-    transform: translateX(-50%) rotate(-1.4deg);
+      var(--ink-mountain-right-mid),
+      var(--ink-mountain-left-mid);
+    background-repeat: no-repeat;
+    background-position:
+      center,
+      center,
+      right -8rem bottom -3.2rem,
+      left -8rem bottom -3.4rem;
+    background-size:
+      100% 100%,
+      100% 100%,
+      min(58vw, 48rem) auto,
+      min(42vw, 32rem) auto;
+    filter:
+      blur(0.2px)
+      saturate(0.6)
+      sepia(0.12)
+      hue-rotate(334deg)
+      contrast(0.92);
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+    transform: translateX(-50%) rotate(-0.8deg);
     mask-image:
-      radial-gradient(ellipse at center, black 0 50%, transparent 76%);
+      radial-gradient(ellipse at center, black 0 52%, transparent 82%);
   }
 
   .thread-hero-stage {
@@ -450,16 +523,24 @@
     position: relative;
     isolation: isolate;
     background:
+      var(--ink-bg-paper),
       radial-gradient(
         13rem 4rem at 0.6rem 1.4rem,
-        hsl(var(--cinnabar) / 0.09),
+        hsl(var(--paper-raised) / 0.42),
+        transparent 76%
+      ),
+      radial-gradient(
+        15rem 7rem at 20% 93%,
+        hsl(var(--qingmo) / 0.065),
         transparent 76%
       ),
       linear-gradient(
         180deg,
-        color-mix(in srgb, hsl(var(--sidebar)) 92%, hsl(var(--cinnabar) / 0.035)),
+        color-mix(in srgb, hsl(var(--sidebar)) 94%, hsl(var(--paper-raised) / 0.45)),
         hsl(var(--sidebar))
       );
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 320px 320px, auto, auto, auto;
     box-shadow:
       inset -1px 0 0 hsl(var(--sidebar-border) / 0.72),
       inset 1px 0 0 hsl(var(--paper-raised) / 0.72);
@@ -468,22 +549,34 @@
   .sidebar-shell:not(.sidebar-shell--transparent)::before {
     content: "";
     position: absolute;
-    top: 0.95rem;
-    left: 0.65rem;
-    right: 1rem;
+    left: 0;
+    right: 0;
+    bottom: 2.65rem;
     z-index: 0;
-    height: 2.9rem;
+    height: 13rem;
     pointer-events: none;
-    border-radius: 999px 44px 999px 38px;
     background:
-      linear-gradient(
-        96deg,
-        hsl(var(--cinnabar) / 0.07),
-        hsl(var(--cinnabar) / 0.032) 46%,
-        transparent 84%
-      );
-    opacity: 0.68;
-    transform: rotate(-1.4deg);
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      left 0.9rem bottom 1.2rem,
+      left -1.4rem bottom 0,
+      left -4.8rem bottom -0.8rem;
+    background-size:
+      10rem auto,
+      16.5rem auto,
+      24rem auto;
+    filter:
+      saturate(0.64)
+      sepia(0.16)
+      hue-rotate(334deg)
+      contrast(0.92);
+    mix-blend-mode: multiply;
+    opacity: 0.34;
+    mask-image:
+      linear-gradient(180deg, transparent 0, black 30% 82%, transparent 100%);
   }
 
   .sidebar-shell:not(.sidebar-shell--transparent) > * {
@@ -493,6 +586,7 @@
 
   .dark .sidebar-shell:not(.sidebar-shell--transparent) {
     background:
+      var(--ink-bg-paper-cold),
       radial-gradient(
         13rem 4rem at 0.6rem 1.4rem,
         hsl(var(--foreground) / 0.055),
@@ -503,6 +597,8 @@
         color-mix(in srgb, hsl(var(--sidebar)) 88%, hsl(var(--foreground) / 0.035)),
         hsl(var(--sidebar))
       );
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 320px 320px, auto, auto, auto;
     box-shadow:
       inset -1px 0 0 hsl(var(--sidebar-border) / 0.78),
       inset 1px 0 0 hsl(var(--foreground) / 0.04);
@@ -643,29 +739,255 @@
     box-shadow: var(--shadow-soft), var(--shadow-inset-highlight);
   }
 
+  .settings-shell-ink {
+    position: relative;
+    isolation: isolate;
+    background:
+      radial-gradient(
+        44rem 20rem at 56% 0%,
+        hsl(var(--paper-raised) / 0.56),
+        transparent 72%
+      ),
+      radial-gradient(
+        38rem 16rem at 88% 72%,
+        hsl(var(--qingmo) / 0.035),
+        transparent 76%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, hsl(var(--background)) 94%, hsl(var(--paper-raised) / 0.5)),
+        color-mix(in srgb, hsl(var(--background)) 97%, hsl(var(--muted-gold) / 0.025)) 58%,
+        hsl(var(--background))
+      );
+  }
+
+  .settings-shell-ink::before,
+  .settings-shell-ink::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .settings-shell-ink::before {
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(circle at 18% 16%, hsl(var(--muted-gold) / 0.028) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 72% 30%, hsl(var(--qingmo) / 0.022) 0 1px, transparent 1.8px);
+    background-repeat: repeat, repeat, repeat;
+    background-size:
+      320px 320px,
+      21rem 17rem,
+      25rem 19rem;
+    mix-blend-mode: multiply;
+    opacity: 0.22;
+    mask-image: radial-gradient(ellipse at 58% 42%, black 0 62%, transparent 88%);
+  }
+
+  .dark .settings-shell-ink::before {
+    background:
+      var(--ink-bg-paper-cold),
+      radial-gradient(circle at 18% 16%, hsl(var(--foreground) / 0.018) 0 1px, transparent 1.7px),
+      radial-gradient(circle at 72% 30%, hsl(var(--qingmo) / 0.02) 0 1px, transparent 1.8px);
+    background-repeat: repeat, repeat, repeat;
+    background-size:
+      320px 320px,
+      21rem 17rem,
+      25rem 19rem;
+    opacity: 0.16;
+  }
+
+  .settings-shell-ink::after {
+    background:
+      linear-gradient(
+        180deg,
+        transparent 0 34%,
+        hsl(var(--background) / 0.08) 58%,
+        hsl(var(--background) / 0.58) 100%
+      ),
+      var(--ink-mountain-right-front),
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-right-mid),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-right-base),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      center bottom,
+      right -10rem bottom 3.8rem,
+      left -3rem bottom 2.3rem,
+      right -17rem bottom 1.1rem,
+      left -8rem bottom 0.7rem,
+      right -22rem bottom -1.8rem,
+      left -13rem bottom -1.4rem;
+    background-size:
+      100% 100%,
+      min(42vw, 33rem) auto,
+      min(30vw, 20rem) auto,
+      min(64vw, 52rem) auto,
+      min(44vw, 34rem) auto,
+      min(78vw, 66rem) auto,
+      min(54vw, 42rem) auto;
+    filter:
+      saturate(0.58)
+      sepia(0.13)
+      hue-rotate(334deg)
+      contrast(0.9);
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+    mask-image:
+      linear-gradient(180deg, transparent 0 28%, black 48%, black 100%);
+  }
+
+  .dark .settings-shell-ink::after {
+    opacity: 0.12;
+    filter:
+      saturate(0.55)
+      sepia(0.04)
+      hue-rotate(350deg)
+      contrast(0.88);
+  }
+
+  .settings-shell-ink > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .settings-content-scroll {
+    background:
+      radial-gradient(
+        32rem 16rem at 50% 13%,
+        hsl(var(--paper-raised) / 0.44),
+        transparent 76%
+      ),
+      radial-gradient(
+        30rem 14rem at 88% 18%,
+        hsl(var(--cinnabar) / 0.025),
+        transparent 72%
+      );
+  }
+
+  .settings-content-inner {
+    position: relative;
+  }
+
+  .settings-title-block {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .settings-title-block::after {
+    content: "";
+    position: absolute;
+    left: -0.35rem;
+    right: -1rem;
+    bottom: -0.45rem;
+    height: 0.75rem;
+    pointer-events: none;
+    border-radius: 999px 48px 999px 42px;
+    background:
+      linear-gradient(
+        96deg,
+        transparent,
+        hsl(var(--cinnabar) / 0.06) 18%,
+        hsl(var(--cinnabar) / 0.022) 58%,
+        transparent 92%
+      );
+    opacity: 0.62;
+    transform: rotate(-0.6deg);
+  }
+
+  .settings-section-kicker,
+  .settings-page-title {
+    position: relative;
+    z-index: 1;
+  }
+
   .settings-sidebar-shell {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     border-color: var(--border-soft);
     background:
+      var(--ink-bg-paper),
+      radial-gradient(
+        12rem 4rem at 0.4rem 1.2rem,
+        hsl(var(--paper-raised) / 0.42),
+        transparent 74%
+      ),
+      radial-gradient(
+        14rem 7rem at 26% 92%,
+        hsl(var(--qingmo) / 0.06),
+        transparent 76%
+      ),
       linear-gradient(
         180deg,
         color-mix(in srgb, var(--surface-elevated) 86%, hsl(var(--qingmo) / 0.045)),
         color-mix(in srgb, var(--surface-soft) 72%, hsl(var(--muted-gold) / 0.035))
       );
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 320px 320px, auto, auto, auto;
     box-shadow:
       inset 0 -1px 0 hsl(var(--paper-raised) / 0.64),
       var(--shadow-inset-highlight);
   }
 
+  .settings-sidebar-shell::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 2.2rem;
+    z-index: 0;
+    height: 12rem;
+    pointer-events: none;
+    background:
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      left 0.7rem bottom 1.1rem,
+      left -1.8rem bottom -0.1rem,
+      left -5.4rem bottom -0.9rem;
+    background-size:
+      9rem auto,
+      15rem auto,
+      22rem auto;
+    filter:
+      saturate(0.58)
+      sepia(0.13)
+      hue-rotate(334deg)
+      contrast(0.9);
+    mix-blend-mode: multiply;
+    opacity: 0.32;
+    mask-image: linear-gradient(180deg, transparent 0, black 28% 82%, transparent 100%);
+  }
+
+  .settings-sidebar-shell > * {
+    position: relative;
+    z-index: 1;
+  }
+
   .dark .settings-sidebar-shell {
     background:
+      var(--ink-bg-paper-cold),
       linear-gradient(
         180deg,
         color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--foreground) / 0.024)),
         color-mix(in srgb, var(--surface-soft) 76%, transparent)
       );
+    background-repeat: repeat, no-repeat;
+    background-size: 320px 320px, auto;
     box-shadow:
       inset -1px 0 0 hsl(var(--border) / 0.64),
       inset 1px 0 0 hsl(var(--foreground) / 0.035);
+  }
+
+  .dark .settings-sidebar-shell::before {
+    opacity: 0.18;
   }
 
   .settings-back-button {
@@ -689,6 +1011,8 @@
   }
 
   .settings-nav-item {
+    position: relative;
+    overflow: hidden;
     border: 1px solid transparent;
     background: transparent;
     box-shadow: inset 0 1px 0 transparent;
@@ -720,6 +1044,25 @@
       var(--shadow-soft),
       inset 0 1px 0 hsl(var(--paper-raised) / 0.64),
       inset 0 -10px 18px hsl(var(--qingmo) / 0.03);
+  }
+
+  .settings-nav-item--active::after {
+    content: "";
+    position: absolute;
+    inset: 0.25rem 0.4rem auto 0.4rem;
+    height: 0.55rem;
+    pointer-events: none;
+    border-radius: 999px 36px 999px 32px;
+    background:
+      linear-gradient(
+        96deg,
+        transparent,
+        hsl(var(--cinnabar) / 0.06) 22%,
+        hsl(var(--cinnabar) / 0.024) 58%,
+        transparent 90%
+      );
+    opacity: 0.68;
+    transform: rotate(-0.7deg);
   }
 
   .dark .settings-nav-item--active {
@@ -930,6 +1273,13 @@
     border: 1px solid color-mix(in srgb, var(--border-soft) 78%, hsl(var(--ui-warning) / 0.2));
     background: color-mix(in srgb, var(--surface-elevated) 84%, hsl(var(--ui-warning) / 0.08));
     color: hsl(var(--foreground) / 0.78);
+  }
+
+  .settings-loading-shell,
+  .settings-error-banner {
+    box-shadow:
+      var(--shadow-soft),
+      var(--shadow-inset-highlight);
   }
 
   .settings-chip-selected {
@@ -1189,6 +1539,7 @@
   }
 
   .settings-group-shell {
+    position: relative;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--border-soft) 82%, hsl(var(--qingmo) / 0.12));
     border-radius: 18px;
@@ -1201,6 +1552,42 @@
     box-shadow:
       var(--shadow-elevated),
       var(--shadow-inset-highlight);
+  }
+
+  .settings-group-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(
+        22rem 5rem at 8% 0%,
+        hsl(var(--cinnabar) / 0.038),
+        transparent 74%
+      );
+    background-repeat: repeat, no-repeat;
+    background-size: 320px 320px, auto;
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+  }
+
+  .dark .settings-group-shell::before {
+    background:
+      var(--ink-bg-paper-cold),
+      radial-gradient(
+        22rem 5rem at 8% 0%,
+        hsl(var(--cinnabar) / 0.025),
+        transparent 74%
+      );
+    background-repeat: repeat, no-repeat;
+    background-size: 320px 320px, auto;
+    opacity: 0.13;
+  }
+
+  .settings-group-shell > * {
+    position: relative;
+    z-index: 1;
   }
 
   .settings-group-divider {
@@ -1230,6 +1617,28 @@
 
   .settings-overview-row:hover .settings-overview-icon {
     background: color-mix(in srgb, hsl(var(--muted)) 62%, hsl(var(--qingmo) / 0.14));
+  }
+
+  @media (max-width: 640px) {
+    .settings-overview-row {
+      flex-wrap: wrap;
+      align-items: flex-start;
+    }
+
+    .settings-overview-row > span:nth-of-type(2) {
+      flex-basis: calc(100% - 3rem);
+    }
+
+    .settings-overview-row > span:last-child {
+      width: calc(100% - 3rem);
+      max-width: calc(100% - 3rem);
+      margin-left: 3rem;
+      justify-content: flex-start;
+    }
+
+    .settings-overview-row > span:last-child .truncate {
+      text-align: left;
+    }
   }
 
   .token-usage-cell--future {
