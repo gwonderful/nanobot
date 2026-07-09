@@ -7583,7 +7583,7 @@ function OverviewRowIcon({
   icon: LucideIcon;
 }) {
   return (
-    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[12px] bg-muted text-foreground/82 transition-colors group-hover:bg-muted/80 dark:bg-muted/70">
+    <span className="settings-overview-icon grid h-9 w-9 shrink-0 place-items-center rounded-[12px] transition-colors">
       <Icon className="h-4 w-4" aria-hidden />
     </span>
   );
@@ -7655,7 +7655,7 @@ function OverviewListRow({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-h-[68px] w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-muted/30 sm:px-5"
+      className="settings-overview-row group flex min-h-[68px] w-full items-center gap-3 px-4 py-3.5 text-left transition-colors sm:px-5"
     >
       <OverviewRowIcon icon={Icon} />
       <span className="min-w-0 flex-1">
@@ -7686,8 +7686,8 @@ function SettingsSectionTitle({ children }: { children: ReactNode }) {
 
 function SettingsGroup({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-[22px] border border-border/45 bg-card/86 shadow-[0_18px_65px_rgba(15,23,42,0.075)] backdrop-blur-xl dark:border-white/10 dark:shadow-[0_18px_65px_rgba(0,0,0,0.24)]">
-      <div className="divide-y divide-border/45">{children}</div>
+    <div className="settings-group-shell">
+      <div className="settings-group-divider divide-y">{children}</div>
     </div>
   );
 }

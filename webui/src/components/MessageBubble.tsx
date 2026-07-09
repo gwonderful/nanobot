@@ -51,6 +51,22 @@ interface MessageBubbleProps {
   onForkFromHere?: () => void;
 }
 
+const USER_AVATAR_SRC = "/brand/avatar-user-cinnabar.png";
+const ASSISTANT_AVATAR_SRC = "/brand/avatar-assistant-qingmo.png";
+
+function MessageTurnAvatar({ tone }: { tone: "user" | "assistant" }) {
+  return (
+    <span className={cn("message-turn-avatar", `message-turn-avatar--${tone}`)} aria-hidden>
+      <img
+        src={tone === "user" ? USER_AVATAR_SRC : ASSISTANT_AVATAR_SRC}
+        alt=""
+        loading="lazy"
+        decoding="async"
+      />
+    </span>
+  );
+}
+
 function ForkArrowIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -145,18 +161,21 @@ export function MessageBubble({
           <MessageMedia media={media} align="right" />
         ) : null}
         {hasText ? (
-          <p
-            className={cn(
-              "ml-auto w-fit rounded-[18px] bg-secondary/70 px-4 py-2",
-              "text-left text-[16px]/[1.75] whitespace-pre-wrap break-words",
-            )}
-          >
-            <CliAppMentionText
-              text={message.content}
-              cliApps={mentionCliApps}
-              mcpPresets={mentionMcpPresets}
-            />
-          </p>
+          <div className="flex max-w-full items-start justify-end gap-2">
+            <p
+              className={cn(
+                "user-message-bubble ml-auto min-w-0 w-fit rounded-[18px] px-4 py-2",
+                "text-left text-[16px]/[1.75] whitespace-pre-wrap break-words",
+              )}
+            >
+              <CliAppMentionText
+                text={message.content}
+                cliApps={mentionCliApps}
+                mcpPresets={mentionMcpPresets}
+              />
+            </p>
+            <MessageTurnAvatar tone="user" />
+          </div>
         ) : null}
       </div>
     );
@@ -191,90 +210,96 @@ export function MessageBubble({
     && (!empty || hasReasoning || media.length > 0);
   const showAssistantFooterRow = showCopyButton || showForkButton || showLatencyFooter;
   return (
-    <div className={cn("w-full text-[15px]", baseAnim)} style={{ lineHeight: "var(--cjk-line-height)" }}>
-      {hasReasoning ? (
-        <ReasoningBubble
-          text={reasoning}
-          streaming={reasoningStreaming}
-          hasBodyBelow={!empty}
-          onOpenFilePreview={onOpenFilePreview}
-        />
-      ) : null}
-      {empty && message.isStreaming && !hasReasoning ? (
-        <TypingDots />
-      ) : empty && message.isStreaming ? null : (
-        <>
-          {automationSourceLabel ? (
-            <AutomationSourceBadge
-              label={automationSourceLabel}
-              triggerLabel={automationTriggeredLabel}
-            />
-          ) : null}
-          <MarkdownText
-            streaming={!!message.isStreaming}
+    <div
+      className={cn("group flex w-full items-start gap-3 text-[15px]", baseAnim)}
+      style={{ lineHeight: "var(--cjk-line-height)" }}
+    >
+      <MessageTurnAvatar tone="assistant" />
+      <div className="assistant-message-content">
+        {hasReasoning ? (
+          <ReasoningBubble
+            text={reasoning}
+            streaming={reasoningStreaming}
+            hasBodyBelow={!empty}
             onOpenFilePreview={onOpenFilePreview}
-          >
-            {message.content}
-          </MarkdownText>
-          {media.length > 0 ? <MessageMedia media={media} align="left" /> : null}
-          {showAssistantFooterRow ? (
-            <TooltipProvider delayDuration={220} skipDelayDuration={80}>
-              <div className="mt-2 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
-                {showCopyButton ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={onCopyAssistantReply}
-                        aria-label={copyReplyLabel}
-                        className={cn(
-                          "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                          "transition-colors hover:bg-muted/55 hover:text-foreground",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        )}
-                      >
-                        {copied ? (
-                          <Check className="h-4 w-4" aria-hidden />
-                        ) : (
-                          <Copy className="h-4 w-4" aria-hidden />
-                        )}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" align="center">{copyReplyLabel}</TooltipContent>
-                  </Tooltip>
-                ) : null}
-                {showForkButton ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        onClick={onForkFromHere}
-                        aria-label={forkLabel}
-                        className={cn(
-                          "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
-                          "transition-colors hover:bg-muted/55 hover:text-foreground",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                        )}
-                      >
-                        <ForkArrowIcon className="h-4 w-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" align="center">{forkLabel}</TooltipContent>
-                  </Tooltip>
-                ) : null}
-                {showLatencyFooter ? (
-                  <span
-                    className="text-[11px] leading-none text-muted-foreground/70 tabular-nums"
-                    title={t("message.turnLatencyTitle")}
-                  >
-                    {formatTurnLatency(latencyMs)}
-                  </span>
-                ) : null}
-              </div>
-            </TooltipProvider>
-          ) : null}
-        </>
-      )}
+          />
+        ) : null}
+        {empty && message.isStreaming && !hasReasoning ? (
+          <TypingDots />
+        ) : empty && message.isStreaming ? null : (
+          <>
+            {automationSourceLabel ? (
+              <AutomationSourceBadge
+                label={automationSourceLabel}
+                triggerLabel={automationTriggeredLabel}
+              />
+            ) : null}
+            <MarkdownText
+              streaming={!!message.isStreaming}
+              onOpenFilePreview={onOpenFilePreview}
+            >
+              {message.content}
+            </MarkdownText>
+            {media.length > 0 ? <MessageMedia media={media} align="left" /> : null}
+            {showAssistantFooterRow ? (
+              <TooltipProvider delayDuration={220} skipDelayDuration={80}>
+                <div className="mt-2 flex min-h-8 flex-wrap items-center gap-x-2 gap-y-1 text-muted-foreground">
+                  {showCopyButton ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={onCopyAssistantReply}
+                          aria-label={copyReplyLabel}
+                          className={cn(
+                            "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                            "transition-colors hover:bg-muted/55 hover:text-foreground",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          )}
+                        >
+                          {copied ? (
+                            <Check className="h-4 w-4" aria-hidden />
+                          ) : (
+                            <Copy className="h-4 w-4" aria-hidden />
+                          )}
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="center">{copyReplyLabel}</TooltipContent>
+                    </Tooltip>
+                  ) : null}
+                  {showForkButton ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={onForkFromHere}
+                          aria-label={forkLabel}
+                          className={cn(
+                            "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                            "transition-colors hover:bg-muted/55 hover:text-foreground",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          )}
+                        >
+                          <ForkArrowIcon className="h-4 w-4" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="center">{forkLabel}</TooltipContent>
+                    </Tooltip>
+                  ) : null}
+                  {showLatencyFooter ? (
+                    <span
+                      className="text-[11px] leading-none text-muted-foreground/70 tabular-nums"
+                      title={t("message.turnLatencyTitle")}
+                    >
+                      {formatTurnLatency(latencyMs)}
+                    </span>
+                  ) : null}
+                </div>
+              </TooltipProvider>
+            ) : null}
+          </>
+        )}
+      </div>
     </div>
   );
 }
