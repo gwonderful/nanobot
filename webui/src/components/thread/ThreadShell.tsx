@@ -792,8 +792,8 @@ export function ThreadShell({
       {t("thread.loadingConversation")}
     </div>
   ) : (
-    <div className="flex w-full flex-col items-center text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
-      <h1 className="max-w-[44rem] text-balance text-[34px] font-normal leading-[1.08] tracking-normal text-foreground sm:text-[48px] sm:leading-tight">
+    <div className="thread-hero-copy flex w-full flex-col items-center text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+      <h1 className="thread-hero-title max-w-[44rem] text-balance text-[34px] font-normal leading-[1.08] tracking-normal text-foreground sm:text-[48px] sm:leading-tight">
         {t(heroGreetingKey)}
       </h1>
     </div>
@@ -809,8 +809,8 @@ export function ThreadShell({
   ) : undefined;
 
   return (
-    <section ref={shellRef} className="relative flex min-h-0 flex-1 overflow-hidden">
-      <div className="relative flex min-w-0 flex-1 flex-col overflow-hidden">
+    <section ref={shellRef} className="thread-shell-ink relative flex min-h-0 flex-1 overflow-hidden">
+      <div className="thread-shell-main relative flex min-w-0 flex-1 flex-col overflow-hidden">
         {!hideHeader ? (
           <ThreadHeader
             title={title}

@@ -494,11 +494,11 @@ export const ThreadViewport = forwardRef<ThreadViewportHandle, ThreadViewportPro
   }, [maybeLoadEarlierFromScroll]);
 
   return (
-    <div className="relative flex min-h-0 flex-1 overflow-hidden">
+    <div className="thread-viewport relative flex min-h-0 flex-1 overflow-hidden">
       <div
         ref={scrollRef}
         className={cn(
-          "thread-viewport-scrollbar absolute inset-0 overflow-y-auto scroll-auto scrollbar-thin",
+          "thread-viewport-scroll thread-viewport-scrollbar absolute inset-0 overflow-y-auto scroll-auto scrollbar-thin",
           "[&::-webkit-scrollbar]:w-1.5",
           "[&::-webkit-scrollbar-thumb]:rounded-full",
           "[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30",
@@ -507,10 +507,10 @@ export const ThreadViewport = forwardRef<ThreadViewportHandle, ThreadViewportPro
         style={scrollViewportStyle}
       >
         {hasMessages ? (
-          <div ref={contentRef} className="mx-auto flex min-h-full w-full max-w-[64rem] flex-col">
+          <div ref={contentRef} className="thread-content-with-messages mx-auto flex min-h-full w-full max-w-[64rem] flex-col">
             <div
               data-testid="thread-message-region"
-              className="flex min-h-0 flex-1 flex-col justify-start px-3 pb-4 pt-4 sm:px-4"
+              className="thread-message-region flex min-h-0 flex-1 flex-col justify-start px-3 pb-4 pt-4 sm:px-4"
             >
               <div className="mx-auto w-full max-w-[49.5rem]">
                 <ThreadMessages
@@ -529,21 +529,21 @@ export const ThreadViewport = forwardRef<ThreadViewportHandle, ThreadViewportPro
             <div
               ref={composerDockRef}
               data-testid="thread-composer-dock"
-              className="sticky bottom-0 z-10 bg-background"
+              className="thread-composer-dock sticky bottom-0 z-10 bg-background"
             >
-              <div className="px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4">
+              <div className="thread-composer-dock-inner px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4">
                 {composer}
               </div>
             </div>
           </div>
         ) : (
-          <div ref={contentRef} className="mx-auto flex min-h-full w-full max-w-[72rem] flex-col px-3 sm:px-4">
-            <div className="flex w-full flex-1 items-center justify-center py-6 sm:py-12">
-              <div className="relative flex w-full max-w-[58rem] flex-col items-center gap-5 sm:block">
+          <div ref={contentRef} className="thread-hero-canvas mx-auto flex min-h-full w-full max-w-[72rem] flex-col px-3 sm:px-4">
+            <div className="thread-hero-stage flex w-full flex-1 items-center justify-center py-6 sm:py-12">
+              <div className="thread-hero-center relative flex w-full max-w-[58rem] flex-col items-center gap-5 sm:block">
                 <div className="flex justify-center sm:absolute sm:inset-x-0 sm:bottom-[calc(100%+1.5rem)]">
                   {emptyState}
                 </div>
-                <div className="w-full">{composer}</div>
+                <div className="thread-hero-composer w-full">{composer}</div>
               </div>
             </div>
           </div>
@@ -553,7 +553,7 @@ export const ThreadViewport = forwardRef<ThreadViewportHandle, ThreadViewportPro
 
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-background to-transparent"
+        className="thread-viewport-top-fade pointer-events-none absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-background to-transparent"
       />
 
       {hasMessages ? (
