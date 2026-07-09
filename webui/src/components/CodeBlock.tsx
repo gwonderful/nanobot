@@ -39,8 +39,6 @@ const CODE_FONT_STACK = [
 ].join(", ");
 
 const ANSI_LANGUAGES = new Set(["ansi", "ansi-output"]);
-const CODE_SURFACE_LIGHT = "#f4f4f5";
-const CODE_SURFACE_DARK = "#27272a";
 
 const LazyHighlightedCode = lazy(async () => {
   const [
@@ -80,11 +78,7 @@ const LazyHighlightedCode = lazy(async () => {
           language={language || "text"}
           style={transparentTheme}
           customStyle={{
-            background: chrome === "none"
-              ? "transparent"
-              : isDark
-                ? CODE_SURFACE_DARK
-                : CODE_SURFACE_LIGHT,
+            background: "transparent",
             margin: 0,
             padding: chrome === "none" ? "0.75rem 1rem" : "1rem",
             fontFamily: CODE_FONT_STACK,
@@ -147,9 +141,9 @@ function CodeTextBlock({
   return (
     <pre
       className={cn(
-        "m-0 overflow-x-auto p-4 font-mono text-sm leading-[1.6] text-foreground/90",
+        "ink-code-block__pre m-0 overflow-x-auto p-4 font-mono text-sm leading-[1.6] text-foreground/90",
         showLineNumbers ? "whitespace-pre" : "whitespace-pre-wrap",
-        chrome === "default" ? "bg-zinc-100 dark:bg-zinc-800" : "bg-transparent",
+        "bg-transparent",
         chrome === "none" && "p-3 text-[13px] leading-[1.55]",
         className,
       )}
@@ -203,7 +197,8 @@ export function CodeBlock({
   return (
     <div
       className={cn(
-        "not-prose overflow-hidden",
+        "ink-code-block not-prose overflow-hidden",
+        hasChrome ? "ink-code-block--default" : "ink-code-block--plain",
         hasChrome && "rounded-lg border",
         hasChrome && (isDark ? "border-white/10" : "border-black/10"),
         className,
@@ -212,20 +207,20 @@ export function CodeBlock({
       {hasChrome ? (
         <div
           className={cn(
-            "flex items-center justify-between px-4 pb-1.5 pt-2 text-xs font-medium",
+            "ink-code-block__header flex items-center justify-between px-4 pb-1.5 pt-2 text-xs font-medium",
             isDark
               ? "bg-zinc-800 text-zinc-300"
               : "bg-zinc-100 text-zinc-600",
           )}
         >
-          <span className="lowercase font-mono">
+          <span className="ink-code-block__language lowercase font-mono">
             {language || t("code.fallbackLanguage")}
           </span>
           <button
             type="button"
             onClick={onCopy}
             className={cn(
-              "inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono transition-colors",
+              "ink-code-block__copy inline-flex items-center gap-1 rounded px-1.5 py-0.5 font-mono transition-colors",
               isDark
                 ? "text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200"
                 : "text-zinc-500 hover:bg-zinc-200 hover:text-zinc-700",
@@ -241,42 +236,44 @@ export function CodeBlock({
           </button>
         </div>
       ) : null}
-      {renderAnsi ? (
-        <CodeTextBlock
-          code={code}
-          chrome={chrome}
-          showLineNumbers={showLineNumbers}
-          testId="ansi-code"
-          renderText={renderAnsiText}
-        />
-      ) : highlight ? (
-        <Suspense
-          fallback={
-            <CodeTextBlock
-              code={code}
-              chrome={chrome}
-              showLineNumbers={showLineNumbers}
-              testId="plain-code-fallback"
-            />
-          }
-        >
-          <LazyHighlightedCode
-            language={language}
+      <div className="ink-code-block__body">
+        {renderAnsi ? (
+          <CodeTextBlock
             code={code}
-            isDark={isDark}
             chrome={chrome}
             showLineNumbers={showLineNumbers}
-            wrapLongLines={wrapLongLines}
+            testId="ansi-code"
+            renderText={renderAnsiText}
           />
-        </Suspense>
-      ) : (
-        <CodeTextBlock
-          code={code}
-          chrome={chrome}
-          showLineNumbers={showLineNumbers}
-          testId="plain-code-fallback"
-        />
-      )}
+        ) : highlight ? (
+          <Suspense
+            fallback={
+              <CodeTextBlock
+                code={code}
+                chrome={chrome}
+                showLineNumbers={showLineNumbers}
+                testId="plain-code-fallback"
+              />
+            }
+          >
+            <LazyHighlightedCode
+              language={language}
+              code={code}
+              isDark={isDark}
+              chrome={chrome}
+              showLineNumbers={showLineNumbers}
+              wrapLongLines={wrapLongLines}
+            />
+          </Suspense>
+        ) : (
+          <CodeTextBlock
+            code={code}
+            chrome={chrome}
+            showLineNumbers={showLineNumbers}
+            testId="plain-code-fallback"
+          />
+        )}
+      </div>
     </div>
   );
 }

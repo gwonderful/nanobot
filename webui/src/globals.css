@@ -3114,6 +3114,106 @@
       inset 0 -1px 0 hsl(31 24% 45% / 0.16);
   }
 
+  /* Ink code block skin. */
+  .ink-code-block--default {
+    position: relative;
+    isolation: isolate;
+    border-radius: 10px 12px 10px 7px;
+    border-color: color-mix(in srgb, var(--paper-edge-cut) 58%, hsl(var(--cinnabar) / 0.26));
+    background:
+      radial-gradient(18rem 4.2rem at 12% 0%, hsl(var(--cinnabar) / 0.06), transparent 72%),
+      var(--ink-bg-paper),
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 86%, hsl(var(--qingmo) / 0.035)), color-mix(in srgb, var(--surface-elevated) 94%, hsl(var(--muted-gold) / 0.035)));
+    background-repeat: no-repeat, repeat, no-repeat;
+    background-size: auto, 300px 300px, auto;
+    box-shadow:
+      0 1px 2px rgb(77 51 39 / 0.075),
+      0 14px 34px -32px rgb(77 51 39 / 0.28),
+      inset 0 1px 0 var(--paper-edge-highlight),
+      inset 0 -1px 0 var(--paper-edge-shadow);
+  }
+
+  .ink-code-block--default::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+      radial-gradient(4rem 1.25rem at 0.7rem 0.25rem, hsl(var(--cinnabar) / 0.085), transparent 72%),
+      linear-gradient(90deg, transparent, hsl(var(--cinnabar) / 0.16) 14%, hsl(var(--qingmo) / 0.055) 58%, transparent);
+    background-repeat: no-repeat;
+    background-size: 5.5rem 1.75rem, 100% 1px;
+    background-position: left top, left bottom;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--paper-raised) / 0.36),
+      inset 0 1px 0 var(--paper-edge-highlight);
+  }
+
+  .ink-code-block__header {
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 76%, hsl(var(--cinnabar) / 0.13));
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 74%, hsl(var(--paper-raised) / 0.5)), color-mix(in srgb, var(--surface-soft) 58%, transparent));
+  }
+
+  .ink-code-block__language {
+    color: color-mix(in srgb, hsl(var(--qingmo)) 82%, hsl(var(--foreground)));
+    letter-spacing: 0;
+  }
+
+  .ink-code-block__copy {
+    border: 1px solid hsl(var(--cinnabar) / 0.16);
+    border-radius: 6px 8px 6px 5px;
+    background:
+      var(--ink-bg-paper),
+      color-mix(in srgb, var(--surface-elevated) 80%, hsl(var(--cinnabar) / 0.045));
+    background-size: 220px 220px, auto;
+  }
+
+  .ink-code-block__copy:hover,
+  .ink-code-block__copy:focus-visible {
+    background:
+      var(--ink-bg-paper),
+      color-mix(in srgb, var(--surface-elevated) 72%, hsl(var(--cinnabar) / 0.08));
+    color: hsl(var(--foreground) / 0.86);
+  }
+
+  .ink-code-block__body {
+    position: relative;
+    z-index: 2;
+    background:
+      linear-gradient(90deg, hsl(var(--qingmo) / 0.07), transparent 3.2rem),
+      linear-gradient(180deg, hsl(var(--paper-raised) / 0.18), transparent 26%),
+      color-mix(in srgb, hsl(var(--paper-raised) / 0.46), hsl(var(--qingmo) / 0.028));
+  }
+
+  .ink-code-block__body::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 2.25rem;
+    width: 1px;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, hsl(var(--cinnabar) / 0.18) 18%, hsl(var(--qingmo) / 0.12) 82%, transparent);
+    opacity: 0.62;
+  }
+
+  .ink-code-block--plain,
+  .ink-code-block--plain .ink-code-block__body {
+    background: transparent;
+  }
+
+  .ink-code-block--plain .ink-code-block__body::before {
+    display: none;
+  }
+
+  .ink-code-block__body > pre,
+  .ink-code-block__pre {
+    background: transparent !important;
+  }
+
   /* Subtle scrollbar that doesn't fight the dark background. */
   .scrollbar-thin {
     scrollbar-width: thin;
