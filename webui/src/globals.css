@@ -512,18 +512,13 @@
   }
 
   .thread-composer-dock {
-    background:
-      linear-gradient(
-        180deg,
-        transparent,
-        hsl(var(--background) / 0.84) 28%,
-        hsl(var(--background)) 78%
-      );
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
+    background: transparent !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .thread-composer-dock-inner {
+    background: transparent;
     padding-top: 0.8rem;
   }
 
@@ -2994,6 +2989,129 @@
       animation: none;
       content: none;
     }
+  }
+
+  /* Ink wash phase 2: paper sheet, cinnabar outlines, and layered landscape. */
+  .thread-shell-ink {
+    background:
+      radial-gradient(52rem 24rem at 56% 26%, hsl(var(--paper-raised) / 0.72), transparent 72%),
+      radial-gradient(48rem 20rem at 84% 72%, hsl(var(--qingmo) / 0.055), transparent 76%),
+      var(--ink-bg-paper),
+      linear-gradient(180deg, hsl(var(--paper) / 0.98), hsl(var(--paper-raised) / 0.96));
+    background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+    background-size: auto, auto, 360px 360px, auto;
+  }
+
+  .thread-shell-ink::before {
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(circle at 10% 11%, hsl(var(--cinnabar) / 0.035) 0 1px, transparent 2px),
+      radial-gradient(circle at 82% 21%, hsl(var(--muted-gold) / 0.04) 0 1px, transparent 2px);
+    background-repeat: repeat, repeat, repeat;
+    background-size: 320px 320px, 17rem 15rem, 21rem 18rem;
+    mix-blend-mode: multiply;
+    opacity: 0.38;
+    mask-image: none;
+  }
+
+  .thread-shell-ink::after {
+    background:
+      linear-gradient(180deg, transparent 0 38%, hsl(var(--paper) / 0.05) 51%, hsl(var(--paper) / 0.28) 100%),
+      var(--ink-mountain-right-front),
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-right-mid),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-right-base),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      center bottom,
+      right -2.5rem bottom 6.3rem,
+      left 2rem bottom 3.6rem,
+      right -5rem bottom 1.8rem,
+      left -1.4rem bottom 2.7rem,
+      right -9rem bottom -0.8rem,
+      left -6rem bottom -0.8rem;
+    background-size:
+      100% 100%,
+      min(38vw, 34rem) auto,
+      min(28vw, 22rem) auto,
+      min(58vw, 54rem) auto,
+      min(44vw, 35rem) auto,
+      min(74vw, 72rem) auto,
+      min(58vw, 48rem) auto;
+    filter: saturate(0.58) sepia(0.16) hue-rotate(334deg) contrast(0.94);
+    mix-blend-mode: multiply;
+    opacity: 0.34;
+    mask-image: linear-gradient(180deg, transparent 0 29%, black 47%, black 100%);
+  }
+
+  .sidebar-shell:not(.sidebar-shell--transparent) {
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(13rem 4rem at 1rem 1.2rem, hsl(var(--paper-raised) / 0.45), transparent 76%),
+      radial-gradient(13rem 6rem at 42% 96%, hsl(var(--qingmo) / 0.06), transparent 78%),
+      linear-gradient(180deg, hsl(var(--sidebar) / 0.98), hsl(var(--paper) / 0.94));
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-size: 320px 320px, auto, auto, auto;
+    box-shadow:
+      inset -1px 0 0 hsl(33 18% 47% / 0.26),
+      inset -2px 0 0 hsl(var(--cinnabar) / 0.06),
+      inset 1px 0 0 hsl(48 45% 98% / 0.72);
+  }
+
+  .sidebar-shell:not(.sidebar-shell--transparent)::before {
+    height: 14rem;
+    bottom: 2.2rem;
+    background:
+      var(--ink-mountain-left-front),
+      var(--ink-mountain-left-mid),
+      var(--ink-mountain-left-base);
+    background-repeat: no-repeat;
+    background-position:
+      left 0.6rem bottom 1.05rem,
+      left -1.8rem bottom -0.1rem,
+      left -5.5rem bottom -1.05rem;
+    background-size:
+      11.5rem auto,
+      18.5rem auto,
+      27rem auto;
+    opacity: 0.42;
+  }
+
+  .sidebar-action-button.sidebar-action-button--primary,
+  .sidebar-chat-row.sidebar-chat-row--active {
+    border-radius: 9px 11px 10px 7px;
+    border-color: hsl(var(--cinnabar) / 0.42);
+    background:
+      radial-gradient(8rem 1.5rem at 18% 0%, hsl(var(--cinnabar) / 0.11), transparent 76%),
+      linear-gradient(180deg, hsl(var(--paper-raised) / 0.72), hsl(var(--sidebar-accent) / 0.7)),
+      var(--ink-mountain-right-front),
+      var(--ink-bg-paper),
+      linear-gradient(180deg, hsl(var(--paper-raised) / 0.86), hsl(var(--sidebar-accent) / 0.74));
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+    background-position: left top, center, right 0.65rem bottom -0.55rem, center, center;
+    background-size: auto, auto, 6.8rem auto, 280px 280px, auto;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--paper-raised) / 0.5),
+      inset 0 1px 0 hsl(48 45% 98% / 0.78),
+      0 1px 2px rgb(77 51 39 / 0.08);
+  }
+
+  .sidebar-action-button--primary::after,
+  .sidebar-chat-row--active::after {
+    background:
+      radial-gradient(2.4rem 0.8rem at 0.75rem 0.25rem, hsl(var(--cinnabar) / 0.18), transparent 72%),
+      radial-gradient(2.6rem 0.8rem at calc(100% - 0.7rem) calc(100% - 0.2rem), hsl(var(--cinnabar) / 0.12), transparent 72%),
+      linear-gradient(90deg, transparent, hsl(var(--cinnabar) / 0.38) 13%, hsl(var(--qingmo) / 0.08) 58%, transparent),
+      linear-gradient(90deg, transparent, hsl(var(--qingmo) / 0.09) 16%, hsl(var(--cinnabar) / 0.24) 80%, transparent);
+    background-repeat: no-repeat;
+    background-size: 3.4rem 1.2rem, 3.6rem 1.1rem, 100% 1px, 100% 1px;
+    background-position: left top, right bottom, left top, left bottom;
+    box-shadow:
+      inset 0 0 0 1px hsl(var(--cinnabar) / 0.18),
+      inset 0 1px 0 hsl(48 45% 98% / 0.6),
+      inset 0 -1px 0 hsl(31 24% 45% / 0.16);
   }
 
   /* Subtle scrollbar that doesn't fight the dark background. */

@@ -529,7 +529,7 @@ export const ThreadViewport = forwardRef<ThreadViewportHandle, ThreadViewportPro
             <div
               ref={composerDockRef}
               data-testid="thread-composer-dock"
-              className="thread-composer-dock sticky bottom-0 z-10 bg-background"
+              className="thread-composer-dock sticky bottom-0 z-10"
             >
               <div className="thread-composer-dock-inner px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-4">
                 {composer}
