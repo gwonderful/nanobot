@@ -2469,6 +2469,7 @@
 
   .assistant-message-card {
     background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 132'%3E%3Cg fill='%238aa098' opacity='.055' transform='translate(-4 10)'%3E%3Cpath d='M145 31C119 17 91 20 58 33c29-2 59 3 87-2Z'/%3E%3Cpath d='M111 69C84 67 55 83 25 108c34-17 62-24 86-39Z'/%3E%3Cpath d='M108 72c-15 20-20 40-18 61 11-22 18-41 18-61Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%235f776e' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M184 5c-25 14-44 29-59 47-15 18-33 31-55 49-13 11-23 22-33 34' stroke-width='1.55' opacity='.31'/%3E%3Cpath d='M151 27c-10 2-18 4-27 8M128 50c-9 1-15 5-22 12M107 69c-9 1-18 5-28 12' stroke-width='.82' opacity='.24'/%3E%3C/g%3E%3Cg fill='%235f7c71'%3E%3Cpath d='M151 28C129 10 108 6 89 8c20 8 41 17 62 20Z' opacity='.19'/%3E%3Cpath d='M148 30C121 18 91 22 58 35c30-3 61 1 90-5Z' opacity='.27'/%3E%3Cpath d='M147 32c-12 19-14 38-8 56 5-21 9-39 8-56Z' opacity='.18'/%3E%3Cpath d='M143 33c-20 13-31 30-37 49 13-18 27-33 37-49Z' opacity='.23'/%3E%3Cpath d='M128 51c-7-18-18-31-32-39 9 15 18 29 32 39Z' opacity='.14'/%3E%3Cpath d='M111 66C86 50 61 48 38 55c25 3 49 8 73 11Z' opacity='.2'/%3E%3Cpath d='M111 69C84 67 55 83 25 108c34-17 62-24 86-39Z' opacity='.29'/%3E%3Cpath d='M108 71c-16 19-22 40-20 61 12-22 20-41 20-61Z' opacity='.25'/%3E%3Cpath d='M105 70c-21 10-37 25-47 43 17-15 33-29 47-43Z' opacity='.17'/%3E%3Cpath d='M81 82c-16-12-32-14-47-10 17 4 32 8 47 10Z' opacity='.13'/%3E%3C/g%3E%3Cg fill='none' stroke='%235f7c71' stroke-linecap='round' opacity='.12'%3E%3Cpath d='M118 28 49 37M116 31 63 40M99 70 19 111M101 74 39 112M105 78 86 132M109 77 96 127' stroke-width='.68'/%3E%3C/g%3E%3C/svg%3E"),
       radial-gradient(20rem 4.5rem at 8% 0%, hsl(var(--cinnabar) / 0.09), transparent 74%),
       radial-gradient(12rem 3.4rem at 92% 100%, hsl(var(--qingmo) / 0.04), transparent 72%),
       var(--ink-bg-paper),
@@ -2477,6 +2478,9 @@
         color-mix(in srgb, var(--surface-elevated) 88%, hsl(var(--paper-raised) / 0.52)),
         color-mix(in srgb, var(--surface-elevated) 96%, hsl(var(--muted-gold) / 0.035))
       );
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, no-repeat;
+    background-position: calc(100% + 7px) -4px, center, center, 0 0, center;
+    background-size: 184px 134px, auto, auto, 280px 280px, auto;
   }
 
   .user-message-bubble::before,
@@ -2518,6 +2522,116 @@
       inset 0 1px 0 var(--paper-edge-highlight),
       inset 0 -1px 0 var(--paper-edge-shadow);
     opacity: 1;
+  }
+
+  .assistant-message-card {
+    --assistant-card-cut: 14px;
+    --assistant-card-outline: color-mix(
+      in srgb,
+      hsl(var(--cinnabar) / 0.62) 72%,
+      var(--paper-edge-cut-strong)
+    );
+    --assistant-card-inner-line: color-mix(
+      in srgb,
+      hsl(var(--qingmo) / 0.72) 72%,
+      hsl(var(--cinnabar) / 0.34)
+    );
+    clip-path: polygon(
+      var(--assistant-card-cut) 0,
+      calc(100% - var(--assistant-card-cut)) 0,
+      100% var(--assistant-card-cut),
+      100% calc(100% - var(--assistant-card-cut)),
+      calc(100% - var(--assistant-card-cut)) 100%,
+      var(--assistant-card-cut) 100%,
+      0 calc(100% - var(--assistant-card-cut)),
+      0 var(--assistant-card-cut)
+    );
+    border: 0;
+    border-radius: 0;
+    filter: drop-shadow(0 2px 3px rgb(77 51 39 / 0.07));
+  }
+
+  .assistant-message-card::before {
+    inset: 8px;
+    z-index: 2;
+    height: auto;
+    border-radius: 0;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 9'%3E%3Cg fill='none' stroke='%2377837e' stroke-width='1.1' stroke-linecap='round' stroke-linejoin='round' opacity='.92'%3E%3Cpath d='M1 8V4Q1 1 5 1H61'/%3E%3Cpath d='M7 7c7 0 8-6 3-6-4 0-4 4-1 4 7 1 9-4 15-4 5 0 8 3 7 6-1 2-5 2-7 0'/%3E%3Cpath d='M19 2c-2 0-4 1-5 3M32 2c3-1 6 0 8 2'/%3E%3C/g%3E%3Ccircle cx='18' cy='4.5' r='1.1' fill='%23a66d5e' opacity='.76'/%3E%3C/svg%3E")
+        left top / 62px 9px no-repeat,
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 30'%3E%3Cg transform='translate(62 30) scale(-1 -1)'%3E%3Cg fill='none' stroke='%2377837e' stroke-width='1.15' stroke-linecap='round' stroke-linejoin='round' opacity='.9'%3E%3Cpath d='M1 29V13Q1 1 13 1H61'/%3E%3Cpath d='M7 24c11 1 12-10 5-11-5-1-6 5-1 6 9 2 12-11 21-11 7 0 11 5 8 10-2 4-8 4-11 0'/%3E%3Cpath d='M25 9c-3-4-7-5-10-3M36 9c4-4 8-4 12-1'/%3E%3C/g%3E%3Ccircle cx='22' cy='12' r='1.35' fill='%23a66d5e' opacity='.72'/%3E%3C/g%3E%3C/svg%3E")
+        right bottom / 62px 30px no-repeat,
+      linear-gradient(var(--assistant-card-inner-line), var(--assistant-card-inner-line)) right top /
+        calc(100% - 58px) 1px no-repeat,
+      linear-gradient(var(--assistant-card-inner-line), var(--assistant-card-inner-line)) left bottom /
+        calc(100% - 58px) 1px no-repeat,
+      linear-gradient(var(--assistant-card-inner-line), var(--assistant-card-inner-line)) left top 9px /
+        1px calc(100% - 9px) no-repeat,
+      linear-gradient(var(--assistant-card-inner-line), var(--assistant-card-inner-line)) right bottom 30px /
+        1px calc(100% - 30px) no-repeat;
+    opacity: 0.88;
+    transform: none;
+  }
+
+  .assistant-message-card::after {
+    clip-path: inherit;
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(2.7rem 1.2rem at 0.85rem 0.4rem, var(--ink-corner-wash), transparent 72%),
+      radial-gradient(
+        2.7rem 1.2rem at calc(100% - 0.85rem) calc(100% - 0.35rem),
+        hsl(var(--cinnabar) / 0.075),
+        transparent 72%
+      ),
+      linear-gradient(
+          45deg,
+          transparent 47%,
+          var(--assistant-card-outline) 48.5% 51.5%,
+          transparent 53%
+        )
+        left top / 14px 14px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent 47%,
+          var(--assistant-card-outline) 48.5% 51.5%,
+          transparent 53%
+        )
+        right top / 14px 14px no-repeat,
+      linear-gradient(
+          45deg,
+          transparent 47%,
+          var(--assistant-card-outline) 48.5% 51.5%,
+          transparent 53%
+        )
+        right bottom / 14px 14px no-repeat,
+      linear-gradient(
+          135deg,
+          transparent 47%,
+          var(--assistant-card-outline) 48.5% 51.5%,
+          transparent 53%
+        )
+        left bottom / 14px 14px no-repeat,
+      linear-gradient(var(--assistant-card-outline), var(--assistant-card-outline)) center top /
+        calc(100% - 28px) 1px no-repeat,
+      linear-gradient(var(--assistant-card-outline), var(--assistant-card-outline)) center bottom /
+        calc(100% - 28px) 1px no-repeat,
+      linear-gradient(var(--assistant-card-outline), var(--assistant-card-outline)) left center /
+        1px calc(100% - 28px) no-repeat,
+      linear-gradient(var(--assistant-card-outline), var(--assistant-card-outline)) right center /
+        1px calc(100% - 28px) no-repeat;
+    box-shadow:
+      inset 0 1px 0 hsl(var(--paper-raised) / 0.34),
+      inset 0 -1px 0 var(--paper-edge-shadow);
+  }
+
+  .assistant-message-card--typing {
+    --assistant-card-cut: 8px;
+    background-size: 0 0, auto, auto, 280px 280px, auto;
+  }
+
+  .assistant-message-card--error {
+    --assistant-card-outline: hsl(var(--cinnabar) / 0.66);
   }
 
   .sidebar-action-button,
