@@ -1878,9 +1878,8 @@ export function SettingsView({
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row",
-        showSidebar
-          ? "settings-shell-ink"
-          : "bg-background",
+        "settings-shell-ink",
+        !showSidebar && "settings-shell-ink--utility",
       )}
     >
       {showSidebar ? (
@@ -1934,7 +1933,8 @@ export function SettingsView({
       <main className="settings-content-scroll min-w-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
         <div
           className={cn(
-            "settings-content-inner mx-auto w-full max-w-[920px] px-4 py-6 sm:px-8 sm:py-8 lg:py-12",
+            "settings-content-inner mx-auto w-full px-4 py-6 sm:px-8 sm:py-8 lg:py-12",
+            showSidebar ? "max-w-[920px]" : "max-w-[68rem]",
             hostChromeInset && "pt-[4.25rem] sm:pt-[4.25rem] lg:pt-[4.75rem]",
           )}
         >
@@ -5471,10 +5471,10 @@ function AppsCatalogSettings({
         </div>
       ) : null}
 
-      <section>
-        <div className="flex items-center justify-between border-b border-border/45 pb-3">
+      <section className="settings-catalog-panel">
+        <div className="settings-catalog-panel__header flex items-center justify-between pb-3">
           <SettingsSectionTitle>{tx("settings.apps.featured", "Catalog")}</SettingsSectionTitle>
-          <span className="rounded-full bg-muted px-2.5 py-1 text-[12px] font-medium text-muted-foreground">
+          <span className="settings-count-pill rounded-full px-2.5 py-1 text-[12px] font-medium text-muted-foreground">
             {items.length}
           </span>
         </div>
@@ -5484,7 +5484,7 @@ function AppsCatalogSettings({
             {tx("settings.apps.loading", "Loading Apps...")}
           </div>
         ) : items.length ? (
-          <div className="grid gap-x-10 gap-y-1 py-3 md:grid-cols-2">
+          <div className="settings-catalog-grid grid gap-x-6 gap-y-1 py-3 md:grid-cols-2">
             {items.map((item) =>
               item.kind === "nanobot" ? (
                 <NanobotFeatureCatalogRow
@@ -5564,8 +5564,8 @@ function NanobotFeatureCatalogRow({
     : installSupportLabel;
 
   return (
-    <article className="group flex min-w-0 items-center gap-3 rounded-[14px] px-3 py-3 transition-colors hover:bg-muted/45">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-border/55 bg-card text-muted-foreground shadow-sm">
+    <article className="settings-catalog-row group flex min-w-0 items-center gap-3 rounded-[14px] px-3 py-3 transition-colors hover:bg-muted/45">
+      <span className="settings-catalog-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border border-border/55 bg-card text-muted-foreground shadow-sm">
         <Bot className="h-4 w-4" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
@@ -5646,7 +5646,7 @@ function CliAppsCatalogRow({
   const description = app.description || app.requires || app.entry_point || app.name;
 
   return (
-    <article className="group flex min-w-0 items-center gap-3 rounded-[14px] px-3 py-3 transition-colors hover:bg-muted/45">
+    <article className="settings-catalog-row group flex min-w-0 items-center gap-3 rounded-[14px] px-3 py-3 transition-colors hover:bg-muted/45">
       <CliAppLogo app={app} showBrandLogos={showBrandLogos} />
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-baseline gap-2">
@@ -5777,7 +5777,7 @@ function McpAppsCatalogRow({
   };
 
   return (
-    <article className="rounded-[14px] transition-colors hover:bg-muted/45">
+    <article className="settings-catalog-row rounded-[14px] transition-colors hover:bg-muted/45">
       <div className="group flex min-w-0 items-center gap-3 px-3 py-3">
         <McpPresetLogo preset={preset} showBrandLogos={showBrandLogos} />
         <div className="min-w-0 flex-1">
@@ -5984,7 +5984,7 @@ function McpAppsCatalogRow({
 
 function AppsTypeBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-muted-foreground">
+    <span className="settings-source-pill shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-muted-foreground">
       {children}
     </span>
   );
@@ -6017,6 +6017,7 @@ const AppsActionButton = forwardRef<HTMLButtonElement, {
       onClick={onClick}
       className={cn(
         "h-9 w-9 rounded-full text-muted-foreground transition-colors",
+        "settings-catalog-action-button",
         tone === "installed" && "bg-transparent hover:bg-muted/70 hover:text-foreground",
         tone === "danger" && "bg-transparent hover:bg-destructive/10 hover:text-destructive",
         tone === "default" && "bg-muted/70 hover:bg-muted hover:text-foreground",

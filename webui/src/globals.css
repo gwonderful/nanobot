@@ -872,6 +872,33 @@
     z-index: 1;
   }
 
+  .settings-shell-ink--utility::after {
+    background-position:
+      center bottom,
+      right -7rem bottom 3.6rem,
+      left -1rem bottom 2rem,
+      right -12rem bottom 0.9rem,
+      left -5rem bottom 0.4rem,
+      right -18rem bottom -2rem,
+      left -10rem bottom -1.7rem;
+    background-size:
+      100% 100%,
+      min(46vw, 38rem) auto,
+      min(34vw, 24rem) auto,
+      min(70vw, 58rem) auto,
+      min(48vw, 38rem) auto,
+      min(84vw, 72rem) auto,
+      min(58vw, 46rem) auto;
+    opacity: 0.22;
+  }
+
+  .settings-shell-ink--utility .settings-content-scroll {
+    background:
+      radial-gradient(34rem 16rem at 52% 12%, hsl(var(--paper-raised) / 0.48), transparent 76%),
+      radial-gradient(30rem 14rem at 84% 22%, hsl(var(--cinnabar) / 0.028), transparent 72%),
+      linear-gradient(180deg, hsl(var(--background) / 0.28), transparent 42%);
+  }
+
   .settings-content-scroll {
     background:
       radial-gradient(
@@ -1685,6 +1712,113 @@
 
   .settings-overview-row:hover .settings-overview-icon {
     background: color-mix(in srgb, hsl(var(--muted)) 62%, hsl(var(--qingmo) / 0.14));
+  }
+
+  .settings-catalog-panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--paper-edge-cut) 70%, var(--ink-line-warm));
+    border-radius: 18px;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 82%, hsl(var(--paper-raised) / 0.28)),
+        color-mix(in srgb, var(--surface-elevated) 92%, hsl(var(--muted-gold) / 0.025))
+      );
+    box-shadow:
+      0 2px 4px rgb(77 51 39 / 0.055),
+      inset 0 1px 0 var(--paper-edge-highlight),
+      inset 0 -1px 0 var(--paper-edge-shadow);
+  }
+
+  .settings-catalog-panel::before,
+  .settings-catalog-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .settings-catalog-panel::before {
+    background:
+      var(--ink-bg-paper),
+      radial-gradient(18rem 4rem at 9% 0%, hsl(var(--cinnabar) / 0.055), transparent 74%),
+      radial-gradient(18rem 4rem at 96% 100%, hsl(var(--qingmo) / 0.045), transparent 76%);
+    background-repeat: repeat, no-repeat, no-repeat;
+    background-size: 320px 320px, auto, auto;
+    mix-blend-mode: multiply;
+    opacity: 0.18;
+  }
+
+  .settings-catalog-panel::after {
+    border-radius: inherit;
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--ink-line-soft) 64%, transparent),
+      inset 0 1px 0 var(--paper-edge-highlight),
+      inset 0 -1px 0 var(--paper-edge-shadow);
+    opacity: 0.68;
+  }
+
+  .settings-catalog-panel > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .settings-catalog-panel__header {
+    margin: 0 0.75rem;
+    padding-top: 0.85rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--paper-edge-cut) 62%, var(--ink-line-soft));
+  }
+
+  .settings-catalog-grid {
+    padding-right: 0.55rem;
+    padding-left: 0.55rem;
+  }
+
+  .settings-catalog-row {
+    position: relative;
+    border: 1px solid transparent;
+    background: transparent;
+    transition:
+      background-color var(--duration-fast) var(--ease-out-soft),
+      border-color var(--duration-fast) var(--ease-out-soft),
+      box-shadow var(--duration-fast) var(--ease-out-soft);
+  }
+
+  .settings-catalog-row:hover,
+  .settings-catalog-row:focus-visible,
+  .settings-catalog-row:focus-within {
+    border-color: color-mix(in srgb, var(--paper-edge-cut) 56%, hsl(var(--cinnabar) / 0.22));
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--surface-elevated) 70%, hsl(var(--cinnabar) / 0.035)),
+        color-mix(in srgb, var(--surface-soft) 74%, hsl(var(--qingmo) / 0.035))
+      );
+    box-shadow:
+      0 1px 2px rgb(77 51 39 / 0.05),
+      inset 0 1px 0 var(--paper-edge-highlight);
+  }
+
+  .settings-catalog-icon {
+    border: 1px solid color-mix(in srgb, var(--paper-edge-cut) 58%, var(--ink-line-soft));
+    background:
+      radial-gradient(circle at 32% 20%, hsl(var(--paper-raised) / 0.92), transparent 56%),
+      color-mix(in srgb, hsl(var(--muted)) 72%, hsl(var(--qingmo) / 0.08));
+    color: hsl(var(--qingmo) / 0.82);
+    box-shadow: inset 0 1px 0 var(--paper-edge-highlight);
+  }
+
+  .settings-source-pill {
+    border: 1px solid hsl(var(--foreground) / 0.055);
+    background: color-mix(in srgb, hsl(var(--muted)) 70%, hsl(var(--cinnabar) / 0.045));
+    color: hsl(var(--foreground) / 0.58);
+  }
+
+  .settings-catalog-action-button {
+    border: 1px solid color-mix(in srgb, var(--border-soft) 72%, transparent);
+    box-shadow: inset 0 1px 0 var(--paper-edge-highlight);
   }
 
   @media (max-width: 640px) {

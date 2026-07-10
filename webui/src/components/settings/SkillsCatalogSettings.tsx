@@ -31,17 +31,17 @@ export function SkillsCatalogSettings({ skills }: { skills: SkillSummary[] }) {
         </span>
       </section>
 
-      <section>
-        <div className="flex items-center justify-between border-b border-border/45 pb-3">
+      <section className="settings-catalog-panel">
+        <div className="settings-catalog-panel__header flex items-center justify-between pb-3">
           <h2 className="mb-2 px-1 text-[13px] font-semibold tracking-[-0.01em] text-foreground/85">
             {t("settings.skills.featured", { defaultValue: "Agent skills" })}
           </h2>
-          <span className="rounded-full bg-muted px-2.5 py-1 text-[12px] font-medium text-muted-foreground">
+          <span className="settings-count-pill rounded-full px-2.5 py-1 text-[12px] font-medium text-muted-foreground">
             {skills.length}
           </span>
         </div>
         {skills.length ? (
-          <div className="grid gap-x-10 gap-y-1 py-3 md:grid-cols-2">
+          <div className="settings-catalog-grid grid gap-x-6 gap-y-1 py-3 md:grid-cols-2">
             {skills.map((skill) => (
               <SkillCatalogRow
                 key={`${skill.source}:${skill.name}`}
@@ -91,12 +91,12 @@ function SkillCatalogRow({
       })}
       onClick={() => onSelect(skill)}
       className={cn(
-        "group flex min-w-0 items-center gap-3 rounded-[16px] px-3 py-3 text-left transition-colors",
+        "settings-catalog-row group flex min-w-0 items-center gap-3 rounded-[16px] px-3 py-3 text-left transition-colors",
         "hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         !skill.available && "opacity-65",
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-muted/70 text-muted-foreground">
+      <div className="settings-catalog-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-muted/70 text-muted-foreground">
         <Brain className="h-5 w-5" strokeWidth={1.8} aria-hidden />
       </div>
       <div className="min-w-0 flex-1">
@@ -104,7 +104,7 @@ function SkillCatalogRow({
           <h3 className="truncate text-[15px] font-semibold leading-5 text-foreground">
             {skill.name}
           </h3>
-          <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-none text-muted-foreground">
+          <span className="settings-source-pill shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold leading-none text-muted-foreground">
             {sourceLabel}
           </span>
         </div>
