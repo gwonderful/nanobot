@@ -2120,6 +2120,7 @@
   }
 
   .composer-run-strip {
+    overflow: hidden;
     background:
       linear-gradient(
         180deg,
@@ -2127,6 +2128,14 @@
         color-mix(in srgb, var(--surface-elevated) 94%, transparent)
       );
     border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 84%, hsl(var(--foreground) / 0.06));
+  }
+
+  .composer-shell--hero .composer-run-strip {
+    border-radius: 27px 27px 0 0;
+  }
+
+  .composer-shell--thread .composer-run-strip {
+    border-radius: 21px 21px 0 0;
   }
 
   .composer-run-strip__target {
