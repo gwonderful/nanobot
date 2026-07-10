@@ -80,6 +80,8 @@
     --ink-mountain-right-base: url("/brand/ink-bg/mountain-right-base.webp");
     --ink-mountain-right-mid: url("/brand/ink-bg/mountain-right-mid.webp");
     --ink-mountain-right-front: url("/brand/ink-bg/mountain-right-front.webp");
+    --ink-cursor-auto: url("/brand/ink-cursor/brush-auto.webp") 2 2, auto;
+    --ink-cursor-pointer: url("/brand/ink-cursor/brush-pointer.webp") 2 2, pointer;
   }
 
   .dark {
@@ -168,6 +170,47 @@
       );
   }
 
+  @media (hover: hover) and (pointer: fine) {
+    body {
+      cursor: var(--ink-cursor-auto);
+    }
+
+    :is(
+      a[href],
+      button:not(:disabled),
+      label[for],
+      select:not(:disabled),
+      summary,
+      [role="button"]:not([aria-disabled="true"]),
+      input[type="button"]:not(:disabled),
+      input[type="checkbox"]:not(:disabled),
+      input[type="radio"]:not(:disabled),
+      input[type="submit"]:not(:disabled)
+    ) {
+      cursor: var(--ink-cursor-pointer);
+    }
+
+    :where(
+      input:not([type]),
+      input[type="email"],
+      input[type="number"],
+      input[type="password"],
+      input[type="search"],
+      input[type="tel"],
+      input[type="text"],
+      input[type="url"],
+      textarea,
+      [contenteditable="true"]
+    ) {
+      cursor: var(--ink-cursor-auto);
+    }
+
+    :where(button, input, select, textarea):disabled,
+    [aria-disabled="true"] {
+      cursor: not-allowed;
+    }
+  }
+
   * {
     scrollbar-color: var(--scrollbar-thumb) transparent;
     scrollbar-width: thin;
@@ -201,6 +244,16 @@
 }
 
 @layer utilities {
+  @media (hover: hover) and (pointer: fine) {
+    .cursor-default {
+      cursor: var(--ink-cursor-auto);
+    }
+
+    .cursor-pointer {
+      cursor: var(--ink-cursor-pointer);
+    }
+  }
+
   .host-drag-region {
     -webkit-app-region: drag;
   }
