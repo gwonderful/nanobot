@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SettingsView } from "@/components/settings/SettingsView";
+import { SettingsView, type SettingsSectionKey } from "@/components/settings/SettingsView";
 import { ClientProvider } from "@/providers/ClientProvider";
 import type { ChatSummary, SettingsPayload } from "@/lib/types";
 import type {
@@ -175,15 +175,7 @@ const installedAnyGen = {
 
 function renderSettingsView(
   options: {
-    initialSection?:
-      | "overview"
-      | "apps"
-      | "archived"
-      | "automations"
-      | "advanced"
-      | "models"
-      | "browser"
-      | "personalization";
+    initialSection?: SettingsSectionKey;
     initialSettings?: SettingsPayload;
     showSidebar?: boolean;
     onSettingsChange?: (payload: SettingsPayload) => void;
@@ -270,6 +262,7 @@ function sampleArchivedGroups(): ArchivedConversationGroup[] {
 
 describe("SettingsView Apps catalog", () => {
   afterEach(() => {
+    localStorage.removeItem("nanobot-webui.settings-preferences");
     vi.useRealTimers();
     vi.unstubAllGlobals();
   });
@@ -440,6 +433,22 @@ describe("SettingsView Apps catalog", () => {
         "websocket:plain-a",
       ]),
     );
+  });
+
+  it("persists the file edit display local preference", async () => {
+    renderSettingsView({
+      initialSection: "appearance",
+      initialSettings: settingsPayload(),
+      showSidebar: true,
+    });
+
+    expect(screen.getByText("File edit display")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Diff" }));
+
+    await waitFor(() => {
+      const saved = JSON.parse(localStorage.getItem("nanobot-webui.settings-preferences") || "{}");
+      expect(saved.fileEditDisplayMode).toBe("diff");
+    });
   });
 
   it("does not show the Settings kicker on the standalone Automations surface", async () => {

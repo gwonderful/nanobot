@@ -221,12 +221,20 @@ vi.mock("@/hooks/useTheme", async () => {
 });
 
 vi.mock("@/lib/bootstrap", () => ({
+  BootstrapAuthRequiredError: class BootstrapAuthRequiredError extends Error {
+    constructor(message = "bootstrap authentication required") {
+      super(message);
+      this.name = "BootstrapAuthRequiredError";
+    }
+  },
   fetchBootstrap: vi.fn().mockResolvedValue({
     token: "tok",
+    api_token: "api-tok",
     ws_path: "/",
     expires_in: 300,
   }),
   deriveWsUrl: vi.fn(() => "ws://test"),
+  consumeUrlBootstrapSecret: vi.fn(() => ""),
   loadSavedSecret: vi.fn(() => ""),
   saveSecret: vi.fn(),
   clearSavedSecret: vi.fn(),
@@ -261,7 +269,11 @@ vi.mock("@/lib/nanobot-client", () => {
   return { NanobotClient: MockClient };
 });
 
-import { deriveWsUrl, fetchBootstrap } from "@/lib/bootstrap";
+import {
+  BootstrapAuthRequiredError,
+  deriveWsUrl,
+  fetchBootstrap,
+} from "@/lib/bootstrap";
 import App from "@/App";
 
 describe("App layout", () => {
@@ -286,6 +298,7 @@ describe("App layout", () => {
     localStorage.removeItem("nanobot-webui.sidebar.session-updates.v1");
     vi.mocked(fetchBootstrap).mockReset().mockResolvedValue({
       token: "tok",
+      api_token: "api-tok",
       ws_path: "/",
       expires_in: 300,
     });
@@ -306,6 +319,20 @@ describe("App layout", () => {
   it("shows the auth form without an invalid-password error on first load", async () => {
     vi.mocked(fetchBootstrap).mockRejectedValueOnce(
       new Error("bootstrap failed: HTTP 401"),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByText("Authentication required")).toBeInTheDocument();
+    expect(screen.queryByText("Invalid password. Try again.")).not.toBeInTheDocument();
+    expect(connectSpy).not.toHaveBeenCalled();
+  });
+
+  it("shows the auth form when bootstrap does not issue an API token", async () => {
+    vi.mocked(fetchBootstrap).mockRejectedValueOnce(
+      new BootstrapAuthRequiredError(
+        "bootstrap authentication required: missing api_token",
+      ),
     );
 
     render(<App />);
@@ -770,6 +797,7 @@ describe("App layout", () => {
     ];
     vi.mocked(fetchBootstrap).mockResolvedValue({
       token: "tok",
+      api_token: "api-tok",
       ws_path: "/",
       expires_in: 300,
       runtime_surface: "native",
@@ -1824,8 +1852,9 @@ describe("App layout", () => {
     openModelPicker();
     await screen.findByText("openai/gpt-4o-mini");
     fireEvent.click(screen.getAllByText("openai/gpt-4o-mini")[0]);
-    expect(screen.getByText("Unsaved changes.").parentElement?.className).toContain(
-      "text-blue-600",
+    expect(screen.getByText("Unsaved changes.").parentElement).toHaveClass(
+      "settings-meta--accent",
+      "font-medium",
     );
     const updatedModelButtons = screen.getAllByRole("button", { name: /openai\/gpt-4o-mini/ });
     fireEvent.pointerDown(updatedModelButtons[updatedModelButtons.length - 1]);
@@ -2441,11 +2470,13 @@ describe("App layout", () => {
     vi.mocked(fetchBootstrap)
       .mockResolvedValueOnce({
         token: "tok-1",
+        api_token: "api-tok-1",
         ws_path: "/",
         expires_in: 30,
       })
       .mockResolvedValueOnce({
         token: "tok-2",
+        api_token: "api-tok-2",
         ws_path: "/",
         expires_in: 300,
       });

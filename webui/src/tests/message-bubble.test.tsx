@@ -465,7 +465,11 @@ describe("MessageBubble", () => {
     const imageButton = screen.getByRole("button", { name: /view image/i });
     expect(imageButton).toHaveClass("w-[min(100%,34rem)]", "rounded-[20px]");
     expect(imageButton).not.toHaveAttribute("title");
-    expect(container.querySelector("img")).toHaveClass("h-auto", "w-full", "object-contain");
+    expect(imageButton.querySelector('img[alt="generated.png"]')).toHaveClass(
+      "h-auto",
+      "w-full",
+      "object-contain",
+    );
   });
 
   it("renders mislabeled html assistant media as a file attachment", () => {
@@ -486,7 +490,10 @@ describe("MessageBubble", () => {
     const { container } = render(<MessageBubble message={message} />);
 
     expect(screen.getByLabelText("File attachment")).toHaveTextContent("index.html");
-    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(container.querySelector('img[src="/api/media/sig/html"]')).not.toBeInTheDocument();
+    expect(
+      container.querySelector('img[src="/brand/avatar-assistant-qingmo.png"]'),
+    ).toBeInTheDocument();
   });
 
   it("renders assistant svg media as an image preview", () => {

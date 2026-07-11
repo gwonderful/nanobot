@@ -164,8 +164,8 @@ export function MessageBubble({
           <div className="message-user-row flex max-w-full items-start justify-end gap-2">
             <p
               className={cn(
-                "user-message-bubble ml-auto min-w-0 w-fit rounded-[18px] px-4 py-2",
-                "text-left text-[16px]/[1.75] whitespace-pre-wrap break-words",
+                "user-message-bubble ml-auto min-w-0 w-fit max-w-full rounded-[18px] px-4 py-2",
+                "text-left text-[16px]/[1.75] whitespace-pre-wrap [overflow-wrap:anywhere]",
               )}
             >
               <CliAppMentionText
