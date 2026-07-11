@@ -953,6 +953,7 @@
   }
 
   .settings-content-scroll {
+    overflow-x: clip;
     background:
       radial-gradient(
         32rem 16rem at 50% 13%,
@@ -968,6 +969,368 @@
 
   .settings-content-inner {
     position: relative;
+  }
+
+  .settings-content-inner > :not(.settings-section-decoration) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .settings-section-decoration {
+    position: absolute;
+    z-index: 0;
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: multiply;
+  }
+
+  .settings-section-decoration--appearance,
+  .settings-section-decoration--personalization,
+  .settings-section-decoration--models,
+  .settings-section-decoration--voice,
+  .settings-section-decoration--browser,
+  .settings-section-decoration--image,
+  .settings-section-decoration--runtime {
+    top: 1.45rem;
+    right: 0.25rem;
+    width: min(48%, 28rem);
+    height: 9.5rem;
+  }
+
+  .settings-section-decoration--overview {
+    top: 0.2rem;
+    right: 0;
+    width: min(52%, 29rem);
+    height: 8.8rem;
+  }
+
+  .settings-section-decoration--archived {
+    top: 15.5rem;
+    right: 0.25rem;
+    width: min(72%, 36rem);
+    height: 19rem;
+  }
+
+  .settings-section-decoration--advanced {
+    top: 24rem;
+    right: -0.75rem;
+    width: min(58%, 30rem);
+    height: 15rem;
+  }
+
+  .settings-decor-cinnabar-wash {
+    fill: hsl(var(--cinnabar) / 0.105);
+    filter: blur(0.35px);
+  }
+
+  .settings-decor-clouds {
+    stroke: hsl(var(--qingmo) / 0.15);
+    stroke-width: 3.2;
+  }
+
+  .settings-decor-clouds path:nth-child(2) {
+    stroke-width: 1.7;
+    opacity: 0.66;
+  }
+
+  .settings-decor-clouds path:nth-child(3) {
+    stroke-width: 0.85;
+    opacity: 0.55;
+  }
+
+  .settings-decor-geese {
+    stroke: hsl(var(--foreground) / 0.25);
+    stroke-width: 1.35;
+  }
+
+  .settings-decor-branch {
+    stroke: hsl(var(--foreground) / 0.18);
+    stroke-width: 2.2;
+  }
+
+  .settings-decor-branch path:not(:first-child) {
+    stroke-width: 1.2;
+    opacity: 0.78;
+  }
+
+  .settings-decor-leaves {
+    fill: hsl(var(--qingmo) / 0.13);
+  }
+
+  .settings-decor-leaves path:nth-child(even) {
+    opacity: 0.72;
+  }
+
+  .settings-decor-blossoms path {
+    fill: hsl(var(--cinnabar) / 0.12);
+    stroke: hsl(var(--cinnabar) / 0.17);
+    stroke-width: 1;
+  }
+
+  .settings-decor-blossoms circle {
+    fill: hsl(var(--muted-gold) / 0.25);
+  }
+
+  .settings-decor-butterfly {
+    fill: hsl(var(--qingmo) / 0.11);
+    stroke: hsl(var(--foreground) / 0.16);
+    stroke-width: 0.85;
+  }
+
+  .settings-decor-pine {
+    stroke: hsl(var(--foreground) / 0.15);
+    stroke-width: 3.1;
+  }
+
+  .settings-decor-pine path:not(:first-child) {
+    stroke-width: 1.45;
+  }
+
+  .settings-decor-pine-needles {
+    stroke: hsl(var(--qingmo) / 0.085);
+    stroke-width: 1.6;
+  }
+
+  .settings-decor-pine-needles path:nth-child(even) {
+    opacity: 0.62;
+  }
+
+  .settings-decor-pine-mass {
+    fill: hsl(var(--qingmo) / 0.095);
+    filter: blur(0.3px);
+  }
+
+  .settings-decor-pine-mass path:nth-child(even) {
+    fill: hsl(var(--foreground) / 0.075);
+  }
+
+  .settings-decor-mist {
+    stroke: hsl(var(--qingmo) / 0.08);
+    stroke-width: 13;
+    filter: blur(3px);
+  }
+
+  .settings-decor-orbits {
+    stroke: hsl(var(--qingmo) / 0.08);
+    stroke-width: 1.15;
+  }
+
+  .settings-decor-constellation-line {
+    stroke: hsl(var(--foreground) / 0.12);
+    stroke-width: 1.1;
+    stroke-dasharray: 3.5 4.5;
+  }
+
+  .settings-decor-constellation-stars {
+    fill: hsl(var(--qingmo) / 0.18);
+  }
+
+  .settings-decor-constellation-stars circle:nth-child(even) {
+    fill: hsl(var(--foreground) / 0.14);
+  }
+
+  .settings-decor-constellation-accent {
+    fill: hsl(var(--cinnabar) / 0.22);
+  }
+
+  .settings-decor-voice-brushes {
+    stroke: hsl(var(--qingmo) / 0.18);
+    stroke-width: 3.15;
+  }
+
+  .settings-decor-voice-brushes path:nth-child(2) {
+    opacity: 0.82;
+  }
+
+  .settings-decor-voice-brushes path:nth-child(3) {
+    opacity: 0.68;
+  }
+
+  .settings-decor-voice-brushes path:nth-child(4) {
+    opacity: 0.54;
+  }
+
+  .settings-decor-voice-accent {
+    fill: hsl(var(--cinnabar) / 0.42);
+  }
+
+  .settings-decor-ginkgo {
+    fill: hsl(var(--qingmo) / 0.09);
+    stroke: hsl(var(--qingmo) / 0.14);
+    stroke-width: 0.9;
+  }
+
+  .settings-decor-ginkgo > g:nth-child(2),
+  .settings-decor-ginkgo > g:nth-child(4) {
+    fill: hsl(var(--cinnabar) / 0.095);
+    stroke: hsl(var(--cinnabar) / 0.14);
+  }
+
+  .settings-decor-archive-geese {
+    stroke: hsl(var(--foreground) / 0.18);
+    stroke-width: 1.15;
+  }
+
+  .settings-decor-sundial {
+    stroke: hsl(var(--qingmo) / 0.11);
+    stroke-width: 1;
+  }
+
+  .settings-decor-sundial ellipse:first-child {
+    stroke-dasharray: 5 4;
+  }
+
+  .settings-decor-sundial path:nth-of-type(2),
+  .settings-decor-sundial path:nth-of-type(3) {
+    opacity: 0.66;
+  }
+
+  .settings-decor-sundial-gnomon {
+    fill: hsl(var(--foreground) / 0.095);
+    stroke: hsl(var(--foreground) / 0.12);
+    stroke-width: 0.8;
+  }
+
+  .settings-decor-sundial-accent {
+    fill: hsl(var(--cinnabar) / 0.2);
+  }
+
+  .settings-decor-orchid-leaves {
+    stroke: hsl(var(--qingmo) / 0.2);
+    stroke-width: 3.25;
+  }
+
+  .settings-decor-orchid-leaves path:nth-child(2),
+  .settings-decor-orchid-leaves path:nth-child(4) {
+    opacity: 0.82;
+  }
+
+  .settings-decor-orchid-leaves path:nth-child(5) {
+    opacity: 0.68;
+  }
+
+  .settings-decor-orchid-blossoms path {
+    fill: hsl(var(--cinnabar) / 0.13);
+    stroke: hsl(var(--cinnabar) / 0.23);
+    stroke-width: 1.35;
+  }
+
+  .settings-decor-orchid-blossoms circle {
+    fill: hsl(var(--muted-gold) / 0.3);
+  }
+
+  .settings-decor-orchid-accent {
+    fill: hsl(var(--foreground) / 0.18);
+  }
+
+  .settings-decor-rock-washes path:first-child {
+    fill: hsl(var(--foreground) / 0.052);
+    stroke: hsl(var(--foreground) / 0.09);
+    stroke-width: 1.2;
+  }
+
+  .settings-decor-rock-washes path:nth-child(2) {
+    fill: hsl(var(--qingmo) / 0.055);
+    stroke: hsl(var(--qingmo) / 0.08);
+    stroke-width: 0.9;
+  }
+
+  .settings-decor-rock-washes path:nth-child(3),
+  .settings-decor-rock-washes path:nth-child(4) {
+    fill: none;
+    stroke: hsl(var(--foreground) / 0.14);
+    stroke-width: 2.6;
+    stroke-dasharray: 17 5 9 4;
+  }
+
+  .settings-decor-bamboo-branch {
+    stroke: hsl(var(--foreground) / 0.17);
+    stroke-width: 2.4;
+  }
+
+  .settings-decor-bamboo-branch path:first-child {
+    stroke-dasharray: 44 3 31 4;
+  }
+
+  .settings-decor-bamboo-leaves {
+    fill: hsl(var(--qingmo) / 0.13);
+  }
+
+  .settings-decor-bamboo-leaves path:nth-child(even) {
+    fill: hsl(var(--foreground) / 0.095);
+  }
+
+  .settings-decor-rock-cloud {
+    stroke: hsl(var(--qingmo) / 0.085);
+    stroke-width: 4;
+    filter: blur(1.2px);
+  }
+
+  .settings-decor-rock-moss {
+    fill: hsl(var(--foreground) / 0.13);
+  }
+
+  .settings-decor-rock-accent {
+    fill: hsl(var(--cinnabar) / 0.18);
+  }
+
+  .settings-decor-kite {
+    stroke: hsl(var(--foreground) / 0.14);
+    stroke-width: 1.05;
+  }
+
+  .settings-decor-kite-knot {
+    fill: hsl(var(--cinnabar) / 0.18);
+  }
+
+  .settings-decor-kite-clouds {
+    stroke: hsl(var(--qingmo) / 0.105);
+    stroke-width: 1.7;
+  }
+
+  .settings-decor-kite-clouds path:nth-child(even) {
+    stroke-width: 1;
+    opacity: 0.72;
+  }
+
+  .dark .settings-section-decoration {
+    opacity: 0.72;
+    mix-blend-mode: screen;
+  }
+
+  @media (max-width: 720px) {
+    .settings-section-decoration--appearance,
+    .settings-section-decoration--personalization,
+    .settings-section-decoration--models,
+    .settings-section-decoration--voice,
+    .settings-section-decoration--browser,
+    .settings-section-decoration--image,
+    .settings-section-decoration--runtime,
+    .settings-section-decoration--overview {
+      top: 2.6rem;
+      right: -1rem;
+      width: 13rem;
+      height: 6.5rem;
+      opacity: 0.68;
+    }
+
+    .settings-section-decoration--archived {
+      top: 19rem;
+      right: -2rem;
+      width: 20rem;
+      height: 12rem;
+      opacity: 0.58;
+    }
+
+    .settings-section-decoration--advanced {
+      top: 23rem;
+      right: -2rem;
+      width: 16rem;
+      height: 10rem;
+      opacity: 0.62;
+    }
   }
 
   .settings-title-block {

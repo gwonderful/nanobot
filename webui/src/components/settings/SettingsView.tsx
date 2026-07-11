@@ -1938,6 +1938,8 @@ export function SettingsView({
             hostChromeInset && "pt-[4.25rem] sm:pt-[4.25rem] lg:pt-[4.75rem]",
           )}
         >
+          <SettingsSectionDecoration section={activeSection} />
+
           <div className="settings-title-block mb-7">
             {!showSidebar ? (
               <button
@@ -2005,6 +2007,362 @@ function visibleWebuiDefaultAccessMode(mode: string | null | undefined): WebuiDe
 
 function titleForSection(section: SettingsSectionKey): string {
   return SETTINGS_NAV_ITEMS.find((item) => item.key === section)?.fallback ?? "Settings";
+}
+
+function SettingsSectionDecoration({ section }: { section: SettingsSectionKey }) {
+  if (section === "overview") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--overview"
+        viewBox="0 0 460 150"
+      >
+        <g className="settings-decor-sundial" fill="none" strokeLinecap="round">
+          <ellipse cx="334" cy="72" rx="101" ry="48" />
+          <ellipse cx="334" cy="72" rx="78" ry="35" />
+          <path d="M233 72h25M410 72h25M334 24v13M334 107v13M267 39l17 13M384 46l18-13M267 105l18-12M384 98l18 13" />
+          <path d="M334 72 302 18M334 72l73 25" />
+          <path d="M334 72 286 88" />
+        </g>
+        <path className="settings-decor-sundial-gnomon" d="M334 72 309 20l12 48Z" />
+        <circle className="settings-decor-sundial-accent" cx="407" cy="97" r="3.4" />
+      </svg>
+    );
+  }
+
+  if (section === "image") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--image"
+        viewBox="0 0 470 165"
+      >
+        <defs>
+          <filter id="settings-orchid-brush" x="-6%" y="-8%" width="112%" height="116%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.012 0.08"
+              numOctaves="2"
+              seed="37"
+              result="orchidNoise"
+            />
+            <feDisplacementMap in="SourceGraphic" in2="orchidNoise" scale="1.7" />
+          </filter>
+        </defs>
+        <g
+          className="settings-decor-orchid-leaves"
+          fill="none"
+          filter="url(#settings-orchid-brush)"
+          strokeLinecap="round"
+        >
+          <path d="M370 151C344 113 310 96 260 97" />
+          <path d="M371 151C346 104 342 57 358 13" />
+          <path d="M372 151C386 96 414 55 456 27" />
+          <path d="M372 151C393 115 424 96 467 92" />
+          <path d="M370 151C352 123 324 114 291 126" />
+        </g>
+        <g className="settings-decor-orchid-blossoms" filter="url(#settings-orchid-brush)">
+          <path d="M343 91c-8-9-18-3-13 6-10 2-8 13 2 12-3 10 8 14 13 5 7 7 16-2 10-9 9-5 3-15-6-14Z" />
+          <path d="M405 61c-7-8-15-2-11 5-8 2-6 11 2 10-2 8 7 11 11 4 6 6 13-1 8-7 7-4 3-12-5-11Z" />
+          <circle cx="342" cy="104" r="2.1" />
+          <circle cx="405" cy="72" r="1.8" />
+        </g>
+        <circle className="settings-decor-orchid-accent" cx="374" cy="150" r="3.1" />
+      </svg>
+    );
+  }
+
+  if (section === "runtime") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--runtime"
+        viewBox="0 0 490 175"
+      >
+        <defs>
+          <filter id="settings-rock-brush" x="-8%" y="-12%" width="116%" height="124%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.026 0.09"
+              numOctaves="3"
+              seed="31"
+              result="rockNoise"
+            />
+            <feDisplacementMap in="SourceGraphic" in2="rockNoise" scale="4" />
+          </filter>
+        </defs>
+        <g className="settings-decor-rock-washes" filter="url(#settings-rock-brush)">
+          <path d="M145 166c21-22 38-31 52-27 7-15 16-24 28-28-2-17 5-29 20-37-1-18 7-31 24-40 12 8 17 20 15 35 13 5 22 14 27 27 16 3 25 14 29 31 20-2 34 8 43 29 20-3 39 0 58 10Z" />
+          <path d="M188 161c13-15 27-21 42-18 3-13 10-22 22-26-1-16 5-29 18-38 6 15 14 24 25 28 11 4 17 16 18 35 16-5 30 1 43 19Z" />
+          <path d="M173 158c25-11 46-13 62-5M205 139c15-12 28-17 40-15M227 112c13-12 24-19 34-22M249 80c8-15 15-25 21-31" />
+          <path d="M273 144c7-23 12-42 13-57M300 151c3-16 7-29 13-39M329 153c9-9 18-14 28-15" />
+        </g>
+        <g
+          className="settings-decor-bamboo-branch"
+          fill="none"
+          filter="url(#settings-rock-brush)"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M369 166c13-49 28-98 53-155" />
+          <path d="M389 98c-20-15-35-21-51-21M405 58c17-13 34-19 52-18" />
+        </g>
+        <g className="settings-decor-bamboo-leaves" filter="url(#settings-rock-brush)">
+          <path d="M388 98c-25-25-49-32-72-23 25 7 48 15 72 23Z" />
+          <path d="M390 96c-14 21-18 40-12 58 8-21 13-40 12-58Z" />
+          <path d="M405 59c14-24 33-39 56-44-18 15-36 29-56 44Z" />
+          <path d="M405 57c24-7 45-3 63 11-22-2-43-6-63-11Z" />
+          <path d="M421 18c-14-11-27-14-40-10 14 5 27 8 40 10Z" />
+          <path d="M421 17c12-11 25-16 39-14-13 6-26 11-39 14Z" />
+        </g>
+        <path
+          className="settings-decor-rock-cloud"
+          d="M115 91c30-17 57-16 78-1 17-18 43-22 66-9"
+          fill="none"
+          strokeLinecap="round"
+        />
+        <g className="settings-decor-rock-moss">
+          <circle cx="232" cy="128" r="2.4" />
+          <circle cx="246" cy="116" r="1.4" />
+          <circle cx="336" cy="137" r="2" />
+          <circle cx="352" cy="148" r="1.2" />
+        </g>
+        <circle className="settings-decor-rock-accent" cx="452" cy="126" r="3.6" />
+      </svg>
+    );
+  }
+
+  if (section === "browser") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--browser"
+        viewBox="0 0 460 160"
+      >
+        <g className="settings-decor-kite" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m321 20 43 29-31 45-35-39Z" />
+          <path d="m321 20 12 74M298 55l66-6" />
+          <path d="M333 94c-20 22-6 33-26 45-10 6-18 4-27 12" />
+        </g>
+        <path className="settings-decor-kite-knot" d="m313 121 7 5-6 7-7-5Z" />
+        <g className="settings-decor-kite-clouds" fill="none" strokeLinecap="round">
+          <path d="M184 91c20-10 40-8 53 3 12-12 31-13 46-4 11 7 24 7 40 2" />
+          <path d="M256 126c26-10 47-7 63 3 14-11 34-12 51-4 15 7 31 7 50 1" />
+          <path d="M366 72c14-7 28-5 37 2 9-8 21-9 32-3" />
+        </g>
+      </svg>
+    );
+  }
+
+  if (section === "models") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--models"
+        viewBox="0 0 430 150"
+      >
+        <g className="settings-decor-orbits" fill="none" strokeLinecap="round">
+          <path d="M236 18c72 8 132 49 166 112" />
+          <path d="M266 9c58 15 106 51 137 103" />
+        </g>
+        <path
+          className="settings-decor-constellation-line"
+          d="M206 78 246 99 286 82 326 43 364 74 395 38 414 91"
+          fill="none"
+        />
+        <g className="settings-decor-constellation-stars">
+          <circle cx="206" cy="78" r="3.2" />
+          <circle cx="246" cy="99" r="4.3" />
+          <circle cx="286" cy="82" r="3.6" />
+          <circle cx="326" cy="43" r="4.7" />
+          <circle cx="364" cy="74" r="3.5" />
+          <circle cx="395" cy="38" r="3.9" />
+          <circle cx="414" cy="91" r="4.8" />
+        </g>
+        <path
+          className="settings-decor-constellation-accent"
+          d="m182 67 2.2 5.8 5.8 2.2-5.8 2.2-2.2 5.8-2.2-5.8-5.8-2.2 5.8-2.2Z"
+        />
+      </svg>
+    );
+  }
+
+  if (section === "voice") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--voice"
+        viewBox="0 0 460 150"
+      >
+        <defs>
+          <filter id="settings-voice-brush" x="-5%" y="-12%" width="110%" height="124%">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.015 0.1"
+              numOctaves="2"
+              seed="19"
+              result="voiceNoise"
+            />
+            <feDisplacementMap in="SourceGraphic" in2="voiceNoise" scale="1.5" />
+          </filter>
+        </defs>
+        <g
+          className="settings-decor-voice-brushes"
+          fill="none"
+          filter="url(#settings-voice-brush)"
+          strokeLinecap="round"
+        >
+          <path d="M202 94c40-51 103-62 164-36 34 14 64 13 94-4" />
+          <path d="M225 104c37-37 86-43 129-26 36 14 69 13 101-2" />
+          <path d="M257 112c29-25 63-28 92-16 25 10 49 9 72-2" />
+          <path d="M292 117c20-14 41-15 59-7 15 7 30 7 44 1" />
+        </g>
+        <circle className="settings-decor-voice-accent" cx="202" cy="94" r="3.6" />
+      </svg>
+    );
+  }
+
+  if (section === "archived") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--archived"
+        viewBox="0 0 560 300"
+      >
+        <g className="settings-decor-ginkgo">
+          <g transform="translate(126 247) rotate(-24) scale(.62)">
+            <path d="M0 0C-18-10-44-16-64-31c10-25 35-36 64-30 29-6 54 5 64 30C44-16 18-10 0 0Z" />
+            <path d="M0 0-48-30M0 0-25-48M0 0 0-58M0 0 25-48M0 0 48-30M0 0 10 60" fill="none" />
+          </g>
+          <g transform="translate(215 218) rotate(18) scale(.84)">
+            <path d="M0 0C-18-10-44-16-64-31c10-25 35-36 64-30 29-6 54 5 64 30C44-16 18-10 0 0Z" />
+            <path d="M0 0-48-30M0 0-25-48M0 0 0-58M0 0 25-48M0 0 48-30M0 0 10 60" fill="none" />
+          </g>
+          <g transform="translate(302 154) rotate(-12) scale(1.05)">
+            <path d="M0 0C-18-10-44-16-64-31c10-25 35-36 64-30 29-6 54 5 64 30C44-16 18-10 0 0Z" />
+            <path d="M0 0-48-30M0 0-25-48M0 0 0-58M0 0 25-48M0 0 48-30M0 0 10 60" fill="none" />
+          </g>
+          <g transform="translate(366 105) rotate(31) scale(.7)">
+            <path d="M0 0C-18-10-44-16-64-31c10-25 35-36 64-30 29-6 54 5 64 30C44-16 18-10 0 0Z" />
+            <path d="M0 0-48-30M0 0-25-48M0 0 0-58M0 0 25-48M0 0 48-30M0 0 10 60" fill="none" />
+          </g>
+          <g transform="translate(424 61) rotate(-18) scale(.56)">
+            <path d="M0 0C-18-10-44-16-64-31c10-25 35-36 64-30 29-6 54 5 64 30C44-16 18-10 0 0Z" />
+            <path d="M0 0-48-30M0 0-25-48M0 0 0-58M0 0 25-48M0 0 48-30M0 0 10 60" fill="none" />
+          </g>
+        </g>
+        <g className="settings-decor-archive-geese" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M367 184q7-6 14 0q7-6 14 0" />
+          <path d="M398 168q6-5 12 0q6-5 12 0" />
+          <path d="M426 146q5-4 10 0q5-4 10 0" />
+          <path d="M451 122q4-3 8 0q4-3 8 0" />
+          <path d="M475 96q3-2.5 6 0q3-2.5 6 0" />
+        </g>
+      </svg>
+    );
+  }
+
+  if (section === "appearance") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--appearance"
+        viewBox="0 0 430 150"
+      >
+        <circle className="settings-decor-cinnabar-wash" cx="307" cy="55" r="40" />
+        <g className="settings-decor-clouds" fill="none" strokeLinecap="round">
+          <path d="M162 72c32-16 58-13 76-1 15-15 40-19 65-7 17 8 37 8 63-1" />
+          <path d="M118 88c39-12 70-9 93 2 20-10 43-10 64-1 22 9 49 8 82-4" />
+          <path d="M196 79c26-5 47-2 62 6" />
+        </g>
+        <g className="settings-decor-geese" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M350 41q8-7 16 0q8-7 16 0" />
+          <path d="M379 59q6-5 12 0q6-5 12 0" />
+          <path d="M326 67q5-4 10 0q5-4 10 0" />
+          <path d="M402 33q4-3 8 0q4-3 8 0" />
+          <path d="M360 82q4-3 8 0q4-3 8 0" />
+        </g>
+      </svg>
+    );
+  }
+
+  if (section === "personalization") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--personalization"
+        viewBox="0 0 460 160"
+      >
+        <g className="settings-decor-branch" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M466 29c-78 16-131 37-187 83-24 20-52 28-87 31" />
+          <path d="M381 54c-18-18-35-28-54-31" />
+          <path d="M330 79c-7-20-20-35-38-47" />
+          <path d="M282 109c-23-6-43-4-61 5" />
+        </g>
+        <g className="settings-decor-leaves">
+          <path d="M395 45c-17-13-32-15-45-8 13 8 28 11 45 8Z" />
+          <path d="M363 62c-12 16-15 30-9 42 8-13 11-27 9-42Z" />
+          <path d="M326 76c-17-9-31-9-42-1 13 5 27 6 42 1Z" />
+          <path d="M291 101c-12 13-16 25-12 36 9-10 13-22 12-36Z" />
+          <path d="M244 124c-14-7-26-6-35 2 11 3 22 2 35-2Z" />
+        </g>
+        <g className="settings-decor-blossoms">
+          <g transform="translate(351 57)">
+            <path d="M0 0c-18-16-31-3-21 10C-37 19-27 34-10 23-4 42 14 35 11 19 30 28 37 10 20 4 29-12 10-20 0 0Z" />
+            <circle cx="1" cy="8" r="3" />
+          </g>
+          <g transform="translate(278 108) scale(.68)">
+            <path d="M0 0c-18-16-31-3-21 10C-37 19-27 34-10 23-4 42 14 35 11 19 30 28 37 10 20 4 29-12 10-20 0 0Z" />
+            <circle cx="1" cy="8" r="3" />
+          </g>
+        </g>
+        <g className="settings-decor-butterfly" transform="translate(178 70) rotate(-12)">
+          <path d="M0 7C-17-9-31-4-25 10c4 10 15 8 25-3Z" />
+          <path d="M3 7C17-10 31-6 26 8c-4 11-15 10-23-1Z" />
+          <path d="M1 7c-8 8-7 18 1 24 7-7 8-16-1-24Z" />
+          <path d="M3 7c8 7 9 16 3 23-7-6-9-15-3-23Z" />
+          <path d="M1 5c-4-9-8-12-12-14M4 5c5-9 9-11 14-12" fill="none" />
+        </g>
+      </svg>
+    );
+  }
+
+  if (section === "advanced") {
+    return (
+      <svg
+        aria-hidden
+        className="settings-section-decoration settings-section-decoration--advanced"
+        viewBox="0 0 470 240"
+      >
+        <circle className="settings-decor-cinnabar-wash" cx="292" cy="159" r="31" />
+        <g className="settings-decor-pine" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M259 232c4-38 9-74 25-103 10-18 13-40 10-68" />
+          <path d="M279 145c-34-18-69-22-104-10" />
+          <path d="M288 117c24-21 53-29 89-24" />
+          <path d="M294 86c-23-17-48-20-74-11" />
+          <path d="M294 63c14-18 33-28 58-29" />
+          <path d="M278 169c-20 1-37 8-51 22" />
+        </g>
+        <g className="settings-decor-pine-mass">
+          <path d="M164 139c8-12 20-15 30-9 8-13 24-15 35-6 10-9 27-7 34 4 12-4 24 2 28 12-22-2-41 1-59 6-24 7-47 5-68-7Z" />
+          <path d="M298 111c7-13 21-18 32-11 8-15 25-18 38-8 12-9 29-5 36 7 10-2 21 5 24 16-23-5-43-2-61 4-22 7-45 5-69-8Z" />
+          <path d="M207 79c7-11 18-15 28-9 8-12 22-14 32-6 11-7 24-3 30 7 9-1 18 5 21 13-18-3-35-1-50 4-21 6-41 3-61-9Z" />
+          <path d="M296 58c5-12 16-17 27-12 6-13 20-17 31-10 10-7 23-3 28 7 8 0 15 5 18 12-17-2-32 1-45 7-19 8-38 7-59-4Z" />
+          <path d="M214 195c5-10 15-14 24-9 7-11 20-13 29-6 9-6 20-3 25 6 7 0 14 5 16 11-15-2-29 1-41 5-18 6-35 4-53-7Z" />
+        </g>
+        <g className="settings-decor-pine-needles" fill="none" strokeLinecap="round">
+          <path d="M171 135c31-18 65-18 101 4M188 126c24-10 49-7 76 8M178 145c25-9 50-8 77 2" />
+          <path d="M304 111c25-21 55-27 89-17M319 100c22-11 44-12 68-5M314 118c27-11 53-11 78 0" />
+          <path d="M214 77c27-14 52-12 76 6M229 68c23-7 43-2 61 14M218 86c26-7 49-4 69 9" />
+          <path d="M301 58c18-20 39-28 65-24M315 45c17-10 34-13 51-10M307 65c22-10 43-10 62 0" />
+          <path d="M221 192c17-17 35-24 55-22M232 181c15-8 30-11 45-8" />
+        </g>
+        <path className="settings-decor-mist" d="M38 218c72-25 131-25 178 0 52 27 120 20 214-22" fill="none" />
+      </svg>
+    );
+  }
+
+  return null;
 }
 
 function SettingsSidebar({
